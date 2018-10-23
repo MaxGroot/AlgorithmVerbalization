@@ -10,8 +10,18 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.Write("Test");
-            Console.ReadKey(true);
+            Console.WriteLine("Program started");
+
+            TrainingController trainer = new TrainingController();
+            
+            // Load in everything we need for the training process
+            List <DataInstance> exampleSet = trainer.exampleSet();
+            List <string> attributeSet = trainer.exampleAttributes();
+            string targetAttribute = trainer.targetAttribute();
+            Console.WriteLine("Training data loaded. ");
+            
+
+
         }
     }
 }
