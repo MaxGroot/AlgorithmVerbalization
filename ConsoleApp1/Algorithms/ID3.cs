@@ -97,7 +97,6 @@ namespace ConsoleApp1
                     if (!attribute_values.Contains(my_value))
                     {
                         // A new possibility!
-                        Console.WriteLine($"Added {my_value} to {attr}");
                         attribute_values.Add(my_value);
 
                     }
