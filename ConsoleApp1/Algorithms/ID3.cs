@@ -27,7 +27,7 @@ namespace ConsoleApp1
             return this.iterate(tree, this.examples);
         }
 
-        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo)
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, string parent_value_splitter = null)
         {
             // Find best possible way to split these sets.
             string best_attr = "";
@@ -43,9 +43,8 @@ namespace ConsoleApp1
             }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
-            Console.WriteLine($"{best_attr} selected as best attribute for this set. Making node");
-            tree.addNode(best_attr);
-
+            tree.addNode(best_attr, parent_value_splitter);
+            
             // Create subsets for each possible value of the best attribute
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
@@ -53,13 +52,16 @@ namespace ConsoleApp1
                 if (this.subset_has_all_same_classifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node.
-                    tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
+                    Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
+                    Console.WriteLine(leaf.myRule(target_attribute));
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it.
-                    this.iterate(tree, subset);
-                }
-                
+                    this.iterate(tree, subset, value_splitter);
+
+                    // If we got here in the code then all subsets have been resolved. We need to move up.
+                    tree.moveSelectionUp();
+                }  
             }
 
             return tree;

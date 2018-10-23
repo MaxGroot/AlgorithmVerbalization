@@ -17,8 +17,14 @@ namespace ConsoleApp1
             this.value_splitter = value_splitter;
             this.classifier = classifier;
             this.parent = parent;
+        }
 
-            Console.WriteLine($"Leaf created for {value_splitter} leading to {classifier}");
+        public string myRule(string targetAttribute)
+        {
+            string rule = this.parent.triggerRule(value_splitter);
+            
+            rule += " THEN " + targetAttribute + " = " + this.classifier;
+            return rule;
         }
     }
 }

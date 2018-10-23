@@ -11,16 +11,15 @@ namespace ConsoleApp1
         private Node root = null;
         private Node currentlySelectedNode = null;
 
-        public DecisionTree addNode(string attribute)
+        public DecisionTree addNode(string attribute, string value_splitter)
         {
+            Node newnode = new Node(attribute, value_splitter);
             if (root == null)
             {
-                root = new Node(attribute);
+                root = newnode;
                 currentlySelectedNode = root;
             } else
             {
-                Node newnode = new Node(attribute);
-
                 this.currentlySelectedNode.addChildNode(newnode);
                 newnode.addParentNode(currentlySelectedNode);
 
@@ -29,10 +28,17 @@ namespace ConsoleApp1
             return this;
         }
 
-        public DecisionTree addLeaf(string value_splitter, string class_prediction)
+        public Leaf addLeaf(string value_splitter, string class_prediction)
         {
             Leaf leaf = new Leaf(value_splitter, class_prediction, this.currentlySelectedNode);
-            return this;
+            currentlySelectedNode.addChildLeaf(leaf);
+
+            return leaf;
+        }
+
+        public void moveSelectionUp()
+        {
+            this.currentlySelectedNode = this.currentlySelectedNode.getParent();
         }
     }
 }
