@@ -21,18 +21,48 @@ namespace ConsoleApp1
 
             Console.WriteLine("Calculating possible values of all attributes...");
             this.calculateAttributePossibilities();
-
-            Console.WriteLine("Calculating set entropy...");
-            Console.WriteLine(this.entropy(examples, "play").ToString());
-
+        
+            DecisionTree tree = new DecisionTree();
             
-            Console.WriteLine("Calculating attribute gains...");
-            foreach(string attr in attributes)
+            return this.iterate(tree, this.examples);
+        }
+
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo)
+        {
+            // Find best possible way to split these sets.
+            string best_attr = "";
+            double highest_gain = 0;
+            foreach(string attr in this.attributes)
             {
-                Console.WriteLine($"{attr} : {this.gain(examples, attr, target_attribute)}");
+                double my_gain = this.gain(sets_todo, attr, this.target_attribute);
+                if (my_gain > highest_gain)
+                {
+                    best_attr = attr;
+                    highest_gain = my_gain;
+                }
             }
-            
-            return new DecisionTree();
+
+            // The best attribute to split this set is now saved in best_attr. Create a node for that.
+            Console.WriteLine($"{best_attr} selected as best attribute for this set. Making node");
+            tree.addNode(best_attr);
+
+            // Create subsets for each possible value of the best attribute
+            foreach (string value_splitter in this.possible_attribute_values[best_attr])
+            {
+                List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
+                if (this.subset_has_all_same_classifier(subset, target_attribute))
+                {
+                    // This subset doesn't have to be split anymore. We can just add it to the node.
+                    tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
+                } else
+                {
+                    // We still haven't resolved this set. We need to iterate upon it.
+                    this.iterate(tree, subset);
+                }
+                
+            }
+
+            return tree;
         }
 
         public double entropy(List<DataInstance> S, string target_attribute)
@@ -107,5 +137,19 @@ namespace ConsoleApp1
             }
         }
 
+        public bool subset_has_all_same_classifier(List<DataInstance> S, string target_attribute)
+        {
+            string classifier = S.First().getProperty(target_attribute);
+
+            foreach(DataInstance instance in S)
+            {
+                if (instance.getProperty(target_attribute) != classifier)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

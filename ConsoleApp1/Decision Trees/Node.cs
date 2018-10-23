@@ -6,23 +6,27 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    public class Node: DecisionTreeElement
+    public class Node
     {
-        private string label;
-        private Dictionary<string, DecisionTreeElement> children;
+
+        public string label;
+        private Node parent;
+        private List<Node> children = new List<Node> ();
 
         public Node(string label)
         {
             this.label = label;
         }
+        
+        public void addChildNode(Node child)
+        {
+            this.children.Add(child);
+        }
 
-        public string getLabel()
+        public void addParentNode(Node parent)
         {
-            return this.label;
+            this.parent = parent;
         }
-        public void handleInstance(DataInstance instance)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
