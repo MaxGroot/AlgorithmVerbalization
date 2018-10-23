@@ -13,6 +13,7 @@ namespace ConsoleApp1
             Console.WriteLine("Program started");
 
             TrainingController trainer = new TrainingController();
+            trainer.generateExamples();
 
             Algorithm algorithm = new ID3();
 

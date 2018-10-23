@@ -42,13 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DecisionTree.cs" />
-    <Compile Include="DataInstance.cs" />
-    <Compile Include="Algorithm.cs" />
-    <Compile Include="ID3.cs" />
+    <Compile Include="Decision Trees\DecisionTree.cs" />
+    <Compile Include="Decision Trees\Node.cs" />
+    <Compile Include="Decision Trees\DecisionTreeElement.cs" />
+    <Compile Include="Training\DataInstance.cs" />
+    <Compile Include="Algorithms\Algorithm.cs" />
+    <Compile Include="Algorithms\ID3.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TrainingController.cs" />
+    <Compile Include="Training\TrainingController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -20,10 +20,9 @@ namespace ConsoleApp1
         {
             return this.label;
         }
-
-        public void handleExample()
+        public void handleInstance(DataInstance instance)
         {
-
+            throw new NotImplementedException();
         }
     }
 }

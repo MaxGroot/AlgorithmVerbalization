@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    class DataInstance
+    public class DataInstance
     {
         Dictionary<string, string> fields = new Dictionary<string, string> ();
 
         // Set an attribute to a value of this Data Instance. 
-        public void setProperty(string attribute, string value)
+        public DataInstance setProperty(string attribute, string value)
         {
             this.fields.Add(attribute, value);
+            return this;
         }
 
         // Access an attribute of this Data Instance

@@ -18,6 +18,9 @@ namespace ConsoleApp1
             this.target_attribute = target_attribute;
             this.attributes = attributes;
 
+            Console.WriteLine("Calculating set entropy...");
+            Console.WriteLine(this.entropy(examples, "play").ToString());
+
             return new DecisionTree();
         }
 
@@ -27,7 +30,15 @@ namespace ConsoleApp1
 
             foreach(DataInstance example in S)
             {
-                proportions[example.getProperty(target_attribute)]++;
+                string my_value = example.getProperty(target_attribute);
+
+                if (!proportions.ContainsKey(my_value))
+                {
+                    Console.WriteLine($"Make entry in dictionary for {my_value}");
+                    proportions[my_value] = 0;
+                }
+                Console.WriteLine($"Adding to {my_value}");
+                proportions[my_value]++;
             }
 
             double result = 0;
@@ -40,9 +51,11 @@ namespace ConsoleApp1
             return result;
         }
 
-        public static float gain(List<DataInstance> S, string targetAttribute)
+        public double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute)
         {
-            return 0f;
+            double entropy = this.entropy(S, targetAttribute);
+
+            return entropy;
         }
     }
 }
