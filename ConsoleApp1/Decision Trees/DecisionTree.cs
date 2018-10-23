@@ -8,6 +8,6 @@ namespace ConsoleApp1
 {
     class DecisionTree
     {
-
+        private DecisionTreeElement root;
     }
 }
