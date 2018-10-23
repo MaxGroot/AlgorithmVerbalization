@@ -11,6 +11,7 @@ namespace ConsoleApp1
         private List<DataInstance> examples;
         private string target_attribute;
         private List<string> attributes;
+        private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>> ();
 
         public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes)
         {
@@ -18,9 +19,19 @@ namespace ConsoleApp1
             this.target_attribute = target_attribute;
             this.attributes = attributes;
 
+            Console.WriteLine("Calculating possible values of all attributes...");
+            this.calculateAttributePossibilities();
+
             Console.WriteLine("Calculating set entropy...");
             Console.WriteLine(this.entropy(examples, "play").ToString());
 
+            
+            Console.WriteLine("Calculating attribute gains...");
+            foreach(string attr in attributes)
+            {
+                Console.WriteLine($"{attr} : {this.gain(examples, attr, target_attribute)}");
+            }
+            
             return new DecisionTree();
         }
 
@@ -34,10 +45,8 @@ namespace ConsoleApp1
 
                 if (!proportions.ContainsKey(my_value))
                 {
-                    Console.WriteLine($"Make entry in dictionary for {my_value}");
                     proportions[my_value] = 0;
                 }
-                Console.WriteLine($"Adding to {my_value}");
                 proportions[my_value]++;
             }
 
@@ -53,9 +62,51 @@ namespace ConsoleApp1
 
         public double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute)
         {
-            double entropy = this.entropy(S, targetAttribute);
+            double result = this.entropy(S, targetAttribute);
+            
 
-            return entropy;
+            List<string> possible_values = this.possible_attribute_values[wanted_attribute];
+
+            foreach(string value in possible_values)
+            {
+                // Create a subset of data instances that only contain this value.
+                List<DataInstance> set_filtered = S.Where(A => A.getProperty(wanted_attribute) == value).ToList();
+                
+
+              
+                double proportion = ( (double) set_filtered.Count() ) / ( (double) S.Count() );
+                double subset_entropy = this.entropy(set_filtered, targetAttribute);
+                
+                result -= proportion * subset_entropy;
+            }
+
+            return result;
         }
+
+        public void calculateAttributePossibilities()
+        {
+            foreach (string attr in attributes)
+            {
+                // Make the list we will later add to the dictionary
+                List<string> attribute_values = new List<string>();
+
+                // Loop through all data instances to find the possible values.
+                foreach(DataInstance instance in this.examples)
+                {
+                    string my_value = instance.getProperty(attr);
+                    if (!attribute_values.Contains(my_value))
+                    {
+                        // A new possibility!
+                        Console.WriteLine($"Added {my_value} to {attr}");
+                        attribute_values.Add(my_value);
+
+                    }
+                }
+
+                // Make the dictionary entry
+                this.possible_attribute_values.Add(attr, attribute_values);
+            }
+        }
+
     }
 }

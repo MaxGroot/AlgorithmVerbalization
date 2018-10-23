@@ -47,7 +47,6 @@ namespace ConsoleApp1
             this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "no"));
 
             this.attributes.Add("wind");
-            this.attributes.Add("play");
 
             this.target = "play";
         }
