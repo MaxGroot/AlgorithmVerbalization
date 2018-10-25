@@ -66,5 +66,23 @@ namespace DecisionTrees
 
             return result;
         }
+
+        public static bool subset_has_all_same_classifier(List<DataInstance> S, string target_attribute)
+        {
+            // First find any classifier that we will check for on the entire set
+            string classifier = S.First().getProperty(target_attribute);
+
+            foreach (DataInstance instance in S)
+            {
+                if (instance.getProperty(target_attribute) != classifier)
+                {
+                    // We found another classifier than the one we previously had. That means this subset has different classifiers. 
+                    return false;
+                }
+            }
+
+            // If we are here then the subset has the same classifier.
+            return true;
+        }
     }
 }
