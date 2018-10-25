@@ -12,7 +12,7 @@ namespace ConsoleApp1
         private string target_attribute;
         private List<string> attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>> ();
-
+ 
         public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes)
         {
             this.examples = examples;
@@ -34,7 +34,7 @@ namespace ConsoleApp1
             double highest_gain = 0;
             foreach(string attr in this.attributes)
             {
-                double my_gain = this.gain(sets_todo, attr, this.target_attribute);
+                double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
                 if (my_gain > highest_gain)
                 {
                     best_attr = attr;
@@ -59,62 +59,14 @@ namespace ConsoleApp1
                     // We still haven't resolved this set. We need to iterate upon it.
                     this.iterate(tree, subset, value_splitter);
 
-                    // If we got here in the code then all subsets have been resolved. We need to move up.
+                    // If we got here in the code then the above set has been resolved. We need to move up.
                     tree.moveSelectionUp();
                 }  
             }
 
             return tree;
         }
-
-        public double entropy(List<DataInstance> S, string target_attribute)
-        {
-            Dictionary<string, float> proportions = new Dictionary<string, float> ();
-
-            foreach(DataInstance example in S)
-            {
-                string my_value = example.getProperty(target_attribute);
-
-                if (!proportions.ContainsKey(my_value))
-                {
-                    proportions[my_value] = 0;
-                }
-                proportions[my_value]++;
-            }
-
-            double result = 0;
-            foreach(var item in proportions)
-            {
-                double proportion = (item.Value / S.Count());
-                result -= (proportion * Math.Log(proportion, 2));
-            }
-
-            return result;
-        }
-
-        public double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute)
-        {
-            double result = this.entropy(S, targetAttribute);
-            
-
-            List<string> possible_values = this.possible_attribute_values[wanted_attribute];
-
-            foreach(string value in possible_values)
-            {
-                // Create a subset of data instances that only contain this value.
-                List<DataInstance> set_filtered = S.Where(A => A.getProperty(wanted_attribute) == value).ToList();
-                
-
-              
-                double proportion = ( (double) set_filtered.Count() ) / ( (double) S.Count() );
-                double subset_entropy = this.entropy(set_filtered, targetAttribute);
-                
-                result -= proportion * subset_entropy;
-            }
-
-            return result;
-        }
-
+        
         public void calculateAttributePossibilities()
         {
             foreach (string attr in attributes)
