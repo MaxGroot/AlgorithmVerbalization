@@ -11,13 +11,13 @@ namespace DecisionTrees
         static void Main(string[] args)
         {
             TrainingController trainer = new TrainingController();
-            trainer.generateExamples();
 
             Algorithm algorithm = new ID3();
 
-            Console.WriteLine("Program started. Press a key to start loading training data. \n");
-            Console.ReadKey(true);
+            Console.WriteLine("Program started. Enter the file path to import data from. \n");
 
+            trainer.importExamples(Console.ReadLine());
+            
             // Load in everything we need for the training process
             List <DataInstance> exampleSet = trainer.exampleSet();
             List <string> attributeSet = trainer.exampleAttributes();
