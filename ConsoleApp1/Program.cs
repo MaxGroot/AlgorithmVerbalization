@@ -10,26 +10,24 @@ namespace DecisionTrees
     {
         static void Main(string[] args)
         {
-            TrainingController trainer = new TrainingController();
-
-            Algorithm algorithm = new ID3();
+            ImportController import = new ImportController();
 
             Console.WriteLine("Program started. Enter the file path to import data from. \n");
+            ObservationSet observations =  import.importExamples(Console.ReadLine());
 
-            trainer.importExamples(Console.ReadLine());
+            Console.WriteLine("ADD UTILITY KNOWLEDGE");
+            Agent agent = new ID3Agent();
+
+            Console.WriteLine("TELL");
+            agent.TELL(observations); 
             
-            // Load in everything we need for the training process
-            List <DataInstance> exampleSet = trainer.exampleSet();
-            List <string> attributeSet = trainer.exampleAttributes();
-            string targetAttribute = trainer.targetAttribute();
-
-            Console.WriteLine("Training data loaded. Press a key to start training process \n");
+            Console.WriteLine("TOLD. Press a key to start training process \n");
             Console.ReadKey(true);
 
             // Train the algorithm based on the Training set
-            Console.WriteLine("Starting Training process.");
+            Console.WriteLine("Starting Training process (INFER).");
 
-            algorithm.train(exampleSet, targetAttribute, attributeSet);
+            agent.INFER();
 
             Console.WriteLine("Training completed. Press any key to close.");
             Console.ReadKey(true);

@@ -31,6 +31,12 @@ namespace DecisionTrees
 
         public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, string parent_value_splitter = null)
         {
+            if (this.attributes.Count == 0)
+            {
+                // We have tried all attributes so we can't go further. The tree ends here my friend.
+                Console.WriteLine($"Could not find suitable splitter for these {sets_todo.Count} examples.");
+                return tree;
+            }
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and slect the highest.
             string best_attr = "";
             double highest_gain = 0;
@@ -45,17 +51,27 @@ namespace DecisionTrees
             }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
+            // Remove this attribute as a splitter for the dataset.
+            this.attributes.RemoveAt(attributes.IndexOf(best_attr));
+            
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
             tree.addNode(best_attr, parent_value_splitter);
             
+
             // Create subsets for each possible value of the attribute we created a node for. 
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
+                if (subset.Count == 0)
+                {
+                    // There are no more of this subset. We need to skip this iteration.
+                    continue;
+                }
                 if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
+                    
                     Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
                     Console.WriteLine(leaf.myRule(target_attribute));
                 } else
@@ -65,9 +81,9 @@ namespace DecisionTrees
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     tree.moveSelectionUp();
-                }  
+                }
             }
-            
+
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
             return tree;
         }
