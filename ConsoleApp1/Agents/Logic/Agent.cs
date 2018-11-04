@@ -9,12 +9,12 @@ namespace DecisionTrees
     abstract class Agent
     {
        private List<Inference> inferences = new List<Inference>();
+       private TextWriter writer;
 
         public Agent()
         {
             this.addInferences();
         }
-
        public bool TELL(Premise premise)
         {
             bool accepted = false;
@@ -36,6 +36,15 @@ namespace DecisionTrees
 
        public abstract string ASK();
 
-       public abstract void addInferences();
+        public void INFER()
+        {
+            this.writer.add("Hello World");
+        }
+        public abstract void addInferences();
+
+        public void addWriter(TextWriter writer)
+        {
+            this.writer = writer;
+        }
     }
 }
