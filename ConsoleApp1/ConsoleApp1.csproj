@@ -47,16 +47,16 @@
     <Compile Include="Agents\Logic\Agent.cs" />
     <Compile Include="Agents\Algorithms\ID3\Calculator.cs" />
     <Compile Include="Agents\Logic\Premise.cs" />
-    <Compile Include="Data\ObservationSet.cs" />
+    <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Decision Trees\Leaf.cs" />
     <Compile Include="Decision Trees\DecisionTree.cs" />
     <Compile Include="Decision Trees\Node.cs" />
-    <Compile Include="Data\DataInstance.cs" />
+    <Compile Include="Observations\DataInstance.cs" />
     <Compile Include="Agents\Algorithms\Algorithm.cs" />
     <Compile Include="Agents\Algorithms\ID3\ID3.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data\DataController.cs" />
+    <Compile Include="Observations\DataController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
