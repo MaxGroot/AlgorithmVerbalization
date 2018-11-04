@@ -13,6 +13,7 @@ namespace DecisionTrees
             ImportController import = new ImportController();
 
             Console.WriteLine("Program started. Enter the file path to import data from. \n");
+        
             ObservationSet observations =  import.importExamples(Console.ReadLine());
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
@@ -27,7 +28,7 @@ namespace DecisionTrees
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (INFER).");
 
-            agent.INFER();
+            agent.TRAIN();
 
             Console.WriteLine("Training completed. Press any key to close.");
             Console.ReadKey(true);

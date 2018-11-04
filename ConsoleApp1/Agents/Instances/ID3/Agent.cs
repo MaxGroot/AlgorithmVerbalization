@@ -16,7 +16,7 @@ namespace DecisionTrees
             throw new NotImplementedException();
         }
 
-        public override DecisionTree INFER()
+        public override DecisionTree TRAIN()
         {
             ObservationSet set = this.infer1.get();
             return algorithm.train(set.instances, set.target_attribute, set.attributes);

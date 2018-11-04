@@ -32,7 +32,7 @@ namespace DecisionTrees
             this.inferences.Add(inference);
         }
 
-       public abstract DecisionTree INFER();
+       public abstract DecisionTree TRAIN();
 
        public abstract string ASK();
 

@@ -262,4 +262,3 @@ __pycache__/
 
 # Additions for CSV import
 .env
-data/
