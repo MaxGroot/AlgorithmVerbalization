@@ -6,12 +6,36 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    interface Agent
+    abstract class Agent
     {
-        void TELL(Premise premise);
+       private List<Inference> inferences = new List<Inference>();
 
-        DecisionTree INFER();
+        public Agent()
+        {
+            this.addInferences();
+        }
 
-        string ASK();
+       public bool TELL(Premise premise)
+        {
+            bool accepted = false;
+            // Loop through inferences to check if they accept the premise.
+            foreach(Inference inference in this.inferences)
+            {
+                accepted = (inference.tell(premise) || accepted);
+            }
+
+            return accepted;
+        }
+
+        public void addInference(Inference inference)
+        {
+            this.inferences.Add(inference);
+        }
+
+       public abstract DecisionTree INFER();
+
+       public abstract string ASK();
+
+       public abstract void addInferences();
     }
 }

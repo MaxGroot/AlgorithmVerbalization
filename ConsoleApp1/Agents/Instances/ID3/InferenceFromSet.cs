@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class InferenceFromSet
+    class InferenceFromSet : Inference
     {
        private ObservationSet observations;
 
@@ -18,6 +18,17 @@ namespace DecisionTrees
         public ObservationSet get()
         {
             return this.observations;
+        }
+
+        public bool tell(Premise premise)
+        {
+            ObservationSet input = (ObservationSet) premise;
+            if (input == null)
+            {
+                return false;
+            }
+            this.observations = input;
+            return true;
         }
     }
 }

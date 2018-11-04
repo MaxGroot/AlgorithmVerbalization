@@ -10,26 +10,21 @@ namespace DecisionTrees
     {
         private Algorithm algorithm = new ID3();
         private InferenceFromSet infer1 = new InferenceFromSet();
-
-        public ID3Agent()
-        {
-
-        }
-
-        public string ASK()
+        
+        public override string ASK()
         {
             throw new NotImplementedException();
         }
 
-        public DecisionTree INFER()
+        public override DecisionTree INFER()
         {
             ObservationSet set = this.infer1.get();
             return algorithm.train(set.instances, set.target_attribute, set.attributes);
         }
 
-        public void TELL(Premise premise)
+        public override void addInferences()
         {
-            infer1.set((ObservationSet) premise);   
+            this.addInference(infer1);
         }
     }
 }

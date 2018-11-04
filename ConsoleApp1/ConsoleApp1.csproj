@@ -46,6 +46,7 @@
     <Compile Include="Agents\Instances\ID3\InferenceFromSet.cs" />
     <Compile Include="Agents\Logic\Agent.cs" />
     <Compile Include="Agents\Algorithms\ID3\Calculator.cs" />
+    <Compile Include="Agents\Logic\Inference.cs" />
     <Compile Include="Agents\Logic\Premise.cs" />
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Decision Trees\Leaf.cs" />
