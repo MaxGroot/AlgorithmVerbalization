@@ -96,7 +96,6 @@ namespace DecisionTrees
 
                     this.runner.DECIDE("ADD LEAF", "Subset has same classifier", $"classifier({best_attr} = {value_splitter}) = {subset.First().getProperty(target_attribute)}","ADD LEAF",level);
                     Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
-                    this.runner.PERFORM("Subset has same classifier",leaf.myRule(target_attribute));
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 

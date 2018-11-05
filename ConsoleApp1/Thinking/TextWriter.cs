@@ -53,11 +53,6 @@ namespace DecisionTrees
         {
             this.add_action(ref this.decision_lines, utility_action, utility_premise, proof, applied_action);
         }
-
-        public void model_add(string utility_premise, string conclusion)
-        {
-            Console.WriteLine("Implementation of this function should be removed!");
-        }
         private void add_action(ref List<string> list, string utility_action, string utility_premise, string proof, string applied_action)
         {
             list.Add(applied_action);
@@ -96,7 +91,7 @@ namespace DecisionTrees
 
         public void save_thoughts()
         {
-            string seperator = ",";
+            string seperator = ";";
             var csv = new StringBuilder();
             string firstline = $"Type{seperator}Utility Action{seperator}Utility Premise{seperator}Proof{seperator}Applied Action";
             foreach(string variable_name in this.total_descriptor.variable_names)

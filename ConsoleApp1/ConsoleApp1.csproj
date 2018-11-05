@@ -58,12 +58,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Observations\DataController.cs" />
-    <Compile Include="Thinking\Action.cs" />
-    <Compile Include="Thinking\Output.cs" />
-    <Compile Include="Thinking\SystemState.cs" />
-    <Compile Include="Thinking\SystemStateDescriptor.cs" />
+    <Compile Include="Thinking\Outputs\Action.cs" />
+    <Compile Include="Thinking\Outputs\Output.cs" />
+    <Compile Include="Thinking\SystemStates\SystemState.cs" />
+    <Compile Include="Thinking\SystemStates\SystemStateDescriptor.cs" />
     <Compile Include="Thinking\TextWriter.cs" />
-    <Compile Include="Thinking\Thought.cs" />
+    <Compile Include="Thinking\Outputs\Thought.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

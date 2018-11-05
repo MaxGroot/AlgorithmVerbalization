@@ -36,12 +36,7 @@ namespace DecisionTrees
         {
             this.writer.infer_add(state);
         }
-
-        public void PERFORM(string utility_premise, string conclusion)
-        {
-            this.writer.model_add(utility_premise, conclusion);
-        }
-
+        
         public void DECIDE(string utility_action, string utility_premise, string proof, string applied_action, int level)
         {
             for(int i=0; i<level; i++)
