@@ -12,18 +12,41 @@ namespace DecisionTrees
         private List<string> infer_lines = new List<string>();
         private List<string> decision_lines = new List<string>();
         private List<string> model_lines = new List<string>();
+
         private List<Thought> thoughts = new List<Thought>();
+
+        private List<SystemStateDescriptor> all_descriptors = new List<SystemStateDescriptor>();
+        private SystemStateDescriptor total_descriptor;
+        private SystemState total_state;
 
         private string location;
 
         public TextWriter(string location)
         {
             this.location = location;
-
         }
-        public void infer_add(string line)
+        public void add_systemstate_descriptor(SystemStateDescriptor descriptor)
         {
-            this.add_thought(ref infer_lines, "INFER", line);
+            all_descriptors.Add(descriptor);
+        }
+        public void generate_total_descriptor()
+        {
+            this.total_descriptor = SystemStateDescriptor.generateTotal(all_descriptors);
+            List<object> current_objects = new List<object>();
+            foreach(string name in this.total_descriptor.variable_names)
+            {
+                current_objects.Add("");
+            }
+            
+            this.total_state = new SystemState(current_objects.ToArray());
+            total_state.setDescriptor(total_descriptor);
+            Console.WriteLine("Initial System State and Posisble System State Attributes Recorded");
+        }
+        public void infer_add(SystemState state, string reason)
+        {
+            // Calculate new system state. 
+            this.total_state = SystemState.Add(total_state, state);
+            this.add_thought(ref infer_lines, "INFER", reason);
         }
 
         public void decision_add(string line)
@@ -48,7 +71,11 @@ namespace DecisionTrees
                 line = line.Replace("  ", " ");
             }
 
-            this.thoughts.Add(new Thought(type, line));
+
+            // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
+            SystemState my_state = SystemState.copy(total_state);
+            this.thoughts.Add(new Thought(type, line, my_state));
+            
         }
         public void write()
         {
@@ -62,10 +89,24 @@ namespace DecisionTrees
         {
             string seperator = ",";
             var csv = new StringBuilder();
-            csv.AppendLine($"Type{seperator}Value{seperator}");
+            string firstline = $"Type{seperator}Value";
+            foreach(string variable_name in this.total_descriptor.variable_names)
+            {
+                firstline += $"{seperator}{variable_name}";
+            }
+            firstline += seperator;
+            csv.AppendLine(firstline);
+
             foreach(Thought thought in thoughts)
             {
-                csv.AppendLine($"{thought.type}{seperator}{thought.value}{seperator}");
+                string addline = $"{thought.type}{seperator}{thought.value}";
+                foreach (string variable_name in this.total_descriptor.variable_names)
+                {
+                    string value = thought.state_of_thought.getVariable(variable_name).ToString();
+                    addline += $"{seperator}{value}";
+                }
+                addline += seperator;
+                csv.AppendLine(addline);
             }
             File.WriteAllText(location + "thoughts.csv", csv.ToString());
         }

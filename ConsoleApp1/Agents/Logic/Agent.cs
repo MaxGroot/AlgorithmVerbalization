@@ -32,9 +32,9 @@ namespace DecisionTrees
 
        public abstract string ASK();
 
-        public void INFER(string output)
+        public void INFER(SystemState state, string reason)
         {
-            this.writer.infer_add(output);
+            this.writer.infer_add(state, reason);
         }
 
         public void PERFORM(string output)
@@ -62,6 +62,15 @@ namespace DecisionTrees
         public void addWriter(TextWriter writer)
         {
             this.writer = writer;
+        }
+
+        public void prepare_system_state(List<SystemStateDescriptor> descriptors)
+        {
+            foreach(SystemStateDescriptor descriptor in descriptors)
+            {
+                this.writer.add_systemstate_descriptor(descriptor);
+            }
+            this.writer.generate_total_descriptor();
         }
     }
 }

@@ -13,6 +13,10 @@ namespace DecisionTrees
         private List<string> attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>> ();
         private Agent runner;
+        
+        // Make System State Descriptors
+        private SystemStateDescriptor gain_selector = new SystemStateDescriptor("Gain Selector", new List<string> { "attr", "my_gain", "highest_gain" });
+
 
         public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes, Agent runner)
         {
@@ -20,6 +24,11 @@ namespace DecisionTrees
             this.target_attribute = target_attribute;
             this.attributes = attributes;
             this.runner = runner;
+
+            // Prepare our runner with the right way to describe system state.
+            runner.prepare_system_state(new List<SystemStateDescriptor>() {
+                gain_selector,
+            });
 
             // First we need to know for each attribute which possible values it can hold.
             this.runner.DECIDE("Calculating possible attribute values", 0);
@@ -50,10 +59,12 @@ namespace DecisionTrees
             foreach(string attr in this.attributes)
             {
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
+                SystemState currentstate = new SystemState(attr, my_gain, highest_gain);
+                currentstate.setDescriptor(gain_selector);
+                this.runner.INFER(currentstate, "Gain Calculation");
                 if (my_gain > highest_gain)
                 {
                     best_attr = attr;
-                    this.runner.INFER($"Best attr was {best_attr}");
                     
                     highest_gain = my_gain;
                 }
