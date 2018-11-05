@@ -42,11 +42,11 @@ namespace DecisionTrees
             total_state.setDescriptor(total_descriptor);
             Console.WriteLine("Initial System State and Posisble System State Attributes Recorded");
         }
-        public void infer_add(SystemState state, string reason)
+        public void infer_add(SystemState state)
         {
             // Calculate new system state. 
             this.total_state = SystemState.Add(total_state, state);
-            this.add_thought(ref infer_lines, "INFER", reason);
+            this.add_thought(ref infer_lines, "INFER", state.getDescriptor().name);
         }
 
         public void decision_add(string line)

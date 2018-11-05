@@ -32,9 +32,9 @@ namespace DecisionTrees
 
        public abstract string ASK();
 
-        public void INFER(SystemState state, string reason)
+        public void INFER(SystemState state)
         {
-            this.writer.infer_add(state, reason);
+            this.writer.infer_add(state);
         }
 
         public void PERFORM(string output)

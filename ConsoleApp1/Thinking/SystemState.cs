@@ -20,9 +20,10 @@ namespace DecisionTrees
 
         }
 
-        public void setDescriptor(SystemStateDescriptor descriptor)
+        public SystemState setDescriptor(SystemStateDescriptor descriptor)
         {
-            this.descriptor = descriptor;  
+            this.descriptor = descriptor;
+            return this;
         }
 
         public SystemStateDescriptor getDescriptor()

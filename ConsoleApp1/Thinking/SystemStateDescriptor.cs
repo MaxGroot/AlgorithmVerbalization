@@ -23,7 +23,10 @@ namespace DecisionTrees
             {
                 foreach(string name in descriptor.variable_names)
                 {
-                    variable_names.Add(name);
+                    if (!variable_names.Contains(name))
+                    {
+                        variable_names.Add(name);
+                    }
                 }
             }
 
