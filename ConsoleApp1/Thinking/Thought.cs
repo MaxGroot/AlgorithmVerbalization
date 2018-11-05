@@ -6,22 +6,30 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class Thought
+    class Thought: Output
     {
         public string type;
-        public string value;
+        public string name;
         public SystemState state_of_thought;
 
-        public Thought(string type, string value, SystemState state_of_thought)
+        public Thought(string type, string name, SystemState state_of_thought)
         {
             this.type = type;
-            this.value = value;
+            this.name = name;
+            // TODO: Rename to state
             this.state_of_thought = state_of_thought;
         }
 
-        public void state_gain()
+        public string toLine(String seperator, SystemStateDescriptor total)
         {
-            Console.WriteLine(this.state_of_thought.getVariable("my_gain"));
+            string addline = $"{this.type}{seperator}{this.name}{seperator} {seperator} {seperator}";
+            foreach (string variable_name in total.variable_names)
+            {
+                string value = this.state_of_thought.getVariable(variable_name).ToString();
+                addline += $"{seperator}{value}";
+            }
+            addline += seperator;
+            return addline;
         }
     }
 }

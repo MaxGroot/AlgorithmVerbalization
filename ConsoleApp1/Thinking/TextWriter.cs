@@ -13,7 +13,7 @@ namespace DecisionTrees
         private List<string> decision_lines = new List<string>();
         private List<string> model_lines = new List<string>();
 
-        private List<Thought> thoughts = new List<Thought>();
+        private List<Output> outputs = new List<Output>();
 
         private List<SystemStateDescriptor> all_descriptors = new List<SystemStateDescriptor>();
         private SystemStateDescriptor total_descriptor;
@@ -46,35 +46,44 @@ namespace DecisionTrees
         {
             // Calculate new system state. 
             this.total_state = SystemState.Add(total_state, state);
-            this.add_thought(ref infer_lines, "INFER", state.getDescriptor().name);
+            this.add_thought(ref infer_lines, state.getDescriptor().name);
         }
 
-        public void decision_add(string line)
+        public void decision_add(string utility_action, string utility_premise, string proof, string applied_action)
         {
-            this.add_thought(ref decision_lines, "DECIDE", line);
+            this.add_action(ref this.decision_lines, utility_action, utility_premise, proof, applied_action);
         }
 
-        public void model_add(string line)
+        public void model_add(string utility_premise, string conclusion)
         {
-            this.add_thought(ref model_lines, "PERFORM", line);
+            Console.WriteLine("Implementation of this function should be removed!");
         }
-
-        private void add_thought(ref List<string> list, string type, string line)
+        private void add_action(ref List<string> list, string utility_action, string utility_premise, string proof, string applied_action)
         {
-            list.Add(line);
+            list.Add(applied_action);
 
-            // Remove tabs and double spaces from thoughts. 
+            // Remove tabs and double spaces from the applied action. We only do this after adding it to the reference list, 
+            // Because some lists want their applied_actions tabbed.
             char tab = '\u0009';
-            line = line.Replace(tab.ToString(), "");
-            while (line.IndexOf("  ") > 0)
+            applied_action = applied_action.Replace(tab.ToString(), "");
+            while (applied_action.IndexOf("  ") > 0)
             {
-                line = line.Replace("  ", " ");
+                applied_action = applied_action.Replace("  ", " ");
             }
+            
+            // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
+            SystemState my_state = SystemState.copy(total_state);
+            this.outputs.Add(new Action(utility_action, utility_premise, proof, applied_action, my_state));
+        }
 
+        private void add_thought(ref List<string> list, string name)
+        {
+            list.Add(name);
+            
 
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
-            this.thoughts.Add(new Thought(type, line, my_state));
+            this.outputs.Add(new Thought("INFER", name, my_state));
             
         }
         public void write()
@@ -89,7 +98,7 @@ namespace DecisionTrees
         {
             string seperator = ",";
             var csv = new StringBuilder();
-            string firstline = $"Type{seperator}Value";
+            string firstline = $"Type{seperator}Utility Action{seperator}Utility Premise{seperator}Proof{seperator}Applied Action";
             foreach(string variable_name in this.total_descriptor.variable_names)
             {
                 firstline += $"{seperator}{variable_name}";
@@ -97,16 +106,9 @@ namespace DecisionTrees
             firstline += seperator;
             csv.AppendLine(firstline);
 
-            foreach(Thought thought in thoughts)
+            foreach(Output output in outputs)
             {
-                string addline = $"{thought.type}{seperator}{thought.value}";
-                foreach (string variable_name in this.total_descriptor.variable_names)
-                {
-                    string value = thought.state_of_thought.getVariable(variable_name).ToString();
-                    addline += $"{seperator}{value}";
-                }
-                addline += seperator;
-                csv.AppendLine(addline);
+                csv.AppendLine(output.toLine(seperator, this.total_descriptor));
             }
             File.WriteAllText(location + "thoughts.csv", csv.ToString());
         }
