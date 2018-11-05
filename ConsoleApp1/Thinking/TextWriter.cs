@@ -12,7 +12,6 @@ namespace DecisionTrees
         private List<string> infer_lines = new List<string>();
         private List<string> decision_lines = new List<string>();
         private List<string> model_lines = new List<string>();
-        private List<string> utility_lines = new List<string>();
 
         private string location;
 
@@ -34,18 +33,12 @@ namespace DecisionTrees
         {
             model_lines.Add(line);
         }
-
-        public void utility_add(string line)
-        {
-            utility_lines.Add(line);
-        }
-
+        
         public void write()
         {
             System.IO.File.WriteAllLines(location + "infers.txt", infer_lines.ToArray());
             System.IO.File.WriteAllLines(location + "model.txt", model_lines.ToArray());
             System.IO.File.WriteAllLines(location + "decisions.txt", decision_lines.ToArray());
-            System.IO.File.WriteAllLines(location + "utility.txt", utility_lines.ToArray());
         }
 
         public static string askLocation(int output_line)

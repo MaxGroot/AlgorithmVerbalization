@@ -22,22 +22,26 @@ namespace DecisionTrees
             this.runner = runner;
 
             // First we need to know for each attribute which possible values it can hold.
-            this.runner.DECIDE("Calculating possible attribute values");
+            this.runner.DECIDE("Calculating possible attribute values", 0);
             this.calculateAttributePossibilities();
         
             DecisionTree tree = new DecisionTree();
 
             // Start the iteration process on the entire set.
-            this.runner.DECIDE("Iterate upon full example set");
-            return this.iterate(tree, this.examples);
+            this.runner.DECIDE("Iterate upon full example set", 0);
+            tree = this.iterate(tree, this.examples, 1);
+            this.runner.DECIDE("All examples resolved. Tree is finished.", 0);
+            return tree;
         }
 
-        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, string parent_value_splitter = null)
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, string parent_value_splitter = null)
         {
             if (this.attributes.Count == 0)
             {
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
-                this.runner.DECIDE($"Could not find suitable splitter for these {sets_todo.Count} examples. Ending tree");
+                // This happens when instances have all attributes the same except for the classifier.
+                //TODO: This set needs a final leaf for classifying value, for the most occuring attribute.
+                this.runner.DECIDE($"Could not find suitable splitter for these {sets_todo.Count} examples. Ending tree", level);
                 return tree;
             }
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
@@ -57,11 +61,11 @@ namespace DecisionTrees
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
             // Remove this attribute as a splitter for the dataset.
-            this.runner.DECIDE($"Remove the selected attribute ({best_attr}) as split consideration");
+            this.runner.DECIDE($"Remove the selected attribute ({best_attr}) as split consideration", level);
             this.attributes.RemoveAt(attributes.IndexOf(best_attr));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
-            this.runner.DECIDE($"Add node for selected attribute ({best_attr})");
+            this.runner.DECIDE($"Add node for selected attribute ({best_attr})", level);
             tree.addNode(best_attr, parent_value_splitter);
             
             // Create subsets for each possible value of the attribute we created a node for. 
@@ -71,7 +75,7 @@ namespace DecisionTrees
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
-                    this.runner.DECIDE($"No subset for {value_splitter}");
+                    this.runner.DECIDE($"No subset for {value_splitter}", level);
                     continue;
                 }
                 if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
@@ -79,22 +83,22 @@ namespace DecisionTrees
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
 
-                    this.runner.DECIDE($"{value_splitter} has the same classifier. Create leaf.");
+                    this.runner.DECIDE($"{value_splitter} has the same classifier. Create leaf.", level);
                     Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
                     this.runner.PERFORM(leaf.myRule(target_attribute));
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
-                    this.runner.DECIDE($"{value_splitter} is divided. Iterate further");
-                    this.iterate(tree, subset, value_splitter);
-                    this.runner.DECIDE($"{value_splitter} resolved. Move up.");
+                    this.runner.DECIDE($"{value_splitter} is divided. Iterate further", level);
+                    this.iterate(tree, subset, level+1, value_splitter);
+                    this.runner.DECIDE($"{value_splitter} resolved. Move up.", level);
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     tree.moveSelectionUp();
                 }
             }
 
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
-            this.runner.DECIDE($"Splitting on {best_attr} resolved.");
+            this.runner.DECIDE($"Splitting on {best_attr} resolved.", level);
             return tree;
         }
         

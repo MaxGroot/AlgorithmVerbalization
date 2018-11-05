@@ -42,15 +42,15 @@ namespace DecisionTrees
             this.writer.model_add(output);
         }
 
-        public void DECIDE(string output)
+        public void DECIDE(string output, int level)
         {
+            for(int i=0; i<level; i++)
+            {
+                output = "\t" + output;
+            }
             this.writer.decision_add(output);
         }
-
-        public void UTILISE(string output)
-        {
-            this.writer.utility_add(output);
-        }
+        
         // TODO: REFACTOR IN CONSTRUCTOR
         public void addInference(Inference inference)
         {
