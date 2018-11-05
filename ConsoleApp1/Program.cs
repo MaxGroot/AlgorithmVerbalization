@@ -11,11 +11,15 @@ namespace DecisionTrees
         static void Main(string[] args)
         {
             ImportController import = new ImportController();
-            Console.WriteLine("Program started. Enter the file path to import data from. \n");
-            ObservationSet observations =  import.importExamples(Console.ReadLine());
+            Console.WriteLine("Program started. Enter the file path to import data from. ");
+            string location = TextWriter.askLocation(1);
+            ObservationSet observations =  import.importExamples(location);
 
-            Console.WriteLine("Enter the file path to output to. \n");
-            TextWriter writer = new TextWriter(Console.ReadLine());
+
+            Console.WriteLine("Enter the directory to export data to. ");
+            location = TextWriter.askLocation(2);
+
+            TextWriter writer = new TextWriter(location);
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
             Agent agent = new ID3Agent();
@@ -26,11 +30,9 @@ namespace DecisionTrees
             
             Console.WriteLine("TOLD. Press a key to start training process \n");
             Console.ReadKey(true);
-            agent.INFER();
 
             // Train the algorithm based on the Training set
-            Console.WriteLine("Starting Training process (INFER).");
-
+            Console.WriteLine("Starting Training process (TRAIN).");
             agent.TRAIN();
 
             Console.WriteLine("Training completed. Processing thoughts.");
