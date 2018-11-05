@@ -19,7 +19,7 @@ namespace DecisionTrees
         public override DecisionTree TRAIN()
         {
             ObservationSet set = this.infer1.get();
-            return algorithm.train(set.instances, set.target_attribute, set.attributes);
+            return algorithm.train(set.instances, set.target_attribute, set.attributes, this);
         }
 
         public override void addInferences()

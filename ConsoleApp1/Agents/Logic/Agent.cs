@@ -11,10 +11,11 @@ namespace DecisionTrees
        private List<Inference> inferences = new List<Inference>();
        private TextWriter writer;
 
-        public Agent()
+       public Agent()
         {
             this.addInferences();
         }
+
        public bool TELL(Premise premise)
         {
             bool accepted = false;
@@ -26,20 +27,36 @@ namespace DecisionTrees
 
             return accepted;
         }
-
-        public void addInference(Inference inference)
-        {
-            this.inferences.Add(inference);
-        }
-
+       
        public abstract DecisionTree TRAIN();
 
        public abstract string ASK();
 
-        public void INFER()
+        public void INFER(string output)
         {
-            this.writer.add("Hello World");
+            this.writer.infer_add(output);
         }
+
+        public void PERFORM(string output)
+        {
+            this.writer.model_add(output);
+        }
+
+        public void DECIDE(string output)
+        {
+            this.writer.decision_add(output);
+        }
+
+        public void UTILISE(string output)
+        {
+            this.writer.utility_add(output);
+        }
+        // TODO: REFACTOR IN CONSTRUCTOR
+        public void addInference(Inference inference)
+        {
+            this.inferences.Add(inference);
+        }
+        
         public abstract void addInferences();
 
         public void addWriter(TextWriter writer)

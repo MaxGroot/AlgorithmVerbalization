@@ -9,20 +9,43 @@ namespace DecisionTrees
 {
     class TextWriter
     {
-        private List<string> lines = new List<string>();
+        private List<string> infer_lines = new List<string>();
+        private List<string> decision_lines = new List<string>();
+        private List<string> model_lines = new List<string>();
+        private List<string> utility_lines = new List<string>();
+
         private string location;
+
         public TextWriter(string location)
         {
             this.location = location;
         }
-        public void add(string line)
+        public void infer_add(string line)
         {
-            lines.Add(line);
+            infer_lines.Add(line);
+        }
+
+        public void decision_add(string line)
+        {
+            decision_lines.Add(line);
+        }
+
+        public void model_add(string line)
+        {
+            model_lines.Add(line);
+        }
+
+        public void utility_add(string line)
+        {
+            utility_lines.Add(line);
         }
 
         public void write()
         {
-            System.IO.File.WriteAllLines(location + "lines.txt", lines.ToArray());
+            System.IO.File.WriteAllLines(location + "infers.txt", infer_lines.ToArray());
+            System.IO.File.WriteAllLines(location + "model.txt", model_lines.ToArray());
+            System.IO.File.WriteAllLines(location + "decisions.txt", decision_lines.ToArray());
+            System.IO.File.WriteAllLines(location + "utility.txt", utility_lines.ToArray());
         }
 
         public static string askLocation(int output_line)
