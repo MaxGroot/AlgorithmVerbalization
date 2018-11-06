@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class InferenceFromSet : Inference
+    class InferenceFromSet : InputInference
     {
        private ObservationSet observations;
 

@@ -49,12 +49,13 @@ namespace DecisionTrees
             this.add_thought(ref infer_lines, state.getDescriptor().name);
         }
 
-        public void decision_add(string utility_action, string utility_premise, string proof, string applied_action)
+        public void decision_add(Decision explanation)
         {
-            this.add_action(ref this.decision_lines, utility_action, utility_premise, proof, applied_action);
+            this.add_action(ref this.decision_lines, explanation);
         }
-        private void add_action(ref List<string> list, string utility_action, string utility_premise, string proof, string applied_action)
+        private void add_action(ref List<string> list, Decision explanation)
         {
+            string applied_action = explanation.appliedaction;
             list.Add(applied_action);
 
             // Remove tabs and double spaces from the applied action. We only do this after adding it to the reference list, 
@@ -65,10 +66,13 @@ namespace DecisionTrees
             {
                 applied_action = applied_action.Replace("  ", " ");
             }
-            
+
+            // Put the tab-removed applied-action back into the explanation.
+
+            explanation.appliedaction = applied_action;
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
-            this.outputs.Add(new Action(utility_action, utility_premise, proof, applied_action, my_state));
+            this.outputs.Add(new Action(explanation, my_state));
         }
 
         private void add_thought(ref List<string> list, string name)

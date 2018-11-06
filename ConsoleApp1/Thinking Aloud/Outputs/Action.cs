@@ -9,26 +9,20 @@ namespace DecisionTrees
     // TODO: Rename Action to Decision
     class Action: Output
     {
-        public string utility_action;
         public string type = "DECIDE";
-        public string utility_premise;
-        public string proof;
-        public string applied_action;
         public SystemState state;
+        public Decision explanation;
 
-        public Action(string utility_action, string utility_premise, string proof, string applied_action, SystemState state)
+        public Action(Decision explanation, SystemState state)
         {
-            this.utility_action = utility_action;
-            this.utility_premise = utility_premise;
-            this.proof = proof;
-            this.applied_action = applied_action;
+            this.explanation = explanation;
             this.state = state;
         }
 
         public string toLine(string seperator, SystemStateDescriptor total)
         {
 
-            string addline = $"{this.type}{seperator}{utility_action}{seperator}{utility_premise}{seperator}{proof}{seperator}{applied_action}";
+            string addline = $"{this.type}{seperator}{explanation.utility_action}{seperator}{explanation.utility_premise}{seperator}{explanation.proof}{seperator}{explanation.appliedaction}";
             foreach (string variable_name in total.variable_names)
             {
                 string value = this.state.getVariable(variable_name).ToString();

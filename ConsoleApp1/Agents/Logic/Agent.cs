@@ -8,7 +8,7 @@ namespace DecisionTrees
 {
     abstract class Agent
     {
-       private List<Inference> inferences = new List<Inference>();
+       private List<InputInference> inferences = new List<InputInference>();
        private TextWriter writer;
 
        public Agent()
@@ -20,7 +20,7 @@ namespace DecisionTrees
         {
             bool accepted = false;
             // Loop through inferences to check if they accept the premise.
-            foreach(Inference inference in this.inferences)
+            foreach(InputInference inference in this.inferences)
             {
                 accepted = (inference.tell(premise) || accepted);
             }
@@ -37,21 +37,21 @@ namespace DecisionTrees
             this.writer.infer_add(state);
         }
         
-        public void DECIDE(string utility_action, string utility_premise, string proof, string applied_action, int level)
+        public void DECIDE(Decision decision, int level)
         {
             for(int i=0; i<level; i++)
             {
-                applied_action = "\t" + applied_action;
+                decision.appliedaction = "\t" + decision.appliedaction;
             }
-            this.writer.decision_add(utility_action, utility_premise, proof, applied_action);
+            this.writer.decision_add(decision);
         }
         
         // TODO: REFACTOR IN CONSTRUCTOR
-        public void addInference(Inference inference)
+        public void addInference(InputInference inference)
         {
             this.inferences.Add(inference);
         }
-        
+
         public abstract void addInferences();
 
         public void addWriter(TextWriter writer)

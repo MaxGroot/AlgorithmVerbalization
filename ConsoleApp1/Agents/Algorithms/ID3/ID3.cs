@@ -72,11 +72,15 @@ namespace DecisionTrees
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
             // Remove this attribute as a splitter for the dataset.
-            this.runner.DECIDE("Remove best attribute from consideration", "Attribute = Best Premise", $"max(gain(attributes)) = gain({best_attr}))", $"REMOVE {best_attr}", level);
+            // this.runner.DECIDE("Remove best attribute from consideration", "Attribute = Best Premise", $"max(gain(attributes)) = gain({best_attr}))", $"REMOVE {best_attr}", level);
             this.attributes.RemoveAt(attributes.IndexOf(best_attr));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
-            this.runner.DECIDE("Add node", "Highest Gain for attribute on subset", $"max(gain(attributes)) = gain({best_attribute}", $"ADD NODE FOR {best_attr}", level);
+            //  this.runner.DECIDE("Add node", "Highest Gain for attribute on subset", $"max(gain(attributes)) = gain({best_attribute}", $"ADD NODE FOR {best_attr}", level);
+            this.runner.DECIDE(new DecisionAddNode()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } } ), 
+                        level);
             tree.addNode(best_attr, parent_value_splitter);
             
             // Create subsets for each possible value of the attribute we created a node for. 
@@ -86,7 +90,7 @@ namespace DecisionTrees
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
-                    this.runner.DECIDE("SKIP ITERATION", "No instance with value -> Nothing to consider", $"count({value_splitter}) = 0", "SKIP ITERATION", level);
+                   // this.runner.DECIDE("SKIP ITERATION", "No instance with value -> Nothing to consider", $"count({value_splitter}) = 0", "SKIP ITERATION", level);
                     continue;
                 }
                 if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
@@ -94,14 +98,14 @@ namespace DecisionTrees
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
 
-                    this.runner.DECIDE("ADD LEAF", "Subset has same classifier", $"classifier({best_attr} = {value_splitter}) = {subset.First().getProperty(target_attribute)}","ADD LEAF",level);
+                 //   this.runner.DECIDE("ADD LEAF", "Subset has same classifier", $"classifier({best_attr} = {value_splitter}) = {subset.First().getProperty(target_attribute)}","ADD LEAF",level);
                     Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
-                    this.runner.DECIDE("ITERATE", "Subset has different classifier", $"clasifier({best_attr} = {value_splitter}) NOT EQUAL FOR ALL", "ITERATE", level);
+                  //  this.runner.DECIDE("ITERATE", "Subset has different classifier", $"clasifier({best_attr} = {value_splitter}) NOT EQUAL FOR ALL", "ITERATE", level);
                     this.iterate(tree, subset, level+1, value_splitter);
-                    this.runner.DECIDE("MOVE VALUE UP", "Different classifier was resolved", $"classifier({best_attr} = {value_splitter}) EQUAL FOR ALL", "MOVE UP", level);
+                   // this.runner.DECIDE("MOVE VALUE UP", "Different classifier was resolved", $"classifier({best_attr} = {value_splitter}) EQUAL FOR ALL", "MOVE UP", level);
                    
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     tree.moveSelectionUp();
@@ -109,7 +113,7 @@ namespace DecisionTrees
             }
 
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
-            this.runner.DECIDE("MOVE ATTRIBUTE UP", "Subset was completely classified", "Don't know", "MOVE ATTRIBUTE UP", level);
+           // this.runner.DECIDE("MOVE ATTRIBUTE UP", "Subset was completely classified", "Don't know", "MOVE ATTRIBUTE UP", level);
             
             return tree;
         }

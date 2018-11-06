@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    interface Inference
+    interface InputInference
     {
         bool tell(Premise premise);
     }

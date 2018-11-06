@@ -42,31 +42,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agents\Instances\ID3\Agent.cs" />
-    <Compile Include="Agents\Instances\ID3\InferenceFromSet.cs" />
-    <Compile Include="Agents\Logic\Agent.cs" />
+    <Compile Include="Agents\Algorithms\Algorithm.cs" />
     <Compile Include="Agents\Algorithms\ID3\Calculator.cs" />
-    <Compile Include="Agents\Logic\Inference.cs" />
+    <Compile Include="Agents\Algorithms\ID3\ID3.cs" />
+    <Compile Include="Agents\Instances\ID3\Agent.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TELL\InferenceFromSet.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionAddNode.cs" />
+    <Compile Include="Agents\Logic\Agent.cs" />
+    <Compile Include="Agents\Logic\InputInference.cs" />
     <Compile Include="Agents\Logic\Premise.cs" />
-    <Compile Include="Observations\ObservationSet.cs" />
+    <Compile Include="Agents\Logic\Decision.cs" />
     <Compile Include="Decision Trees\Leaf.cs" />
     <Compile Include="Decision Trees\DecisionTree.cs" />
     <Compile Include="Decision Trees\Node.cs" />
+    <Compile Include="Observations\DataController.cs" />
+    <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
-    <Compile Include="Agents\Algorithms\Algorithm.cs" />
-    <Compile Include="Agents\Algorithms\ID3\ID3.cs" />
+    <Compile Include="Thinking Aloud\Outputs\Action.cs" />
+    <Compile Include="Thinking Aloud\Outputs\Output.cs" />
+    <Compile Include="Thinking Aloud\Outputs\Thought.cs" />
+    <Compile Include="Thinking Aloud\SystemStates\SystemState.cs" />
+    <Compile Include="Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
+    <Compile Include="Thinking Aloud\TextWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Observations\DataController.cs" />
-    <Compile Include="Thinking\Outputs\Action.cs" />
-    <Compile Include="Thinking\Outputs\Output.cs" />
-    <Compile Include="Thinking\SystemStates\SystemState.cs" />
-    <Compile Include="Thinking\SystemStates\SystemStateDescriptor.cs" />
-    <Compile Include="Thinking\TextWriter.cs" />
-    <Compile Include="Thinking\Outputs\Thought.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
