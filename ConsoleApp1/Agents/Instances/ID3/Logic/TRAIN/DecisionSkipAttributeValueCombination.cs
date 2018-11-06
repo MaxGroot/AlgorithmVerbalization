@@ -6,26 +6,24 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class DecisionAddNode : Decision
+    class DecisionSkipAttributeValueCombination: Decision
     {
-
         public override Decision setAppliedAction(Dictionary<string, string> variables)
         {
-            this.appliedaction = $"CREATE NODE FOR {variables["attribute_name"]}";
-
+            this.appliedaction = $"NOTHING TO DO FOR {variables["attribute_name"]} = {variables["attribute_value"]}";
             return this;
         }
 
         public override Decision setProof(Dictionary<string, string> variables)
         {
-            this.proof = $"gain({variables["attribute_name"]}) = {variables["attribute_gain"]}";
+            this.proof = $"count({variables["attribute_name"]} = {variables["attribute_value"]}) = 0";
             return this;
         }
 
         protected override void setUtility()
         {
-            this.utility_action = "Add New Node";
-            this.utility_premise = "Highest gain has been determined.";
+            this.utility_action = "Skip Attribute-Value Combination";
+            this.utility_premise = "No attribute-value combination of this kind in this subset.";
         }
     }
 }

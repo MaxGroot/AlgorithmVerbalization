@@ -6,26 +6,24 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class DecisionAddNode : Decision
+    class DecisionMoveUpToValue: Decision
     {
-
         public override Decision setAppliedAction(Dictionary<string, string> variables)
         {
-            this.appliedaction = $"CREATE NODE FOR {variables["attribute_name"]}";
-
+            this.appliedaction = $"MOVE UP TO VALUE, Back to {variables["parent_value"]}";
             return this;
         }
 
         public override Decision setProof(Dictionary<string, string> variables)
         {
-            this.proof = $"gain({variables["attribute_name"]}) = {variables["attribute_gain"]}";
+            this.proof = $"{variables["attribute_name"]}  considered fully.";
             return this;
         }
 
         protected override void setUtility()
         {
-            this.utility_action = "Add New Node";
-            this.utility_premise = "Highest gain has been determined.";
+            this.utility_action = "Move Up To Parent Value";
+            this.utility_premise = "All subsets corresponding to values of this attribute have been resolved.";
         }
     }
 }

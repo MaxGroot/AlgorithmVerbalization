@@ -47,7 +47,14 @@
     <Compile Include="Agents\Algorithms\ID3\ID3.cs" />
     <Compile Include="Agents\Instances\ID3\Agent.cs" />
     <Compile Include="Agents\Instances\ID3\Logic\TELL\InferenceFromSet.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionAddBestGuessLeaf.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionAddLeaf.cs" />
     <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionAddNode.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionIterateFurther.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionMoveUpToAttribute.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionMoveUpToValue.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionRemoveAttributeFromConsideration.cs" />
+    <Compile Include="Agents\Instances\ID3\Logic\TRAIN\DecisionSkipAttributeValueCombination.cs" />
     <Compile Include="Agents\Logic\Agent.cs" />
     <Compile Include="Agents\Logic\InputInference.cs" />
     <Compile Include="Agents\Logic\Premise.cs" />

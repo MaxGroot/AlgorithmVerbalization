@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class DecisionAddNode : Decision
+    class DecisionRemoveAttributeFromConsideration : Decision
     {
-
         public override Decision setAppliedAction(Dictionary<string, string> variables)
         {
-            this.appliedaction = $"CREATE NODE FOR {variables["attribute_name"]}";
+            this.appliedaction = $"REMOVE {variables["attribute_name"]} FROM SPLIT CONSIDERATION";
 
             return this;
         }
@@ -24,7 +23,7 @@ namespace DecisionTrees
 
         protected override void setUtility()
         {
-            this.utility_action = "Add New Node";
+            this.utility_action = "Remove Attribute from consideration";
             this.utility_premise = "Highest gain has been determined.";
         }
     }

@@ -32,7 +32,7 @@ namespace DecisionTrees
             });
 
             // First we need to know for each attribute which possible values it can hold.
-             // this.runner.DECIDE("Calculating possible attribute values", 0);
+            // this.runner.DECIDE("Calculating possible attribute values", 0);
             this.calculateAttributePossibilities();
         
             DecisionTree tree = new DecisionTree();
@@ -46,15 +46,6 @@ namespace DecisionTrees
 
         public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, string parent_value_splitter = null)
         {
-            if (this.attributes.Count == 0)
-            {
-                // We have tried all attributes so we can't go further. The tree ends here my friend.
-                // This happens when instances have all attributes the same except for the classifier.
-                //TODO: This set needs a final leaf for classifying value, for the most occuring attribute.
-                // this.runner.DECIDE($"Could not find suitable splitter for these {sets_todo.Count} examples. Ending tree", level);
-                // this.runner.DECIDE("END TREE", ")
-                return tree;
-            }
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
             string best_attr = "";
             double highest_gain = 0;
@@ -72,11 +63,13 @@ namespace DecisionTrees
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
             // Remove this attribute as a splitter for the dataset.
-            // this.runner.DECIDE("Remove best attribute from consideration", "Attribute = Best Premise", $"max(gain(attributes)) = gain({best_attr}))", $"REMOVE {best_attr}", level);
+            this.runner.DECIDE(new DecisionRemoveAttributeFromConsideration()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } }),
+                        level);
             this.attributes.RemoveAt(attributes.IndexOf(best_attr));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
-            //  this.runner.DECIDE("Add node", "Highest Gain for attribute on subset", $"max(gain(attributes)) = gain({best_attribute}", $"ADD NODE FOR {best_attr}", level);
             this.runner.DECIDE(new DecisionAddNode()
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } } ), 
@@ -90,7 +83,10 @@ namespace DecisionTrees
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
-                   // this.runner.DECIDE("SKIP ITERATION", "No instance with value -> Nothing to consider", $"count({value_splitter}) = 0", "SKIP ITERATION", level);
+                    this.runner.DECIDE(new DecisionSkipAttributeValueCombination()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
+                        level);
                     continue;
                 }
                 if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
@@ -98,23 +94,49 @@ namespace DecisionTrees
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
 
-                 //   this.runner.DECIDE("ADD LEAF", "Subset has same classifier", $"classifier({best_attr} = {value_splitter}) = {subset.First().getProperty(target_attribute)}","ADD LEAF",level);
-                    Leaf leaf = tree.addLeaf(value_splitter, subset.First().getProperty(target_attribute));
+                    string classifier_value = subset.First().getProperty(target_attribute);
+                    this.runner.DECIDE(new DecisionAddLeaf()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter }, { "classifier_value", classifier_value } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
+                        level);
+                    Leaf leaf = tree.addLeaf(value_splitter, classifier_value);
                 } else
                 {
+                    if (this.attributes.Count == 0)
+                    {
+                        // We have tried all attributes so we can't go further. The tree ends here my friend.
+                        // This happens when instances have all attributes the same except for the classifier.
+                        //TODO: This set needs a final leaf for classifying value, for the most occuring attribute.
+                        this.runner.DECIDE(new DecisionAddBestGuessLeaf()
+                               .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
+                               setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
+                               level);
+                        tree.moveSelectionUp();
+                        return tree;
+                    }
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
-                  //  this.runner.DECIDE("ITERATE", "Subset has different classifier", $"clasifier({best_attr} = {value_splitter}) NOT EQUAL FOR ALL", "ITERATE", level);
+                    this.runner.DECIDE(new DecisionIterateFurther()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
+                        level);
+
                     this.iterate(tree, subset, level+1, value_splitter);
-                   // this.runner.DECIDE("MOVE VALUE UP", "Different classifier was resolved", $"classifier({best_attr} = {value_splitter}) EQUAL FOR ALL", "MOVE UP", level);
-                   
+
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
+                    this.runner.DECIDE(new DecisionMoveupToAttribute()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "parent_attribute", parent_value_splitter } }),
+                        level);
+                    
                     tree.moveSelectionUp();
                 }
             }
 
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
-           // this.runner.DECIDE("MOVE ATTRIBUTE UP", "Subset was completely classified", "Don't know", "MOVE ATTRIBUTE UP", level);
-            
+           this.runner.DECIDE(new DecisionMoveUpToValue()
+                        .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr } }).
+                        setAppliedAction(new Dictionary<string, string>() { { "parent_value", parent_value_splitter } }),
+                        level);
             return tree;
         }
         

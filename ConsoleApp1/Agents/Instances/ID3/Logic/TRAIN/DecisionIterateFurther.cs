@@ -6,26 +6,24 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class DecisionAddNode : Decision
+    class DecisionIterateFurther: Decision
     {
-
         public override Decision setAppliedAction(Dictionary<string, string> variables)
         {
-            this.appliedaction = $"CREATE NODE FOR {variables["attribute_name"]}";
-
+            this.appliedaction = $"ITERATE FURTHER ON {variables["attribute_name"]} = {variables["attribute_value"]}";
             return this;
         }
 
         public override Decision setProof(Dictionary<string, string> variables)
         {
-            this.proof = $"gain({variables["attribute_name"]}) = {variables["attribute_gain"]}";
+            this.proof = $"classifier({variables["attribute_name"]} = {variables["attribute_value"]}) = DISTINCT";
             return this;
         }
 
         protected override void setUtility()
         {
-            this.utility_action = "Add New Node";
-            this.utility_premise = "Highest gain has been determined.";
+            this.utility_action = "Iterate further";
+            this.utility_premise = "Subset not fully classified on this value.";
         }
     }
 }
