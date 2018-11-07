@@ -7,7 +7,7 @@ using System.IO;
 
 namespace DecisionTrees
 {
-    class ImportController
+    class DataController
     {
 
         private List<DataInstance> instances = new List<DataInstance> ();
