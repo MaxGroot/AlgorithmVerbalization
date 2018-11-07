@@ -7,16 +7,7 @@
         <text>ADD UTILITY KNOWLEDGE</text>
       </name>
       <graphics>
-        <position x="134" y="408" />
-        <dimension x="32" y="32" />
-      </graphics>
-    </transition>
-    <transition id="tr93">
-      <name>
-        <text>TELL</text>
-      </name>
-      <graphics>
-        <position x="275" y="109" />
+        <position x="134" y="587" />
         <dimension x="32" y="32" />
       </graphics>
     </transition>
@@ -25,16 +16,16 @@
         <text>START TELL</text>
       </name>
       <graphics>
-        <position x="133" y="238" />
+        <position x="133" y="417" />
         <dimension x="32" y="32" />
       </graphics>
     </transition>
     <transition id="tr17">
       <name>
-        <text>END TELL, START INFER</text>
+        <text>TELL UTILITY</text>
       </name>
       <graphics>
-        <position x="419" y="237" />
+        <position x="359" y="415" />
         <dimension x="32" y="32" />
       </graphics>
     </transition>
@@ -43,7 +34,7 @@
         <text>END ASK, END AGENT</text>
       </name>
       <graphics>
-        <position x="736" y="407" />
+        <position x="278" y="111" />
         <dimension x="32" y="32" />
       </graphics>
     </transition>
@@ -52,13 +43,22 @@
         <text>ASK</text>
       </name>
       <graphics>
-        <position x="870" y="107" />
+        <position x="149" y="190" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr42">
+      <name>
+        <text>TELL TRAIN SET</text>
+      </name>
+      <graphics>
+        <position x="518" y="412" />
         <dimension x="32" y="32" />
       </graphics>
     </transition>
     <place id="pl2">
       <graphics>
-        <position x="10" y="410" />
+        <position x="10" y="589" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -67,10 +67,10 @@
     </place>
     <place id="pl32">
       <name>
-        <text>Actions</text>
+        <text>Decisions</text>
       </name>
       <graphics>
-        <position x="538" y="11" />
+        <position x="528" y="81" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -82,7 +82,7 @@
         <text>System States</text>
       </name>
       <graphics>
-        <position x="671" y="10" />
+        <position x="363" y="84" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -91,7 +91,7 @@
     </place>
     <place id="pl7">
       <graphics>
-        <position x="133" y="342" />
+        <position x="133" y="521" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -103,19 +103,7 @@
         <text>Ready</text>
       </name>
       <graphics>
-        <position x="276" y="238" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl28">
-      <name>
-        <text>Ready</text>
-      </name>
-      <graphics>
-        <position x="605" y="238" />
+        <position x="250" y="417" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -127,7 +115,7 @@
         <text>Model</text>
       </name>
       <graphics>
-        <position x="734" y="109" />
+        <position x="277" y="189" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -139,7 +127,7 @@
         <text>Predictions</text>
       </name>
       <graphics>
-        <position x="868" y="11" />
+        <position x="148" y="87" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -148,19 +136,43 @@
     </place>
     <place id="pl82">
       <graphics>
-        <position x="903" y="407" />
+        <position x="275" y="10" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
         <text>0</text>
       </initialMarking>
     </place>
-    <place id="pl92">
+    <place id="pl36">
       <name>
-        <text>KB</text>
+        <text>Algorithm</text>
       </name>
       <graphics>
-        <position x="425" y="108" />
+        <position x="359" y="283" />
+        <dimension x="20" y="20" />
+      </graphics>
+      <initialMarking>
+        <text>0</text>
+      </initialMarking>
+    </place>
+    <place id="pl39">
+      <name>
+        <text>Ready</text>
+      </name>
+      <graphics>
+        <position x="436" y="413" />
+        <dimension x="20" y="20" />
+      </graphics>
+      <initialMarking>
+        <text>0</text>
+      </initialMarking>
+    </place>
+    <place id="pl49">
+      <name>
+        <text>Train set</text>
+      </name>
+      <graphics>
+        <position x="517" y="283" />
         <dimension x="20" y="20" />
       </graphics>
       <initialMarking>
@@ -172,42 +184,60 @@
         <text>TRAIN</text>
       </name>
       <graphics>
-        <position x="605" y="109" />
+        <position x="449" y="187" />
         <dimension x="32" y="32" />
       </graphics>
       <transition id="tr31">
         <name>
-          <text>START INFERATION</text>
+          <text>START TRAINING</text>
         </name>
         <graphics>
-          <position x="154" y="158" />
+          <position x="146" y="99" />
           <dimension x="32" y="32" />
         </graphics>
       </transition>
-      <transition id="tr37">
+      <transition id="tr11">
         <name>
-          <text>Consider KB Entry</text>
+          <text>PERFORM EXPRESSION</text>
         </name>
         <graphics>
-          <position x="391" y="159" />
+          <position x="271" y="268" />
           <dimension x="32" y="32" />
         </graphics>
       </transition>
-      <transition id="tr23">
+      <transition id="tr24">
         <name>
-          <text>PERFORM ACTION</text>
+          <text>DECIDE</text>
         </name>
         <graphics>
-          <position x="268" y="339" />
+          <position x="273" y="478" />
           <dimension x="32" y="32" />
         </graphics>
       </transition>
-      <transition id="tr32">
+      <transition id="tr33">
         <name>
-          <text>NO UNCONSIDERED KB ENTRIES</text>
+          <text>NO DECISION POSSIBLE</text>
         </name>
         <graphics>
-          <position x="268" y="16" />
+          <position x="146" y="377" />
+          <dimension x="32" y="32" />
+        </graphics>
+      </transition>
+      <transition id="tr66">
+        <name>
+          <text>Model not finished</text>
+        </name>
+        <graphics>
+          <position x="207" y="672" />
+          <dimension x="32" y="32" />
+        </graphics>
+      </transition>
+      <transition id="tr6">
+        <name>
+          <text>Model finished</text>
+        </name>
+        <graphics>
+          <position x="341" y="672" />
           <dimension x="32" y="32" />
         </graphics>
       </transition>
@@ -216,80 +246,103 @@
           <text>Ready</text>
         </name>
         <graphics>
-          <position x="267" y="159" />
+          <position x="145" y="268" />
           <dimension x="20" y="20" />
         </graphics>
         <initialMarking>
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="pl20">
+      <place id="pl21">
         <name>
-          <text>Considered</text>
+          <text>System State Change</text>
         </name>
         <graphics>
-          <position x="390" y="340" />
+          <position x="273" y="377" />
           <dimension x="20" y="20" />
         </graphics>
         <initialMarking>
           <text>0</text>
         </initialMarking>
       </place>
-      <referencePlace ref="pl28" id="pn18">
+      <place id="pl53">
+        <name>
+          <text>Decision Processed</text>
+        </name>
         <graphics>
-          <position x="10" y="159" />
+          <position x="275" y="603" />
           <dimension x="20" y="20" />
         </graphics>
-      </referencePlace>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
       <referencePlace ref="pl35" id="pn21">
         <graphics>
-          <position x="515" y="226" />
+          <position x="145" y="480" />
           <dimension x="20" y="20" />
         </graphics>
       </referencePlace>
       <referencePlace ref="pl32" id="pn25">
         <graphics>
-          <position x="513" y="160" />
-          <dimension x="20" y="20" />
-        </graphics>
-      </referencePlace>
-      <referencePlace ref="pl92" id="pn28">
-        <graphics>
-          <position x="392" y="71" />
+          <position x="277" y="738" />
           <dimension x="20" y="20" />
         </graphics>
       </referencePlace>
       <referencePlace ref="pl59" id="pn38">
         <graphics>
-          <position x="573" y="16" />
+          <position x="505" y="670" />
           <dimension x="20" y="20" />
         </graphics>
       </referencePlace>
-      <arc id="a1" source="pn18" target="tr31" />
-      <arc id="a2" source="tr31" target="pl34" />
-      <arc id="a3" source="pl34" target="tr37" />
-      <arc id="a4" source="tr37" target="pn21" />
-      <arc id="a5" source="tr37" target="pn25" />
-      <arc id="a6" source="pn28" target="tr37" />
-      <arc id="a7" source="tr37" target="pl20" />
-      <arc id="a8" source="pl20" target="tr23" />
-      <arc id="a9" source="tr23" target="pl34" />
-      <arc id="a10" source="pl34" target="tr32" />
-      <arc id="a11" source="tr32" target="pn38" />
+      <referencePlace ref="pl36" id="pn60">
+        <graphics>
+          <position x="277" y="11" />
+          <dimension x="20" y="20" />
+        </graphics>
+      </referencePlace>
+      <referencePlace ref="pl49" id="pn71">
+        <graphics>
+          <position x="10" y="10" />
+          <dimension x="20" y="20" />
+        </graphics>
+      </referencePlace>
+      <arc id="a1" source="tr31" target="pl34" />
+      <arc id="a3" source="pl34" target="tr11" />
+      <arc id="a4" source="tr11" target="pl21" />
+      <arc id="a5" source="pl21" target="tr24" />
+      <arc id="a6" source="pl21" target="tr33" />
+      <arc id="a7" source="tr33" target="pl34" />
+      <arc id="a8" source="pl53" target="tr66" />
+      <arc id="a9" source="pl53" target="tr6" />
+      <arc id="a10" source="tr66" target="pl34">
+        <graphics>
+          <position x="7" y="673" />
+          <position x="6" y="266" />
+        </graphics>
+      </arc>
+      <arc id="a11" source="tr6" target="pn38" />
+      <arc id="a17" source="tr24" target="pn21" />
+      <arc id="a18" source="tr33" target="pn21" />
+      <arc id="a19" source="tr6" target="pn25" />
+      <arc id="a22" source="tr66" target="pn25" />
+      <arc id="a25" source="tr24" target="pl53" />
+      <arc id="a26" source="pn60" target="tr31" />
+      <arc id="a27" source="pn71" target="tr31" />
     </page>
-    <arc id="a12" source="pl2" target="tr3" />
-    <arc id="a13" source="tr3" target="pl7" />
-    <arc id="a14" source="pl7" target="tr10" />
-    <arc id="a15" source="tr10" target="pl14" />
-    <arc id="a16" source="pl14" target="tr17" />
-    <arc id="a17" source="pl14" target="tr93" />
-    <arc id="a18" source="tr93" target="pl14" />
-    <arc id="a19" source="tr17" target="pl28" />
-    <arc id="a20" source="pl59" target="tr62" />
-    <arc id="a21" source="pl59" target="tr72" />
-    <arc id="a22" source="tr72" target="pl59" />
-    <arc id="a23" source="tr72" target="pl75" />
-    <arc id="a24" source="tr62" target="pl82" />
-    <arc id="a25" source="tr93" target="pl92" />
+    <arc id="a28" source="pl2" target="tr3" />
+    <arc id="a29" source="tr3" target="pl7" />
+    <arc id="a30" source="pl7" target="tr10" />
+    <arc id="a31" source="tr10" target="pl14" />
+    <arc id="a32" source="pl14" target="tr17" />
+    <arc id="a33" source="pl59" target="tr62" />
+    <arc id="a34" source="pl59" target="tr72" />
+    <arc id="a35" source="tr72" target="pl59" />
+    <arc id="a36" source="tr72" target="pl75" />
+    <arc id="a37" source="tr62" target="pl82" />
+    <arc id="a38" source="tr17" target="pl36" />
+    <arc id="a39" source="tr17" target="pl39" />
+    <arc id="a40" source="pl39" target="tr42" />
+    <arc id="a41" source="tr42" target="pl49" />
   </net>
 </pnml>
