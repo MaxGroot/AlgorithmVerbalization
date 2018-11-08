@@ -16,7 +16,7 @@ namespace DecisionTrees
 
         public override Decision setProof(Dictionary<string, string> variables)
         {
-            this.proof = $"classifier({variables["attribute_name"]} = {variables["attribute_value"]}) = DISTINCT, AttributeCount = 0";
+            this.proof = $"classifier({variables["attribute_name"]} = {variables["attribute_value"]}) = DISTINCT & AttributeCount = 0";
             return this;
         }
 

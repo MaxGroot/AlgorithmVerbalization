@@ -10,7 +10,7 @@ namespace DecisionTrees
     {
         public override Decision setAppliedAction(Dictionary<string, string> variables)
         {
-            this.appliedaction = $"MOVE UP TO ATTRIBUTE, Back to {variables["parent_attribute"]}";
+            this.appliedaction = $"MOVE UP TO ATTRIBUTE. Back to {variables["parent_attribute"]}";
             return this;
         }
 

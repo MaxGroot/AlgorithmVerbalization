@@ -95,7 +95,7 @@ namespace DecisionTrees
 
         public void save_thoughts()
         {
-            string seperator = ";";
+            string seperator = ",";
             var csv = new StringBuilder();
             string firstline = $"Type{seperator}Utility Action{seperator}Utility Premise{seperator}Proof{seperator}Applied Action";
             foreach(string variable_name in this.total_descriptor.variable_names)
