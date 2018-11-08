@@ -8,11 +8,12 @@ namespace DecisionTrees
 {
     abstract class Agent
     {
-       private List<InputInference> inferences = new List<InputInference>();
+       protected List<InputInference> inferences = new List<InputInference>();
        private TextWriter writer;
 
-       public Agent()
+       public Agent(TextWriter writer)
         {
+            this.writer = writer;
             this.addInferences();
         }
 
@@ -45,20 +46,9 @@ namespace DecisionTrees
             }
             this.writer.decision_add(decision);
         }
-        
-        // TODO: REFACTOR IN CONSTRUCTOR
-        public void addInference(InputInference inference)
-        {
-            this.inferences.Add(inference);
-        }
 
         public abstract void addInferences();
-
-        public void addWriter(TextWriter writer)
-        {
-            this.writer = writer;
-        }
-
+        
         public void prepare_system_state(List<SystemStateDescriptor> descriptors)
         {
             foreach(SystemStateDescriptor descriptor in descriptors)

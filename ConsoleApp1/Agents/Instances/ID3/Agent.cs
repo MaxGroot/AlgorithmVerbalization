@@ -16,6 +16,11 @@ namespace DecisionTrees
             throw new NotImplementedException();
         }
 
+        public ID3Agent(TextWriter writer): base(writer)
+        {
+
+        }
+
         public override DecisionTree TRAIN()
         {
             ObservationSet set = this.infer1.get();
@@ -24,7 +29,7 @@ namespace DecisionTrees
 
         public override void addInferences()
         {
-            this.addInference(infer1);
+            this.inferences.Add(infer1);
         }
     }
 }

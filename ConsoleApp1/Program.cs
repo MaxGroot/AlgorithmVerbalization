@@ -22,8 +22,7 @@ namespace DecisionTrees
             TextWriter writer = new TextWriter(location);
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
-            Agent agent = new ID3Agent();
-            agent.addWriter(writer);
+            Agent agent = new ID3Agent(writer);
 
             Console.WriteLine("TELL");
             agent.TELL(observations); 
