@@ -9,9 +9,6 @@ namespace DecisionTrees
 {
     class TextWriter
     {
-        private List<string> infer_lines = new List<string>();
-        private List<string> decision_lines = new List<string>();
-
         private List<Output> outputs = new List<Output>();
 
         private List<SystemStateDescriptor> all_descriptors = new List<SystemStateDescriptor>();
@@ -45,17 +42,16 @@ namespace DecisionTrees
         {
             // Calculate new system state. 
             this.total_state = SystemState.Add(total_state, state);
-            this.add_thought(ref infer_lines, state.getDescriptor().name);
+            this.add_thought(state.getDescriptor().name);
         }
 
         public void decision_add(Decision explanation)
         {
-            this.add_action(ref this.decision_lines, explanation);
+            this.add_action(explanation);
         }
-        private void add_action(ref List<string> list, Decision explanation)
+        private void add_action(Decision explanation)
         {
             string applied_action = explanation.appliedaction;
-            list.Add(applied_action);
 
             // Remove tabs and double spaces from the applied action. We only do this after adding it to the reference list, 
             // Because some lists want their applied_actions tabbed.
@@ -74,11 +70,8 @@ namespace DecisionTrees
             this.outputs.Add(new Action(explanation, my_state));
         }
 
-        private void add_thought(ref List<string> list, string name)
-        {
-            list.Add(name);
-            
-
+        private void add_thought(string name)
+        {        
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
             this.outputs.Add(new Thought("INFER", name, my_state));
@@ -86,14 +79,12 @@ namespace DecisionTrees
         }
         public void write()
         {
-            System.IO.File.WriteAllLines(location + "infers.txt", infer_lines.ToArray());
-            System.IO.File.WriteAllLines(location + "decisions.txt", decision_lines.ToArray());
             this.save_thoughts();
         }
 
         public void save_thoughts()
         {
-            string seperator = ",";
+            string seperator = ";";
             var csv = new StringBuilder();
             string firstline = $"Type{seperator}Utility Action{seperator}Utility Premise{seperator}Proof{seperator}Applied Action";
             foreach(string variable_name in this.total_descriptor.variable_names)
