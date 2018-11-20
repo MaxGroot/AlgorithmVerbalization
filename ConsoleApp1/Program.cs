@@ -33,12 +33,15 @@ namespace DecisionTrees
 
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
-            agent.TRAIN();
+            DecisionTree model = agent.TRAIN();
 
             Console.WriteLine("Training completed. Processing thoughts.");
             writer.write();
 
-            Console.WriteLine("Thoughts processed.");
+            Console.WriteLine("Thoughts processed. Processing model.");
+            ModelManager.save(model, location);
+
+            Console.WriteLine("Model saved.");
             Console.ReadKey(true);
         }
     }

@@ -11,7 +11,6 @@ namespace DecisionTrees
     {
         private List<string> infer_lines = new List<string>();
         private List<string> decision_lines = new List<string>();
-        private List<string> model_lines = new List<string>();
 
         private List<Output> outputs = new List<Output>();
 
@@ -88,7 +87,6 @@ namespace DecisionTrees
         public void write()
         {
             System.IO.File.WriteAllLines(location + "infers.txt", infer_lines.ToArray());
-            System.IO.File.WriteAllLines(location + "model.txt", model_lines.ToArray());
             System.IO.File.WriteAllLines(location + "decisions.txt", decision_lines.ToArray());
             this.save_thoughts();
         }

@@ -40,5 +40,10 @@ namespace DecisionTrees
         {
             this.currentlySelectedNode = this.currentlySelectedNode.getParent();
         }
+
+        public Node getRoot()
+        {
+            return this.root;
+        }
     }
 }

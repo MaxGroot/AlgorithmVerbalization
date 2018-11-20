@@ -65,6 +65,7 @@
     <Compile Include="Observations\DataController.cs" />
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
+    <Compile Include="Thinking Aloud\ModelManager.cs" />
     <Compile Include="Thinking Aloud\Outputs\Action.cs" />
     <Compile Include="Thinking Aloud\Outputs\Output.cs" />
     <Compile Include="Thinking Aloud\Outputs\Thought.cs" />

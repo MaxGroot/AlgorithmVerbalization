@@ -10,7 +10,7 @@ namespace DecisionTrees
     {
         public string value_splitter;
         public string classifier;
-        private Node parent;
+        public Node parent;
 
         public Leaf(string value_splitter, string classifier, Node parent)
         {

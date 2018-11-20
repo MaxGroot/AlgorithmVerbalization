@@ -11,7 +11,7 @@ namespace DecisionTrees
 
         public string label;
         private Node parent = null;
-        private string value_splitter = "";
+        public string value_splitter = "";
         private List<Node> nodeChildren = new List<Node>();
         private List<Leaf> leafChildren = new List<Leaf>();
 
@@ -58,5 +58,14 @@ namespace DecisionTrees
         {
             return this.parent;
         }
+        public List<Node> getNodeChildren()
+        {
+            return this.nodeChildren;
+        }
+        public List<Leaf> getLeafChildren()
+        {
+            return this.leafChildren;
+        }
+
     }
 }
