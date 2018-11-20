@@ -11,6 +11,7 @@ namespace DecisionTrees
         static void Main(string[] args)
         {
             DataController import = new DataController();
+            Console.WriteLine("Good Day!");
             Console.WriteLine("Program started. Enter the file path to import data from. ");
             string location = TextWriter.askLocation(1);
             ObservationSet observations =  import.importExamples(location);
