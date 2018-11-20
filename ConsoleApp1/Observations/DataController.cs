@@ -60,6 +60,7 @@ namespace DecisionTrees
         {
             var reader = new StreamReader(filepath);
             int row = 0;
+            char sep = ';';
             List<string> all_attributes = new List<string>();
 
             // Loop through CSV lines. 
@@ -67,7 +68,7 @@ namespace DecisionTrees
             {
                 row++;
                 string line = reader.ReadLine();
-                var values = line.Split(';');
+                var values = line.Split(sep);
                 if (row != 1)
                 {
                     // This is a training instance. The attributes have already been established.

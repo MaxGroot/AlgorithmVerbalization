@@ -20,6 +20,10 @@ namespace DecisionTrees
             Console.WriteLine("Enter the directory to export data to. ");
             location = TextWriter.askLocation(2);
 
+            Console.WriteLine("Catch error and output?");
+            string catchinput = TextWriter.askLocation(3);
+            bool catcherror = (catchinput == "TRUE");
+
             TextWriter writer = new TextWriter(location);
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
@@ -34,15 +38,21 @@ namespace DecisionTrees
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
             DecisionTree model = new DecisionTree();
-            try
+            if (catcherror)
+            {
+                try
+                {
+                    model = agent.TRAIN();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Encountered an error! Writing output and model anyways.");
+                    writer.write();
+                    throw (e);
+                }
+            } else
             {
                 model = agent.TRAIN();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("Encountered an error! Writing output anyways.");
-                writer.write();
-                throw (e);
             }
             Console.WriteLine("Training completed. Processing thoughts.");
             writer.write();
