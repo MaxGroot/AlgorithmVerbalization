@@ -36,6 +36,13 @@ namespace DecisionTrees
             return leaf;
         }
 
+        public Leaf addBestGuessLeaf(string value_splitter, string class_prediction)
+        {
+            Leaf leaf = this.addLeaf(value_splitter, class_prediction);
+            leaf.isBestGuess = true;
+            return leaf;
+        }
+
         public void moveSelectionUp()
         {
             this.currentlySelectedNode = this.currentlySelectedNode.getParent();

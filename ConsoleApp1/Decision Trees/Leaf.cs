@@ -11,6 +11,7 @@ namespace DecisionTrees
         public string value_splitter;
         public string classifier;
         public Node parent;
+        public bool isBestGuess = false; 
 
         public Leaf(string value_splitter, string classifier, Node parent)
         {

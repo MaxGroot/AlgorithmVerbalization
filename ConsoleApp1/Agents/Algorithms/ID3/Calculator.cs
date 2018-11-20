@@ -84,5 +84,25 @@ namespace DecisionTrees
             // If we are here then the subset has the same classifier.
             return true;
         }
+
+        public static string subset_most_common_classifier(List<DataInstance> S, string target_attribute)
+        {
+            // Initialize Dictionary
+            Dictionary<String, int> value_counter = new Dictionary<string, int>();
+            
+            // Set classifier frequency in dictionary
+            foreach(DataInstance instance in S)
+            {
+                string my_classifier = instance.getProperty(target_attribute);
+                if (!value_counter.ContainsKey(my_classifier))
+                {
+                    value_counter[my_classifier] = 0;
+                }
+
+                value_counter[my_classifier]++;
+            }
+            // Return classifier value that occurs most in the given set.
+            return value_counter.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+        }
     }
 }

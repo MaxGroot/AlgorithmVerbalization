@@ -106,11 +106,12 @@ namespace DecisionTrees
                     {
                         // We have tried all attributes so we can't go further. The tree ends here my friend.
                         // This happens when instances have all attributes the same except for the classifier.
-                        //TODO: This set needs a final leaf for classifying value, for the most occuring attribute.
                         this.runner.DECIDE(new DecisionAddBestGuessLeaf()
                                .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
                                setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                                level);
+                        string classifier_value = Calculator.subset_most_common_classifier(subset, target_attribute);
+                        tree.addBestGuessLeaf(value_splitter, classifier_value);
                         tree.moveSelectionUp();
                         return tree;
                     }
