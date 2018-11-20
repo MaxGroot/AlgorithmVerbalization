@@ -10,7 +10,7 @@ namespace DecisionTrees
     {
         private List<DataInstance> examples;
         private string target_attribute;
-        private List<string> attributes;
+        private List<string> all_attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>> ();
         private Agent runner;
         
@@ -23,7 +23,7 @@ namespace DecisionTrees
         {
             this.examples = examples;
             this.target_attribute = target_attribute;
-            this.attributes = attributes;
+            this.all_attributes = attributes;
             this.runner = runner;
 
             // Prepare our runner with the right way to describe system state.
@@ -41,18 +41,18 @@ namespace DecisionTrees
 
             // Start the iteration process on the entire set.
              // this.runner.DECIDE("Iterate upon full example set", 0);
-            tree = this.iterate(tree, this.examples, 1);
+            tree = this.iterate(tree, this.examples, 1, attributes);
             // this.runner.DECIDE("All examples resolved. Tree is finished.", 0);
             return tree;
         }
 
-        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, string parent_value_splitter = null)
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, string parent_value_splitter = null)
         {
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
             string best_attr = "";
             double highest_gain = 0;
             this.runner.INFER(new SystemState(sets_todo.Count.ToString()).setDescriptor(subset_size));
-            foreach(string attr in this.attributes)
+            foreach(string attr in considerable_attributes)
             {
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
                 this.runner.INFER( new SystemState(attr, my_gain, highest_gain).setDescriptor(calculate_gain));
@@ -70,7 +70,7 @@ namespace DecisionTrees
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } }),
                         level);
-            this.attributes.RemoveAt(attributes.IndexOf(best_attr));
+            considerable_attributes.RemoveAt(considerable_attributes.IndexOf(best_attr));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
             this.runner.DECIDE(new DecisionAddNode()
@@ -105,7 +105,7 @@ namespace DecisionTrees
                     Leaf leaf = tree.addLeaf(value_splitter, classifier_value);
                 } else
                 {
-                    if (this.attributes.Count == 0)
+                    if (considerable_attributes.Count == 0)
                     {
                         // We have tried all attributes so we can't go further. The tree ends here my friend.
                         // This happens when instances have all attributes the same except for the classifier.
@@ -124,7 +124,7 @@ namespace DecisionTrees
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                         level);
 
-                    this.iterate(tree, subset, level+1, value_splitter);
+                    this.iterate(tree, subset, level+1, considerable_attributes, value_splitter);
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     this.runner.DECIDE(new DecisionMoveupToAttribute()
@@ -146,7 +146,7 @@ namespace DecisionTrees
         
         public void calculateAttributePossibilities()
         {
-            foreach (string attr in attributes)
+            foreach (string attr in all_attributes)
             {
                 // Make the list we will later add to the dictionary
                 List<string> attribute_values = new List<string>();
