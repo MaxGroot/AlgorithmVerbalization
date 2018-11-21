@@ -34,22 +34,18 @@ namespace DecisionTrees
             });
 
             // First we need to know for each attribute which possible values it can hold.
-            // this.runner.DECIDE("Calculating possible attribute values", 0);
             this.calculateAttributePossibilities();
         
             DecisionTree tree = new DecisionTree();
 
             // Start the iteration process on the entire set.
-             // this.runner.DECIDE("Iterate upon full example set", 0);
-            tree = this.iterate(tree, this.examples, 1, attributes);
-            // this.runner.DECIDE("All examples resolved. Tree is finished.", 0);
+            tree = this.iterate(tree, this.examples, 1, attributes, null, null);
             return tree;
         }
 
-        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, string parent_value_splitter = null)
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, Node parent_node, string parent_value_splitter)
         {
             List <string> attributes_copy = new List<string>(considerable_attributes.ToArray());
-            Console.WriteLine(considerable_attributes.Count.ToString());
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
             string best_attr = "UNDETERMINED";
             double highest_gain = 0;
@@ -67,8 +63,7 @@ namespace DecisionTrees
             }
             if (highest_gain == 0)
             {
-                Console.WriteLine("HIHAHO");
-                tree.moveSelectionUp();
+                // This set cannot be split further.
                 return tree;
             }
 
@@ -85,7 +80,7 @@ namespace DecisionTrees
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } } ), 
                         level);
-            tree.addNode(best_attr, parent_value_splitter);
+            Node new_node = tree.addNode(best_attr, parent_value_splitter, parent_node);
             
             // Create subsets for each possible value of the attribute we created a node for. 
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
@@ -110,7 +105,7 @@ namespace DecisionTrees
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter }, { "classifier_value", classifier_value } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                         level);
-                    Leaf leaf = tree.addLeaf(value_splitter, classifier_value);
+                    Leaf leaf = tree.addLeaf(value_splitter, classifier_value, parent_node);
                 } else
                 {
                     if (attributes_copy.Count == 0)
@@ -122,9 +117,7 @@ namespace DecisionTrees
                                setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                                level);
                         string classifier_value = Calculator.subset_most_common_classifier(subset, target_attribute);
-                        tree.addBestGuessLeaf(value_splitter, classifier_value);
-                        Console.WriteLine("No more attributes");
-                        tree.moveSelectionUp();
+                        tree.addBestGuessLeaf(value_splitter, classifier_value, parent_node);
                         return tree;
                     }
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
@@ -133,20 +126,13 @@ namespace DecisionTrees
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                         level);
 
-                    this.iterate(tree, subset, level+1, attributes_copy, value_splitter);
+                    this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     this.runner.DECIDE(new DecisionMoveupToAttribute()
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
                         setAppliedAction(new Dictionary<string, string>() { { "parent_attribute", parent_value_splitter } }),
                         level);
-                    Console.WriteLine($"Move up to attribute, set resolved {level}");
-
-                    if (parent_value_splitter != null)
-                    {
-                        // Move up if we're not at the root of the tree.
-                        tree.moveSelectionUp();
-                    }
                 }
             }
 

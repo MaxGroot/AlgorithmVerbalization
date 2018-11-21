@@ -9,45 +9,34 @@ namespace DecisionTrees
     class DecisionTree
     {
         private Node root = null;
-        private Node currentlySelectedNode = null;
 
-        public DecisionTree addNode(string attribute, string value_splitter)
+        public Node addNode(string attribute, string value_splitter, Node parent)
         {
             Node newnode = new Node(attribute, value_splitter);
-            Console.WriteLine($"Node for {value_splitter}, now splitting on {attribute}");
             if (root == null)
             {
                 root = newnode;
-                currentlySelectedNode = root;
             } else
             {
-                this.currentlySelectedNode.addChildNode(newnode);
-                newnode.addParentNode(currentlySelectedNode);
-
-                this.currentlySelectedNode = newnode;
+                parent.addChildNode(newnode);
+                newnode.addParentNode(parent);
             }
-            return this;
+            return newnode;
         }
 
-        public Leaf addLeaf(string value_splitter, string class_prediction)
+        public Leaf addLeaf(string value_splitter, string class_prediction, Node parent)
         {
-            Leaf leaf = new Leaf(value_splitter, class_prediction, this.currentlySelectedNode);
-            currentlySelectedNode.addChildLeaf(leaf);
+            Leaf leaf = new Leaf(value_splitter, class_prediction, parent);
+            parent.addChildLeaf(leaf);
 
             return leaf;
         }
 
-        public Leaf addBestGuessLeaf(string value_splitter, string class_prediction)
+        public Leaf addBestGuessLeaf(string value_splitter, string class_prediction, Node parent)
         {
-            Leaf leaf = this.addLeaf(value_splitter, class_prediction);
+            Leaf leaf = this.addLeaf(value_splitter, class_prediction, parent);
             leaf.isBestGuess = true;
             return leaf;
-        }
-
-        public void moveSelectionUp()
-        {
-            this.writeMyPosition(currentlySelectedNode);
-            this.currentlySelectedNode = this.currentlySelectedNode.getParent();
         }
 
         public Node getRoot()
