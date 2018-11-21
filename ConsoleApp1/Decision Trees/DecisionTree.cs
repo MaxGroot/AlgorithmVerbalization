@@ -14,6 +14,7 @@ namespace DecisionTrees
         public DecisionTree addNode(string attribute, string value_splitter)
         {
             Node newnode = new Node(attribute, value_splitter);
+            Console.WriteLine($"Node for {value_splitter}, now splitting on {attribute}");
             if (root == null)
             {
                 root = newnode;
@@ -45,12 +46,25 @@ namespace DecisionTrees
 
         public void moveSelectionUp()
         {
+            this.writeMyPosition(currentlySelectedNode);
             this.currentlySelectedNode = this.currentlySelectedNode.getParent();
         }
 
         public Node getRoot()
         {
             return this.root;
+        }
+
+        private void writeMyPosition(Node node)
+        {
+            string str = node.value_splitter;
+            Node parent = node.getParent();
+            while (parent != null)
+            {
+                str = parent.value_splitter + ", " + parent.label + " = " + str;
+                parent = parent.getParent();
+            }
+            Console.WriteLine(str);
         }
     }
 }

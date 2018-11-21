@@ -48,11 +48,13 @@ namespace DecisionTrees
 
         public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, string parent_value_splitter = null)
         {
+            List <string> attributes_copy = new List<string>(considerable_attributes.ToArray());
+            Console.WriteLine(considerable_attributes.Count.ToString());
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
-            string best_attr = "";
+            string best_attr = "UNDETERMINED";
             double highest_gain = 0;
             this.runner.INFER(new SystemState(sets_todo.Count.ToString()).setDescriptor(subset_size));
-            foreach(string attr in considerable_attributes)
+            foreach(string attr in attributes_copy)
             {
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
                 this.runner.INFER( new SystemState(attr, my_gain, highest_gain).setDescriptor(calculate_gain));
@@ -63,6 +65,12 @@ namespace DecisionTrees
                     this.runner.INFER(new SystemState(my_gain, highest_gain).setDescriptor(best_attribute));
                 }
             }
+            if (highest_gain == 0)
+            {
+                Console.WriteLine("HIHAHO");
+                tree.moveSelectionUp();
+                return tree;
+            }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
             // Remove this attribute as a splitter for the dataset.
@@ -70,7 +78,7 @@ namespace DecisionTrees
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_gain", highest_gain.ToString() } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr } }),
                         level);
-            considerable_attributes.RemoveAt(considerable_attributes.IndexOf(best_attr));
+            attributes_copy.RemoveAt(considerable_attributes.IndexOf(best_attr));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
             this.runner.DECIDE(new DecisionAddNode()
@@ -105,7 +113,7 @@ namespace DecisionTrees
                     Leaf leaf = tree.addLeaf(value_splitter, classifier_value);
                 } else
                 {
-                    if (considerable_attributes.Count == 0)
+                    if (attributes_copy.Count == 0)
                     {
                         // We have tried all attributes so we can't go further. The tree ends here my friend.
                         // This happens when instances have all attributes the same except for the classifier.
@@ -115,6 +123,7 @@ namespace DecisionTrees
                                level);
                         string classifier_value = Calculator.subset_most_common_classifier(subset, target_attribute);
                         tree.addBestGuessLeaf(value_splitter, classifier_value);
+                        Console.WriteLine("No more attributes");
                         tree.moveSelectionUp();
                         return tree;
                     }
@@ -124,15 +133,20 @@ namespace DecisionTrees
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                         level);
 
-                    this.iterate(tree, subset, level+1, considerable_attributes, value_splitter);
+                    this.iterate(tree, subset, level+1, attributes_copy, value_splitter);
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                     this.runner.DECIDE(new DecisionMoveupToAttribute()
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
                         setAppliedAction(new Dictionary<string, string>() { { "parent_attribute", parent_value_splitter } }),
                         level);
-                    
-                    tree.moveSelectionUp();
+                    Console.WriteLine($"Move up to attribute, set resolved {level}");
+
+                    if (parent_value_splitter != null)
+                    {
+                        // Move up if we're not at the root of the tree.
+                        tree.moveSelectionUp();
+                    }
                 }
             }
 
