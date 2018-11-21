@@ -64,6 +64,14 @@ namespace DecisionTrees
             if (highest_gain == 0)
             {
                 // This set cannot be split further.
+                // We have tried all attributes so we can't go further. The tree ends here my friend.
+                // This happens when instances have all attributes the same except for the classifier.
+                this.runner.DECIDE(new DecisionAddBestGuessLeaf()
+                       .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", parent_value_splitter } }).
+                       setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", parent_value_splitter } }),
+                       level);
+                string classifier_value = Calculator.subset_most_common_classifier(sets_todo, target_attribute);
+                tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
                 return tree;
             }
 
@@ -105,21 +113,9 @@ namespace DecisionTrees
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter }, { "classifier_value", classifier_value } }).
                         setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
                         level);
-                    Leaf leaf = tree.addLeaf(value_splitter, classifier_value, parent_node);
+                    Leaf leaf = tree.addLeaf(value_splitter, classifier_value, new_node);
                 } else
                 {
-                    if (attributes_copy.Count == 0)
-                    {
-                        // We have tried all attributes so we can't go further. The tree ends here my friend.
-                        // This happens when instances have all attributes the same except for the classifier.
-                        this.runner.DECIDE(new DecisionAddBestGuessLeaf()
-                               .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
-                               setAppliedAction(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }),
-                               level);
-                        string classifier_value = Calculator.subset_most_common_classifier(subset, target_attribute);
-                        tree.addBestGuessLeaf(value_splitter, classifier_value, parent_node);
-                        return tree;
-                    }
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
                     this.runner.DECIDE(new DecisionIterateFurther()
                         .setProof(new Dictionary<string, string>() { { "attribute_name", best_attr }, { "attribute_value", value_splitter } }).
