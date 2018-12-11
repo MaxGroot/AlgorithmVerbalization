@@ -66,9 +66,9 @@
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
     <Compile Include="Thinking Aloud\ModelManager.cs" />
-    <Compile Include="Thinking Aloud\Outputs\Action.cs" />
+    <Compile Include="Thinking Aloud\Outputs\OutputDecision.cs" />
     <Compile Include="Thinking Aloud\Outputs\Output.cs" />
-    <Compile Include="Thinking Aloud\Outputs\Thought.cs" />
+    <Compile Include="Thinking Aloud\Outputs\OutputThought.cs" />
     <Compile Include="Thinking Aloud\SystemStates\SystemState.cs" />
     <Compile Include="Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
     <Compile Include="Thinking Aloud\TextWriter.cs" />

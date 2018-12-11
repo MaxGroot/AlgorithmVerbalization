@@ -67,14 +67,14 @@ namespace DecisionTrees
             explanation.appliedaction = applied_action;
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
-            this.outputs.Add(new Action(explanation, my_state));
+            this.outputs.Add(new OutputDecision(explanation, my_state));
         }
 
         private void add_thought(string name)
         {        
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
-            this.outputs.Add(new Thought("INFER", name, my_state));
+            this.outputs.Add(new OutputThought("INFER", name, my_state));
             
         }
         public void write()
