@@ -60,7 +60,10 @@ namespace DecisionTrees
             Console.WriteLine("Thoughts processed. Processing model.");
             ModelManager.save(model, location);
 
-            Console.WriteLine("Model saved.");
+            Console.WriteLine("Model saved. Saving image.");
+            Drawing drawer = new Drawing(model);
+            drawer.lines();
+
             Console.ReadKey(true);
             
         }

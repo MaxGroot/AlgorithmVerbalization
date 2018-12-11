@@ -80,6 +80,7 @@ namespace DecisionTrees
         public void write()
         {
             this.save_thoughts();
+
         }
 
         public void save_thoughts()
