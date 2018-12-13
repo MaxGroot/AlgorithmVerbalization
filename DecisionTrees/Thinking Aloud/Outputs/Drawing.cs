@@ -40,9 +40,6 @@ namespace DecisionTrees
             {
                 iterate(ref queue, ref all_elements);
             }
-            Console.WriteLine($"HOI {lowest_x}");
-            Console.WriteLine($"DOEI {highest_x}");
-            Console.WriteLine($"KOE {highest_y}");
             foreach(DrawElement el in all_elements)
             {
                 el.x += Math.Abs(this.lowest_x);
@@ -52,14 +49,11 @@ namespace DecisionTrees
             // We loop through them and write it in lines.
             for(int j=0; j<=highest_y; j+=1)
             {
-                lines.Add(new string('-', highest_x+1));
+                lines.Add(new string(' ', highest_x+1));
             }
             foreach (DrawElement el in all_elements)
             {
                 StringBuilder b = new StringBuilder(lines[el.y]);
-                Console.WriteLine($"{el.x}");
-                Console.WriteLine($"{el.label}");
-                Console.WriteLine(b.ToString());
                 b[el.x] = el.label[0];
                 lines[el.y] = b.ToString();
             }
@@ -146,13 +140,11 @@ namespace DecisionTrees
                 {
                     el.x -= side_offset;
                     update_coordinate_variables(el.x, el.y);
-                    Console.WriteLine($"Moved {el.label} left");
                 }
                 if (el.x > x_threshold)
                 {
                     el.x += side_offset;
                     update_coordinate_variables(el.x, el.y);
-                    Console.WriteLine($"Moved {el.label} right");
                 }
             }
         }
