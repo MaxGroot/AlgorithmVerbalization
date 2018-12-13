@@ -28,7 +28,7 @@ namespace DecisionTrees
             List<DrawElement> queue = new List<DrawElement>();
 
             // Create the root
-            DrawElement root_element = new DrawElement(tree.getRoot(), "0", 0, 0);
+            DrawElement root_element = new DrawElement(tree.getRoot(), "R", 0, 0);
             all_elements.Add(root_element);
 
             // Add the root's kids to the queue.

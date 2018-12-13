@@ -42,9 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Thinking Aloud\Drawing\DrawElement.cs" />
-    <Compile Include="Thinking Aloud\DrawManager.cs" />
-    <Compile Include="Thinking Aloud\ThoughtsManager.cs" />
+    <Compile Include="Output\Drawing\DrawElement.cs" />
+    <Compile Include="Output\Drawing\DrawManager.cs" />
+    <Compile Include="Output\Thinking Aloud\ThoughtsManager.cs" />
     <Compile Include="Training Agents\Algorithm.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />
     <Compile Include="Training Agents\Instances\ID3\ID3Algorithm.cs" />
@@ -68,13 +68,13 @@
     <Compile Include="Observations\DataController.cs" />
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
-    <Compile Include="Thinking Aloud\ModelManager.cs" />
-    <Compile Include="Thinking Aloud\Outputs\OutputDecision.cs" />
-    <Compile Include="Thinking Aloud\Outputs\Output.cs" />
-    <Compile Include="Thinking Aloud\Outputs\OutputThought.cs" />
-    <Compile Include="Thinking Aloud\SystemStates\SystemState.cs" />
-    <Compile Include="Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
-    <Compile Include="Thinking Aloud\TextWriter.cs" />
+    <Compile Include="Output\Model\ModelManager.cs" />
+    <Compile Include="Output\Thinking Aloud\Outputs\OutputDecision.cs" />
+    <Compile Include="Output\Thinking Aloud\Outputs\Output.cs" />
+    <Compile Include="Output\Thinking Aloud\Outputs\OutputThought.cs" />
+    <Compile Include="Output\Thinking Aloud\SystemStates\SystemState.cs" />
+    <Compile Include="Output\Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
+    <Compile Include="Output\TextWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
