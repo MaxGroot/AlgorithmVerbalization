@@ -9,11 +9,11 @@ namespace DecisionTrees
     abstract class Agent
     {
        protected List<InputInference> inferences = new List<InputInference>();
-       private TextWriter writer;
+       private ThoughtsManager thoughts;
 
-       public Agent(TextWriter writer)
+       public Agent(ThoughtsManager thoughts)
         {
-            this.writer = writer;
+            this.thoughts = thoughts;
             this.addInferences();
         }
 
@@ -35,7 +35,7 @@ namespace DecisionTrees
 
         public void INFER(SystemState state)
         {
-            this.writer.infer_add(state);
+            this.thoughts.infer_add(state);
         }
         
         public void DECIDE(Decision decision, int level)
@@ -44,7 +44,7 @@ namespace DecisionTrees
             {
                 decision.appliedaction = "\t" + decision.appliedaction;
             }
-            this.writer.decision_add(decision);
+            this.thoughts.decision_add(decision);
         }
 
         public abstract void addInferences();
@@ -53,9 +53,9 @@ namespace DecisionTrees
         {
             foreach(SystemStateDescriptor descriptor in descriptors)
             {
-                this.writer.add_systemstate_descriptor(descriptor);
+                this.thoughts.add_systemstate_descriptor(descriptor);
             }
-            this.writer.generate_total_descriptor();
+            this.thoughts.generate_total_descriptor();
         }
     }
 }

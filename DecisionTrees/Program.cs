@@ -11,10 +11,13 @@ namespace DecisionTrees
     {
         static void Main(string[] args)
         {
-            DataController import = new DataController();
             Console.WriteLine("Good Day!");
+
+            // Ask the important questions.
             Console.WriteLine("Program started. Enter the file path to import data from. ");
             string location = TextWriter.askLocation(1);
+
+            DataController import = new DataController();
             ObservationSet observations =  import.importExamples(location);
 
 
@@ -25,10 +28,17 @@ namespace DecisionTrees
             string catchinput = TextWriter.askLocation(3);
             bool catcherror = (catchinput == "TRUE");
 
+
+            // Prepare outputting
             TextWriter writer = new TextWriter(location);
+            ThoughtsManager thoughts = new ThoughtsManager();
+            string model_filename = "decisiontree.txt";
+            string drawing_filename = "drawing.txt";
+            string thoughts_filename = "thoughts.csv";
+
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
-            Agent agent = new ID3Agent(writer);
+            Agent agent = new ID3Agent(thoughts);
 
             Console.WriteLine("TELL");
             agent.TELL(observations); 
@@ -48,7 +58,7 @@ namespace DecisionTrees
                 catch (Exception e)
                 {
                     Console.WriteLine("Encountered an error! Writing output and model anyways.");
-                    writer.write();
+                    writer.filesave_string(thoughts_filename, thoughts.output());
                     throw (e);
                 }
             } else
@@ -56,14 +66,15 @@ namespace DecisionTrees
                 model = agent.TRAIN();
             }
             Console.WriteLine("Training completed. Processing thoughts.");
-            writer.write();
+            writer.filesave_string(thoughts_filename, thoughts.output());
 
             Console.WriteLine("Thoughts processed. Processing model.");
-            ModelManager.save(model, location);
+            writer.filesave_lines(model_filename, ModelManager.output(model));
 
             Console.WriteLine("Model saved. Saving image.");
-            Drawing drawer = new Drawing(model);
-            File.WriteAllLines(location + "drawing.txt", drawer.lines());
+
+            DrawManager drawing = new DrawManager(model);
+            writer.filesave_lines(drawing_filename, drawing.lines());
             Console.WriteLine("Image saved.");
             Console.ReadKey(true);
             

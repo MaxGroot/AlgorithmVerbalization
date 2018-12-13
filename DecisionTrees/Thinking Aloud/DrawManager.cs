@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class Drawing
+    class DrawManager
     {
         private DecisionTree tree;
         private int el_counter;
         private int lowest_x, highest_x, highest_y;
-        public Drawing(DecisionTree tree)
+        public DrawManager(DecisionTree tree)
         {
             this.tree = tree;
             el_counter = 0;
@@ -84,7 +84,6 @@ namespace DecisionTrees
             List<DrawElement> leaf_babies = new List<DrawElement>();
 
             int i = 0;
-            int character_width = 0;
             foreach(Node baby in node.getNodeChildren())
             {
                 el_counter++;

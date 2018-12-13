@@ -8,7 +8,7 @@ namespace DecisionTrees
 {
     class ModelManager
     {
-        public static void save(DecisionTree tree, string location)
+        public static List<string> output(DecisionTree tree)
         {
             List<string> output_lines = new List<string>();
             List<Node> queue = new List<Node>();
@@ -19,7 +19,7 @@ namespace DecisionTrees
                 iterate(ref queue, ref output_lines);
             }
 
-             System.IO.File.WriteAllLines(location + "decisiontree.txt", output_lines.ToArray());
+            return output_lines;
         }
 
 

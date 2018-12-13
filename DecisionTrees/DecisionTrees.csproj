@@ -42,8 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Thinking Aloud\Outputs\DrawElement.cs" />
-    <Compile Include="Thinking Aloud\Outputs\Drawing.cs" />
+    <Compile Include="Thinking Aloud\Drawing\DrawElement.cs" />
+    <Compile Include="Thinking Aloud\DrawManager.cs" />
+    <Compile Include="Thinking Aloud\ThoughtsManager.cs" />
     <Compile Include="Training Agents\Algorithm.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />
     <Compile Include="Training Agents\Instances\ID3\ID3Algorithm.cs" />

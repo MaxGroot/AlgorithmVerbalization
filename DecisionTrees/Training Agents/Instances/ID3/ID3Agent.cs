@@ -16,7 +16,7 @@ namespace DecisionTrees
             throw new NotImplementedException();
         }
 
-        public ID3Agent(TextWriter writer): base(writer)
+        public ID3Agent(ThoughtsManager thoughts): base(thoughts)
         {
 
         }
