@@ -8,13 +8,13 @@ namespace DecisionTrees
 {
     class DrawElement
     {
-        public char character;
+        public string label;
         public int x, y;
         public Node node;
 
-        public DrawElement(Node node, char character, int x, int y)
+        public DrawElement(Node node, string label, int x, int y)
         {
-            this.character = character;
+            this.label = label;
             this.node = node;
             this.x = x;
             this.y = y;
