@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace DecisionTrees
 {
@@ -62,8 +63,8 @@ namespace DecisionTrees
 
             Console.WriteLine("Model saved. Saving image.");
             Drawing drawer = new Drawing(model);
-            drawer.lines();
-
+            File.WriteAllLines(location + "drawing.txt", drawer.lines());
+            Console.WriteLine("Image saved.");
             Console.ReadKey(true);
             
         }

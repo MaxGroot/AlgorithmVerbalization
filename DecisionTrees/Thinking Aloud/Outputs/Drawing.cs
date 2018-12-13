@@ -10,18 +10,20 @@ namespace DecisionTrees
     {
         private DecisionTree tree;
         private int el_counter;
+        private int lowest_x, highest_x, highest_y;
         public Drawing(DecisionTree tree)
         {
             this.tree = tree;
             el_counter = 0;
+            lowest_x = 0;
+            highest_x = 0;
+            highest_y = 0;
         }
 
         public List<string> lines()
         {
             List<string> lines = new List<string>();
             List<DrawElement> all_elements = new List<DrawElement>();
-
-            DrawElement[,] raster = new DrawElement[,] { };
 
             List<DrawElement> queue = new List<DrawElement>();
 
@@ -36,19 +38,37 @@ namespace DecisionTrees
             // Iterate!
             while (queue.Count > 0)
             {
-                iterate(ref queue, ref raster, ref all_elements);
+                iterate(ref queue, ref all_elements);
             }
-
+            Console.WriteLine($"HOI {lowest_x}");
+            Console.WriteLine($"DOEI {highest_x}");
+            Console.WriteLine($"KOE {highest_y}");
             foreach(DrawElement el in all_elements)
             {
-                Console.WriteLine($"({el.x}, {el.y}) : {el.label}"); 
+                el.x += Math.Abs(this.lowest_x);
+            }
+            highest_x += Math.Abs(lowest_x);
+            // Each element now knows it's own position. They are placed in a minimal raster that starts at 0,0. 
+            // We loop through them and write it in lines.
+            for(int j=0; j<=highest_y; j+=1)
+            {
+                lines.Add(new string('-', highest_x+1));
+            }
+            foreach (DrawElement el in all_elements)
+            {
+                StringBuilder b = new StringBuilder(lines[el.y]);
+                Console.WriteLine($"{el.x}");
+                Console.WriteLine($"{el.label}");
+                Console.WriteLine(b.ToString());
+                b[el.x] = el.label[0];
+                lines[el.y] = b.ToString();
             }
 
 
             return lines;
         }
 
-        private void iterate(ref List<DrawElement> queue, ref DrawElement[,] raster, ref List<DrawElement> all_elements)
+        private void iterate(ref List<DrawElement> queue, ref List<DrawElement> all_elements)
         {
             // Manage queue
             Node node = queue[0].node;
@@ -76,11 +96,14 @@ namespace DecisionTrees
                 el_counter++;
                 int x = currentX;
                 x += (i - side_offset);
-
+                
                 int y = currentY + 1;
 
                 Console.WriteLine($"Nodebaby on {x} , {y}: {el_counter}");
                 DrawElement el = new DrawElement(baby, $"N{el_counter}", x, y);
+
+                update_coordinate_variables(el.x, el.y);
+
                 node_babies.Add(el);
 
                 i++;
@@ -90,11 +113,15 @@ namespace DecisionTrees
                 el_counter++;
                 int x = currentX;
                 x += (i - side_offset);
+                
                 int y = currentY + 1;
 
 
                 Console.WriteLine($"Leafbaby on {x}, {y}: {el_counter}");
                 DrawElement el = new DrawElement(null, $"L{el_counter}", x, y);
+
+                update_coordinate_variables(el.x, el.y);
+
                 leaf_babies.Add(el);
 
                 i++;
@@ -118,13 +145,31 @@ namespace DecisionTrees
                 if (el.x < x_threshold)
                 {
                     el.x -= side_offset;
+                    update_coordinate_variables(el.x, el.y);
                     Console.WriteLine($"Moved {el.label} left");
                 }
                 if (el.x > x_threshold)
                 {
                     el.x += side_offset;
+                    update_coordinate_variables(el.x, el.y);
                     Console.WriteLine($"Moved {el.label} right");
                 }
+            }
+        }
+
+        private void update_coordinate_variables(int x, int y)
+        {
+            if (x < this.lowest_x)
+            {
+                this.lowest_x = x;
+            }
+            if (x > this.highest_x)
+            {
+                this.highest_x = x;
+            }
+            if (y > this.highest_y)
+            {
+                this.highest_y = y;
             }
         }
         
