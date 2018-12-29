@@ -1,0 +1,24 @@
+
+Gegeven een node in een line
+
+Boven zijn lien: Value_splitter
+Op zijn line: N:label
+Onder zijn line: Value_splitter van de volgende
+
+Dus in element is het value_splitter, label
+
+Gegeven een leaf in een line
+
+Boven zijn line: Value_splitter
+Op zijn line: L:Classifier 
+Onder zijn line: Onbekend
+
+Dus in element is het value_splitter, classifier
+
+Dus currentY+1 --> Value_splitter
+Dus currentY+2 --> Label of classifier
+
+
+
+CurrentX: Midden van de BOI
+Line, loop van offset

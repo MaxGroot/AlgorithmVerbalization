@@ -8,16 +8,18 @@ namespace DecisionTrees
 {
     class DrawElement
     {
-        public string label;
         public int x, y;
         public Node node;
-
-        public DrawElement(Node node, string label, int x, int y)
+        public string line;
+        public string underline;
+        public DrawElement(Node node, string line, string underline, int x, int y)
         {
-            this.label = label;
             this.node = node;
             this.x = x;
             this.y = y;
+            this.line = line;
+            this.underline = underline;
         }
+        
     }
 }
