@@ -122,7 +122,7 @@ namespace DecisionTrees
                 int x = currentX;
                 x += (i - child_offset);
                 int y = currentY + 2;
-                DrawElement el = new DrawElement(baby, oddsize(baby.label) , oddsize(baby.value_splitter) , x, y);
+                DrawElement el = new DrawElement(baby, oddsize(baby.value_splitter) , oddsize(baby.label) , x, y);
                 
                 // Since we know this baby will be added to the queue later on and will be iterated upon
                 // we do not need to add its width to the offset now.
@@ -239,9 +239,9 @@ namespace DecisionTrees
             }
             for(int i= 0; i<el.underline.Length; i++)
             {
-                Console.WriteLine($"{el.x} - {offset_line}");
-                Console.WriteLine($"Writing to underline {el.x - offset_line + i} with {i} from {el.underline}");
-                underlineB[el.x - offset_line + i] = el.underline[i];
+                Console.WriteLine($"{el.x} - {offset_underline}");
+                Console.WriteLine($"Writing to underline {el.x - offset_underline + i} with {i} from {el.underline}");
+                underlineB[el.x - offset_underline + i] = el.underline[i];
             }
 
             return new string[] { lineB.ToString(), underlineB.ToString()};
