@@ -83,7 +83,9 @@ namespace DecisionTrees
                 {
                     el = new DrawElement(null, baby.line(), baby.underline(), x, y);
                 }
+
                 move_other_elements(ref all_elements, x, added_width(oddsize(baby.line()), oddsize(baby.underline())));
+
                 all_elements.Add(el);
 
                 outputImage(generate_image_from_elements(all_elements));
@@ -95,6 +97,7 @@ namespace DecisionTrees
         // Move other elements aside with a certain amount according to if they are left or right of the given threshold.
         private void move_other_elements(ref List<DrawElement> all_elements, int x_threshold, int movement)
         {
+            Console.WriteLine($"MOVE {x_threshold} : {movement}");
             foreach(DrawElement el in all_elements)
             {
                 if (el.x < x_threshold)
@@ -112,6 +115,10 @@ namespace DecisionTrees
                     el.x += movement;
                     update_coordinate_variables(el.x, el.y);
                 }
+            }
+            foreach(DrawElement el in all_elements)
+            {
+                Console.WriteLine($"[{el.line}-{el.underline}]: ({el.x},{el.y})");
             }
         }
 
