@@ -62,53 +62,32 @@ namespace DecisionTrees
             int child_offset = (int)Math.Floor( (double) (children_count / 2));
 
             // Added width is width taken up by the labels and value_splitters of this node and its leafchildren. 
-            int child_width = 0; 
+            int child_width = 0;
 
             List<DrawElement> node_babies = new List<DrawElement>();
-            List<DrawElement> leaf_babies = new List<DrawElement>();
-
             int i = 0;
-            
-            foreach(Node baby in node.getNodeChildren())
+            int extra_width = 0;
+            foreach(ITreeElement baby in node.getAllChildren())
             {
-                el_counter++;
+                // Determine coordinates
                 int x = currentX;
-                x += (i - child_offset);
+                x += (i - child_offset) + extra_width;
                 int y = currentY + 2;
-                DrawElement el = new DrawElement(baby, oddsize(baby.value_splitter) , oddsize(baby.label) , x, y);
-                
-                // Since we know this baby will be added to the queue later on and will be iterated upon
-                // we do not need to add its width to the offset now.
-                node_babies.Add(el);
 
+                DrawElement el = null;
+                if (baby is Node)
+                {
+                    el = new DrawElement((Node) baby, baby.line(), baby.underline(), x, y);
+                    node_babies.Add(el);
+                }
+                else
+                {
+                    el = new DrawElement(null, baby.line(), baby.underline(), x, y);
+                }
+                move_other_elements(ref all_elements, x, added_width(oddsize(baby.line()), oddsize(baby.underline())));
+                all_elements.Add(el);
                 i++;
             }
-            foreach(Leaf baby in node.getLeafChildren())
-            {
-                el_counter++;
-                int x = currentX;
-                x += (i - child_offset);
-                int y = currentY + 2;
-                DrawElement el = new DrawElement(null, oddsize(baby.value_splitter), oddsize(baby.classifier), x, y);
-                
-                // This leaf directly adds to its parents width usage, so we will calculate how much and add it to side offset. 
-                child_width += added_width(oddsize(baby.value_splitter), oddsize(baby.classifier));
-                leaf_babies.Add(el);
-
-                i++;
-            }
-
-            // Total space occupied by the just handled node is side_offset
-            // Babies are made, lets now move up existing drawelements.
-            Console.WriteLine($"[Post-Birth] : Move elements with {child_width}");
-
-            move_other_elements(ref all_elements, currentX, child_width);
-            // Add the babies to the all elements
-            all_elements.AddRange(node_babies);
-            all_elements.AddRange(leaf_babies);
-            
-            outputImage(generate_image_from_elements(all_elements));
-
             queue.AddRange(node_babies);
         }
 
@@ -255,7 +234,7 @@ namespace DecisionTrees
                 string l = "";
                 for(int z= 0; z<= highest_x; z++)
                 {
-                    l += (z % 10).ToString();
+                    l += " ";
                 }
                 lines.Add(l);
             }
