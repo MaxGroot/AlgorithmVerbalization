@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    public class Node
+    public class Node: ITreeElement
     {
 
         public string label;
@@ -66,6 +66,20 @@ namespace DecisionTrees
         {
             return this.leafChildren;
         }
-
+        public string line()
+        {
+            return this.value_splitter;
+        }
+        public string underline()
+        {
+            return this.label;
+        }
+        public List<ITreeElement> getAllChildren()
+        {
+            List<ITreeElement> ret = new List<ITreeElement>();
+            ret.AddRange(this.getLeafChildren());
+            ret.AddRange(this.getNodeChildren());
+            return ret;
+        }
     }
 }

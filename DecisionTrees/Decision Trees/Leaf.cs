@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    public class Leaf
+    public class Leaf: ITreeElement
     {
         public string value_splitter;
         public string classifier;
@@ -26,6 +26,23 @@ namespace DecisionTrees
             
             rule += " THEN " + targetAttribute + " = " + this.classifier;
             return rule;
+        }
+
+        public string line()
+        {
+            return this.value_splitter;
+        }
+        public string underline()
+        {
+            return this.classifier;
+        }
+        public List<Node> nodechildren()
+        {
+            return new List<Node>();
+        }
+        public List<Leaf> leafchildren()
+        {
+            return new List<Leaf>();
         }
     }
 }

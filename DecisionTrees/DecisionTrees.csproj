@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decision Trees\ITreeElement.cs" />
     <Compile Include="Output\Drawing\DrawElement.cs" />
     <Compile Include="Output\Drawing\DrawManager.cs" />
     <Compile Include="Output\Thinking Aloud\ThoughtsManager.cs" />
