@@ -22,7 +22,6 @@ namespace DecisionTrees
 
         public List<string> lines()
         {
-            List<string> lines = new List<string>();
             List<DrawElement> all_elements = new List<DrawElement>();
 
             List<DrawElement> queue = new List<DrawElement>();
@@ -40,48 +39,8 @@ namespace DecisionTrees
             {
                 iterate(ref queue, ref all_elements);
             }
-            // We don't want negative X values so we move all elements to the right with the difference to 0 of the most leftwards element.
-            foreach(DrawElement el in all_elements)
-            {
-                el.x += Math.Abs(this.lowest_x);
-            }
 
-            // All elements have at least x 0 but that might not have enough spacing for the labels they have.
-            foreach(DrawElement el in all_elements)
-            {
-                int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
-                while (el.x - my_offside < 0)
-                {
-                    move_other_elements(ref all_elements, el.x, 1);
-                }
-                Console.WriteLine($"Line: {el.line}, {el.underline}");
-            }
-
-            // Adjust the variable of highest X. 
-            highest_x += Math.Abs(lowest_x);
-
-            // Adjust for the width of the longest length label?
-            //TODO: Make this something thats not just easy.
-            highest_x += 10;
-
-            // Adjust for the labels on the left?
-
-
-            // Each element now knows it's own position. They are placed in a raster that starts at 0,0. 
-            // We loop through them and write it in lines.
-            for(int j=0; j<=highest_y+10; j+=1)
-            {
-                lines.Add(new string(' ', highest_x+1));
-            }
-            foreach (DrawElement el in all_elements)
-            {
-                string[] updated_lines = insert_element_into_lines(lines[el.y], lines[el.y + 1], el);
-                lines[el.y] = updated_lines[0];
-                lines[el.y+1] = updated_lines[1];
-            }
-
-
-            return lines;
+            return generate_image_from_elements(all_elements);
         }
 
         private void iterate(ref List<DrawElement> queue, ref List<DrawElement> all_elements)
@@ -245,6 +204,54 @@ namespace DecisionTrees
             }
 
             return new string[] { lineB.ToString(), underlineB.ToString()};
+        }
+
+        private List<string> generate_image_from_elements(List<DrawElement> all_elements)
+        {
+            List<string> lines = new List<string>();
+
+            // We don't want negative X values so we move all elements to the right with the difference to 0 of the most leftwards element.
+            foreach (DrawElement el in all_elements)
+            {
+                el.x += Math.Abs(this.lowest_x);
+            }
+
+            // All elements have at least x 0 but that might not have enough spacing for the labels they have.
+            foreach (DrawElement el in all_elements)
+            {
+                int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
+                while (el.x - my_offside < 0)
+                {
+                    move_other_elements(ref all_elements, el.x, 1);
+                }
+                Console.WriteLine($"Line: {el.line}, {el.underline}");
+            }
+
+            // Adjust the variable of highest X. 
+            highest_x += Math.Abs(lowest_x);
+
+            // Adjust for the width of the longest length label?
+            //TODO: Make this something thats not just easy.
+            highest_x += 10;
+
+            // Adjust for the labels on the left?
+
+
+            // Each element now knows it's own position. They are placed in a raster that starts at 0,0. 
+            // We loop through them and write it in lines.
+            for (int j = 0; j <= highest_y + 10; j += 1)
+            {
+                lines.Add(new string(' ', highest_x + 1));
+            }
+            foreach (DrawElement el in all_elements)
+            {
+                string[] updated_lines = insert_element_into_lines(lines[el.y], lines[el.y + 1], el);
+                lines[el.y] = updated_lines[0];
+                lines[el.y + 1] = updated_lines[1];
+            }
+
+
+            return lines;
         }
     }
 }
