@@ -68,13 +68,7 @@ namespace DecisionTrees
             List<DrawElement> leaf_babies = new List<DrawElement>();
 
             int i = 0;
-            // Move all elements aside with the label / value_splitter size of this element. 
-            int my_width = added_width(oddsize(node.label), oddsize(node.value_splitter));
-
-            Console.WriteLine($"[Pre-Birth][{node.value_splitter}-{node.label}] : Move elements with {my_width}");
-            move_other_elements(ref all_elements, currentX, my_width);
-            outputImage(generate_image_from_elements(all_elements));
-
+            
             foreach(Node baby in node.getNodeChildren())
             {
                 el_counter++;
@@ -258,7 +252,12 @@ namespace DecisionTrees
             // We loop through them and write it in lines.
             for (int j = 0; j <= highest_y + 10; j += 1)
             {
-                lines.Add(new string(' ', highest_x + 1));
+                string l = "";
+                for(int z= 0; z<= highest_x; z++)
+                {
+                    l += (z % 10).ToString();
+                }
+                lines.Add(l);
             }
             foreach (DrawElement el in all_elements)
             {
