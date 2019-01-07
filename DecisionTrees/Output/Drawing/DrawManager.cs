@@ -71,7 +71,7 @@ namespace DecisionTrees
             // Move all elements aside with the label / value_splitter size of this element. 
             int my_width = added_width(oddsize(node.label), oddsize(node.value_splitter));
 
-            Console.WriteLine($"[Pre-Birth] : Move elements with {my_width}");
+            Console.WriteLine($"[Pre-Birth][{node.value_splitter}-{node.label}] : Move elements with {my_width}");
             move_other_elements(ref all_elements, currentX, my_width);
             outputImage(generate_image_from_elements(all_elements));
 
@@ -107,6 +107,7 @@ namespace DecisionTrees
             // Total space occupied by the just handled node is side_offset
             // Babies are made, lets now move up existing drawelements.
             Console.WriteLine($"[Post-Birth] : Move elements with {child_width}");
+
             move_other_elements(ref all_elements, currentX, child_width);
             // Add the babies to the all elements
             all_elements.AddRange(node_babies);
@@ -229,7 +230,11 @@ namespace DecisionTrees
                 int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
                 while (el.x - my_offside < 0)
                 {
-                    move_other_elements(ref all_elements, el.x, 1);
+                    foreach(DrawElement inner_element in all_elements)
+                    {
+                        inner_element.x += 1;
+                        update_coordinate_variables(inner_element.x, inner_element.y);
+                    }
                 }
             }
 
@@ -237,8 +242,14 @@ namespace DecisionTrees
             highest_x += Math.Abs(lowest_x);
 
             // Adjust for the width of the longest length label?
-            //TODO: Make this something thats not just easy.
-            highest_x += 10;
+            foreach(DrawElement el in all_elements)
+            {
+                int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
+                if (el.x + my_offside > highest_x)
+                {
+                    highest_x = el.x + my_offside;
+                }
+            }
 
             // Adjust for the labels on the left?
 
