@@ -70,8 +70,10 @@ namespace DecisionTrees
             int i = 0;
             // Move all elements aside with the label / value_splitter size of this element. 
             int my_width = added_width(oddsize(node.label), oddsize(node.value_splitter));
-            
+
+            Console.WriteLine($"[Pre-Birth] : Move elements with {my_width}");
             move_other_elements(ref all_elements, currentX, my_width);
+            outputImage(generate_image_from_elements(all_elements));
 
             foreach(Node baby in node.getNodeChildren())
             {
@@ -104,12 +106,13 @@ namespace DecisionTrees
 
             // Total space occupied by the just handled node is side_offset
             // Babies are made, lets now move up existing drawelements.
-            Console.WriteLine($"Move elements with {child_width}");
+            Console.WriteLine($"[Post-Birth] : Move elements with {child_width}");
             move_other_elements(ref all_elements, currentX, child_width);
-            
             // Add the babies to the all elements
             all_elements.AddRange(node_babies);
             all_elements.AddRange(leaf_babies);
+            
+            outputImage(generate_image_from_elements(all_elements));
 
             queue.AddRange(node_babies);
         }
@@ -260,6 +263,14 @@ namespace DecisionTrees
             this.highest_y = old_high_y;
 
             return lines;
+        }
+
+        private void outputImage(List<string> lines)
+        {
+            foreach(string l in lines)
+            {
+                Console.WriteLine(l);
+            }
         }
     }
 }
