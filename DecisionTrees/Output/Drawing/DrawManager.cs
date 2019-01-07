@@ -66,12 +66,11 @@ namespace DecisionTrees
 
             List<DrawElement> node_babies = new List<DrawElement>();
             int i = 0;
-            int extra_width = 0;
             foreach(ITreeElement baby in node.getAllChildren())
             {
                 // Determine coordinates
                 int x = currentX;
-                x += (i - child_offset) + extra_width;
+                x += (i - child_offset);
                 int y = currentY + 2;
 
                 DrawElement el = null;
@@ -86,7 +85,9 @@ namespace DecisionTrees
                 }
                 move_other_elements(ref all_elements, x, added_width(oddsize(baby.line()), oddsize(baby.underline())));
                 all_elements.Add(el);
-                i++;
+
+                outputImage(generate_image_from_elements(all_elements));
+                i+=2;
             }
             queue.AddRange(node_babies);
         }
