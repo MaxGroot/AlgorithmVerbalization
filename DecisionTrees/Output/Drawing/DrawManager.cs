@@ -39,7 +39,6 @@ namespace DecisionTrees
             {
                 iterate(ref queue, ref all_elements);
             }
-
             return generate_image_from_elements(all_elements);
         }
 
@@ -71,8 +70,7 @@ namespace DecisionTrees
             int i = 0;
             // Move all elements aside with the label / value_splitter size of this element. 
             int my_width = added_width(oddsize(node.label), oddsize(node.value_splitter));
-
-            Console.WriteLine($"Nodestart move with {my_width}");
+            
             move_other_elements(ref all_elements, currentX, my_width);
 
             foreach(Node baby in node.getNodeChildren())
@@ -108,7 +106,7 @@ namespace DecisionTrees
             // Babies are made, lets now move up existing drawelements.
             Console.WriteLine($"Move elements with {child_width}");
             move_other_elements(ref all_elements, currentX, child_width);
-
+            
             // Add the babies to the all elements
             all_elements.AddRange(node_babies);
             all_elements.AddRange(leaf_babies);
@@ -192,30 +190,36 @@ namespace DecisionTrees
 
             for(int i = 0; i<el.line.Length; i++)
             {
-                Console.WriteLine($"{el.x} - {offset_line}");
-                Console.WriteLine($"Writing to {el.x - offset_line + i} with {i} from {el.line}");
                 lineB[el.x - offset_line + i] = el.line[i];
             }
             for(int i= 0; i<el.underline.Length; i++)
             {
-                Console.WriteLine($"{el.x} - {offset_underline}");
-                Console.WriteLine($"Writing to underline {el.x - offset_underline + i} with {i} from {el.underline}");
                 underlineB[el.x - offset_underline + i] = el.underline[i];
             }
 
             return new string[] { lineB.ToString(), underlineB.ToString()};
         }
 
-        private List<string> generate_image_from_elements(List<DrawElement> all_elements)
+        private List<string> generate_image_from_elements(List<DrawElement> input_elements)
         {
             List<string> lines = new List<string>();
+            List<DrawElement> all_elements = new List<DrawElement>();
+
+            // Running this code will affect the following instance variables. We will roll them back after the image generation is done. 
+            int old_low_x = lowest_x;
+            int old_high_x = highest_x;
+            int old_high_y = highest_y;
+
+            foreach (DrawElement el in input_elements)
+            {
+                all_elements.Add(DrawElement.Copy(el));
+            }
 
             // We don't want negative X values so we move all elements to the right with the difference to 0 of the most leftwards element.
             foreach (DrawElement el in all_elements)
             {
-                el.x += Math.Abs(this.lowest_x);
+                el.x += Math.Abs(lowest_x);
             }
-
             // All elements have at least x 0 but that might not have enough spacing for the labels they have.
             foreach (DrawElement el in all_elements)
             {
@@ -224,7 +228,6 @@ namespace DecisionTrees
                 {
                     move_other_elements(ref all_elements, el.x, 1);
                 }
-                Console.WriteLine($"Line: {el.line}, {el.underline}");
             }
 
             // Adjust the variable of highest X. 
@@ -249,7 +252,12 @@ namespace DecisionTrees
                 lines[el.y] = updated_lines[0];
                 lines[el.y + 1] = updated_lines[1];
             }
-
+            lines.Insert(0, new string('-', highest_x + 1));
+            lines.Add(new string('-', highest_x + 1));
+            // Rollback instance variables.
+            this.highest_x = old_high_x;
+            this.lowest_x = old_low_x;
+            this.highest_y = old_high_y;
 
             return lines;
         }

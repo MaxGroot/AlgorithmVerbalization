@@ -21,5 +21,9 @@ namespace DecisionTrees
             this.underline = underline;
         }
         
+        static public DrawElement Copy(DrawElement el)
+        {
+            return new DrawElement(el.node, el.line, el.underline, el.x, el.y);
+        }
     }
 }
