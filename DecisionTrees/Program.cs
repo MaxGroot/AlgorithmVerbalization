@@ -13,24 +13,21 @@ namespace DecisionTrees
         {
             Console.WriteLine("Good Day!");
 
+            // Create our file handler
+            TextWriter writer = new TextWriter();
+
             // Ask the important questions.
-            Console.WriteLine("Program started. Enter the file path to import data from. ");
-            string location = TextWriter.askLocation(1);
+            string location = writer.askFromConfig("Program started. Enter the file path to import data from. ", "GENERAL", "input-location");
 
             DataController import = new DataController();
             ObservationSet observations =  import.importExamples(location);
+            
+            location = writer.askFromConfig("Enter the directory to export data to. ", "GENERAL", "export-location");
 
-
-            Console.WriteLine("Enter the directory to export data to. ");
-            location = TextWriter.askLocation(2);
-
-            Console.WriteLine("Catch error and output?");
-            string catchinput = TextWriter.askLocation(3);
+            string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
 
 
-            // Prepare outputting
-            TextWriter writer = new TextWriter(location);
             ThoughtsManager thoughts = new ThoughtsManager();
             string model_filename = "decisiontree.txt";
             string drawing_filename = "drawing.txt";

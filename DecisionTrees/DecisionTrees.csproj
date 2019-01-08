@@ -45,6 +45,7 @@
     <Compile Include="Decision Trees\ITreeElement.cs" />
     <Compile Include="Output\Drawing\DrawElement.cs" />
     <Compile Include="Output\Drawing\DrawManager.cs" />
+    <Compile Include="Output\IniFile.cs" />
     <Compile Include="Output\Thinking Aloud\ThoughtsManager.cs" />
     <Compile Include="Training Agents\Algorithm.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />

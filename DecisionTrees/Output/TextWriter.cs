@@ -9,52 +9,52 @@ namespace DecisionTrees
 {
     class TextWriter
     {
-        private string location;
+        private string save_location = "";
+        private IniFile ini;
 
-        public TextWriter(string location)
+        public TextWriter()
         {
-            this.location = location;
+            string directory = System.AppDomain.CurrentDomain.BaseDirectory + "../../../";
+            string my_path = directory + "env.ini";
+            if (!System.IO.File.Exists(my_path))
+            {
+                my_path = directory + "config.ini";
+                if (!System.IO.File.Exists(my_path))
+                {
+                    Console.WriteLine(my_path);
+                    throw new Exception("Neither an environment configuration or a default configuration file found.");
+                }
+                Console.WriteLine("Env file could not be found, switching to default configuration instead.");
+            }
+            this.ini = new IniFile(my_path);
         }
-
+        
         public void filesave_string(string filename, string output)
         {
-            File.WriteAllText(location + filename, output);
+            File.WriteAllText(save_location + filename, output);
         }
 
         public void filesave_lines(string filename, List<string> lines)
         {
-            File.WriteAllLines(location + filename, lines.ToArray());
+            File.WriteAllLines(save_location + filename, lines.ToArray());
         }
 
-        public static string askLocation(int output_line)
+        public void set_location(string location)
         {
-            string ask = Console.ReadLine();
-            if (ask == "")
+            this.save_location = location;
+        }
+
+        public string askFromConfig(string question, string section, string key)
+        {
+            Console.WriteLine(question);
+            string config = this.ini.Read(key, section);
+            Console.WriteLine($"Press enter for {config}");
+            string input = Console.ReadLine();
+            if (input == "")
             {
-                string my_path = System.AppDomain.CurrentDomain.BaseDirectory + "../../../";
-
-                if (!System.IO.File.Exists(my_path + ".env"))
-                {
-                    Console.WriteLine(my_path + ".env");
-                    throw new Exception("No input supplied but no env file found either");
-                }
-
-                var sr = new StreamReader(my_path + ".env");
-
-                for (int i = 1; i <= output_line; i++)
-                {
-                    string this_line = sr.ReadLine();
-
-                    if (i == output_line)
-                    {
-                        return this_line;
-                    }
-                }
-
-                throw new Exception("Env file did not contain specified line");
-
+                return config;
             }
-            return ask;
+            return input;
         }
     }
 }

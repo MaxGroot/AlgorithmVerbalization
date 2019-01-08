@@ -261,4 +261,4 @@ __pycache__/
 *.pyc
 
 # Additions for CSV import
-.env
+env.ini
