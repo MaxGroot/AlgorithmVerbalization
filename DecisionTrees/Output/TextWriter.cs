@@ -46,15 +46,16 @@ namespace DecisionTrees
 
         public string askFromConfig(string question, string section, string key)
         {
-            Console.WriteLine(question);
             string config = this.ini.Read(key, section);
-            Console.WriteLine($"Press enter for {config}");
-            string input = Console.ReadLine();
-            if (input == "")
+            
+            if (config == "" || section == "ASK ON STARTUP")
             {
-                return config;
+                question = (config == "") ? question : question + " Press ENTER for [" + config + "]";
+                Console.WriteLine(question);
+                string input = Console.ReadLine();
+                return (input == "") ? config : input;
             }
-            return input;
+            return config;
         }
     }
 }
