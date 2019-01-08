@@ -27,9 +27,14 @@ namespace DecisionTrees
             List<DrawElement> queue = new List<DrawElement>();
 
             // Create the root
-            DrawElement root_element = new DrawElement(tree.getRoot(), "" , tree.getRoot().label, 0, 0);
+            int root_x = calculate_line_length(tree.getRoot().label);
+            DrawElement root_element = new DrawElement(tree.getRoot(), "" , tree.getRoot().label, root_x, 0);
+            update_coordinate_variables(root_x, 0);
+
             all_elements.Add(root_element);
 
+            Console.WriteLine("Starting situation:");
+            outputImage(generate_image_from_elements(all_elements));
             // Add the root's kids to the queue.
             queue.Add(root_element);
 
@@ -45,9 +50,11 @@ namespace DecisionTrees
         private void iterate(ref List<DrawElement> queue, ref List<DrawElement> all_elements)
         {
             // Manage queue
-            Node node = queue[0].node;
-            int currentX = queue[0].x;
-            int currentY = queue[0].y;
+
+            DrawElement parent_element = queue[0];
+            Node node = parent_element.node;
+            int currentX = parent_element.x;
+            int currentY = parent_element.y;
             
             queue.RemoveAt(0);
 
@@ -61,15 +68,12 @@ namespace DecisionTrees
             // It depends on the amount of children it will have. 4 --> 2 , 5 --> 2
             int child_offset = (int)Math.Floor( (double) (children_count / 2));
 
-            // Added width is width taken up by the labels and value_splitters of this node and its leafchildren. 
-            int child_width = 0;
-
             List<DrawElement> node_babies = new List<DrawElement>();
             int i = 0;
-            foreach(ITreeElement baby in node.getAllChildren())
+            foreach (ITreeElement baby in node.getAllChildren())
             {
                 // Determine coordinates
-                int x = currentX;
+                int x = parent_element.x;
                 x += (i - child_offset);
                 int y = currentY + 2;
 
@@ -84,12 +88,12 @@ namespace DecisionTrees
                     el = new DrawElement(null, baby.line(), baby.underline(), x, y);
                 }
 
-                move_other_elements(ref all_elements, x, added_width(oddsize(baby.line()), oddsize(baby.underline())));
+                move_other_elements(ref all_elements, x, calculate_width_oneside(oddsize(baby.line()), oddsize(baby.underline())));
 
                 all_elements.Add(el);
 
                 outputImage(generate_image_from_elements(all_elements));
-                i+=2;
+                i+=1;
             }
             queue.AddRange(node_babies);
         }
@@ -106,11 +110,6 @@ namespace DecisionTrees
                     update_coordinate_variables(el.x, el.y);
                 }
                 if (el.x > x_threshold)
-                {
-                    el.x += movement;
-                    update_coordinate_variables(el.x, el.y);
-                }
-                if (el.x == x_threshold)
                 {
                     el.x += movement;
                     update_coordinate_variables(el.x, el.y);
@@ -152,34 +151,22 @@ namespace DecisionTrees
             }
             return input;
         }
-
-        // Returns the highest added width of a collection of strings. 
-        private int added_width(string a, string b)
-        {
-            int[] values = {    (int)Math.Floor((double)(a.Length / 2)),
-                                (int)Math.Floor((double)(b.Length / 2))
-                            };
-
-            return values.Max();
-            
-        }
-
+        
         // Given a line and an underline, insert the characters corresponding to the element into those lines at the correct positions.
         private string[] insert_element_into_lines(string line, string underline, DrawElement el)
         {
             StringBuilder lineB = new StringBuilder(line);
             StringBuilder underlineB = new StringBuilder(underline);
-
-            int offset_line = (int)Math.Floor((double)(el.line.Length / 2));
-            int offset_underline = (int)Math.Floor((double)el.underline.Length / 2);
-
+            int offset_underline = 0;
             for(int i = 0; i<el.line.Length; i++)
             {
-                lineB[el.x - offset_line + i] = el.line[i];
+                lineB[el.x + i] = el.line[i];
             }
+
+            int my_offside = calculate_line_length(el.underline);
             for(int i= 0; i<el.underline.Length; i++)
             {
-                underlineB[el.x - offset_underline + i] = el.underline[i];
+                underlineB[ el.x + (i - my_offside) ] = el.underline[i];
             }
 
             return new string[] { lineB.ToString(), underlineB.ToString()};
@@ -194,7 +181,6 @@ namespace DecisionTrees
             int old_low_x = lowest_x;
             int old_high_x = highest_x;
             int old_high_y = highest_y;
-
             foreach (DrawElement el in input_elements)
             {
                 all_elements.Add(DrawElement.Copy(el));
@@ -205,10 +191,11 @@ namespace DecisionTrees
             {
                 el.x += Math.Abs(lowest_x);
             }
-            // All elements have at least x 0 but that might not have enough spacing for the labels they have.
+            
+            // All elements have at least x 0 but that might not have enough spacing for the labels they have on the left side.
             foreach (DrawElement el in all_elements)
             {
-                int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
+                int my_offside = calculate_width_oneside(oddsize(el.line), oddsize(el.underline));
                 while (el.x - my_offside < 0)
                 {
                     foreach(DrawElement inner_element in all_elements)
@@ -225,15 +212,12 @@ namespace DecisionTrees
             // Adjust for the width of the longest length label?
             foreach(DrawElement el in all_elements)
             {
-                int my_offside = added_width(oddsize(el.line), oddsize(el.underline));
-                if (el.x + my_offside > highest_x)
+                int my_offside = calculate_width_oneside(oddsize(el.line), oddsize(el.underline));
+                if (el.x + my_offside + 1> highest_x)
                 {
-                    highest_x = el.x + my_offside;
+                    highest_x = el.x + my_offside + 1;
                 }
             }
-
-            // Adjust for the labels on the left?
-
 
             // Each element now knows it's own position. They are placed in a raster that starts at 0,0. 
             // We loop through them and write it in lines.
@@ -268,6 +252,22 @@ namespace DecisionTrees
             {
                 Console.WriteLine(l);
             }
+        }
+        private int calculate_width_oneside(string line, string underline)
+        {
+            // Returns the highest added width of a collection of strings. 
+
+            int[] values = {    calculate_line_length(line),
+                                calculate_line_length(underline),
+                            };
+
+                return values.Max();
+            
+        }
+
+        private int calculate_line_length(string line)
+        {
+            return (int)Math.Floor((double)(line.Length / 2));
         }
     }
 }
