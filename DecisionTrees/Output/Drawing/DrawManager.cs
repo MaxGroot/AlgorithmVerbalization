@@ -32,9 +32,7 @@ namespace DecisionTrees
             update_coordinate_variables(root_x, 0);
 
             all_elements.Add(root_element);
-
-            Console.WriteLine("Starting situation:");
-            outputImage(generate_image_from_elements(all_elements));
+            
             // Add the root's kids to the queue.
             queue.Add(root_element);
 
@@ -101,7 +99,6 @@ namespace DecisionTrees
         // Move other elements aside with a certain amount according to if they are left or right of the given threshold.
         private void move_other_elements(ref List<DrawElement> all_elements, int x_threshold, int movement)
         {
-            Console.WriteLine($"MOVE {x_threshold} : {movement}");
             foreach(DrawElement el in all_elements)
             {
                 if (el.x < x_threshold)
@@ -114,10 +111,6 @@ namespace DecisionTrees
                     el.x += movement;
                     update_coordinate_variables(el.x, el.y);
                 }
-            }
-            foreach(DrawElement el in all_elements)
-            {
-                Console.WriteLine($"[{el.line}-{el.underline}]: ({el.x},{el.y})");
             }
         }
 
