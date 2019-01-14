@@ -41,6 +41,7 @@ namespace DecisionTrees
             ObservationSet observations = import.importExamples(location);
 
             location = writer.askFromConfig("Enter the directory to export data to. ", "GENERAL", "export-location");
+            writer.set_location(location);
 
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
@@ -96,7 +97,35 @@ namespace DecisionTrees
 
         static void classify(TextWriter writer)
         {
-            Console.WriteLine("Classified.");
+            ModelLoader loader = new ModelLoader();
+
+            // Ask the important questions.
+            string model_location = writer.askFromConfig("Enter the file path to import the model from. ", "CLASSIFICATION", "model-location");
+            DecisionTree model = loader.load_model(model_location);
+
+            // Draw the just-loaded model.
+            DrawManager drawing = new DrawManager(model);
+            List<string> lines = drawing.lines();
+            foreach(string l in lines)
+            {
+                Console.WriteLine(l);
+            }
+
+            // Import the classification data.
+            string data_location = writer.askFromConfig("Enter the file path to import the data from. ", "CLASSIFICATION", "input-location");
+
+            DataController import = new DataController();
+            ObservationSet observations = import.importExamples(model_location);
+            
+            // Get ready for classification.
+            string export_location = writer.askFromConfig("Enter the directory to export data to. ", "CLASSIFICATION", "export-location");
+
+            Console.WriteLine("READY. Press a key to start classification process \n");
+            Console.ReadKey(true);
+
+            // loader.classify_set(observations);
+            Console.WriteLine("Job's done.");
+
         }
     }
 }
