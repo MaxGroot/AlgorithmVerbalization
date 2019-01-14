@@ -65,7 +65,7 @@ namespace DecisionTrees
         {
             int level = node_level(leaf.parent) + 1;
             string classifying_strength = leaf.isBestGuess ? "ESTIMATE" : "PERFECT";
-            return $"{level}-LEAF-{leaf.parent.label} = {leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
+            return $"{level}-LEAF-{leaf.parent.label}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
     }
 }

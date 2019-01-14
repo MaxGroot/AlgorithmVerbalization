@@ -28,35 +28,24 @@ namespace DecisionTrees
         {
             return this.target;
         }
-
-        public ObservationSet generateExamples()
-        {
-           
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "no").setProperty("humidity","high").setProperty("temperature","hot").setProperty("outlook", "sunny"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "no").setProperty("humidity", "high").setProperty("temperature", "hot").setProperty("outlook", "sunny"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "high").setProperty("temperature", "hot").setProperty("outlook", "overcast"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "high").setProperty("temperature", "mild").setProperty("outlook", "rain"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "cool").setProperty("outlook", "rain"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "no").setProperty("humidity", "normal").setProperty("temperature", "cool").setProperty("outlook", "rain"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "cool").setProperty("outlook", "overcast"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "no").setProperty("humidity", "high").setProperty("temperature", "mild").setProperty("outlook", "sunny"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "cool").setProperty("outlook", "sunny"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "mild").setProperty("outlook", "rain"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "mild").setProperty("outlook", "sunny"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "yes").setProperty("humidity", "high").setProperty("temperature", "mild").setProperty("outlook", "overcast"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "weak").setProperty("play", "yes").setProperty("humidity", "normal").setProperty("temperature", "hot").setProperty("outlook", "overcast"));
-            this.instances.Add((new DataInstance()).setProperty("wind", "strong").setProperty("play", "no").setProperty("humidity", "high").setProperty("temperature", "mild").setProperty("outlook", "rain"));
-
-            this.attributes.Add("wind");
-            this.attributes.Add("humidity");
-            this.attributes.Add("temperature");
-            this.attributes.Add("outlook");
-
-            this.target = "play";
-
-            return new ObservationSet(this.exampleSet(), this.targetAttribute(), this.exampleAttributes());
-        }
+        
         public ObservationSet importExamples(string filepath)
+        {
+            return this.importCSV(filepath, true);
+        }
+
+        public ObservationSet importUnclassified(string filepath)
+        {
+            return this.importCSV(filepath, false);
+        }
+
+        public void exportSet(string filepath, ObservationSet export)
+        {
+            string writestring = exportCSV_string(export);
+            File.WriteAllText(filepath, writestring);
+        }
+
+        private ObservationSet importCSV(string filepath, bool set_classifiers)
         {
             var reader = new StreamReader(filepath);
             int row = 0;
@@ -69,16 +58,23 @@ namespace DecisionTrees
                 row++;
                 string line = reader.ReadLine();
                 var values = line.Split(sep);
+                int classifier_column = -1;
+
                 if (row != 1)
                 {
-                    // This is a training instance. The attributes have already been established.
+                    // This is an instance. The attributes have already been established.
                     DataInstance addition = new DataInstance();
                     int column = 0;
 
-                    // Find the properties of this training example.
+                    // Find the properties of this instance. 
                     foreach (string value in values)
                     {
-                        addition.setProperty(all_attributes[column], value);
+                        // If we do not want to set the classifiers of the instances, we need to check we have not arrived at the 
+                        // Final column.
+                        if (  set_classifiers || column != classifier_column ) 
+                        {
+                            addition.setProperty(all_attributes[column], value);
+                        }
                         column++;
                     }
                     this.instances.Add(addition);
@@ -94,13 +90,13 @@ namespace DecisionTrees
                         {
                             // This is the last column. It is the target attribute
                             this.target = value;
+                            classifier_column = column;
                         }
                         else
                         {
                             // Add it to the columns-that-are-not-the-classifier list.
                             this.attributes.Add(value);
                         }
-
                         column++;
                     }
                 }
@@ -108,6 +104,36 @@ namespace DecisionTrees
 
             // All data has been considered, let's return a ObservationSet.
             return new ObservationSet(this.exampleSet(), this.targetAttribute(), this.exampleAttributes());
+        }
+
+        private string exportCSV_string(ObservationSet export)
+        {
+            string seperator = ";";
+            var csv = new StringBuilder();
+            
+            // Generate the first line
+            string firstline = "";
+            foreach(string attr_name in export.attributes)
+            {
+                firstline += attr_name;
+                firstline += seperator;
+            }
+            firstline += export.target_attribute + seperator;
+            csv.AppendLine(firstline);
+            foreach (DataInstance instance in export.instances)
+            {
+                string my_line = "";
+                foreach (string attr_name in export.attributes)
+                {
+                    my_line += instance.getProperty(attr_name);
+                    my_line += seperator;
+                }
+                my_line += instance.getProperty(export.target_attribute);
+                my_line += seperator;
+
+                csv.AppendLine(my_line);
+            }
+            return csv.ToString();
         }
     }
 }

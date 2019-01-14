@@ -81,5 +81,26 @@ namespace DecisionTrees
             ret.AddRange(this.getNodeChildren());
             return ret;
         }
+
+        public string classify(DataInstance instance)
+        {
+            string value_of_instance = instance.getProperty(this.label);
+            foreach(Node child in this.getNodeChildren())
+            {
+                if (value_of_instance == child.value_splitter)
+                {
+                    return child.classify(instance);
+                }
+            }
+            foreach(Leaf child in this.getLeafChildren())
+            {
+                if (value_of_instance == child.value_splitter)
+                {
+                    return child.classifier;
+                }
+            }
+            // If we got here, the instance has a value for an attribute that this model does not know. ERROR TIME!
+            throw new Exception($"Unknown value {value_of_instance} for {this.label}");
+        }
     }
 }
