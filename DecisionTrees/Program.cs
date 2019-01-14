@@ -119,8 +119,14 @@ namespace DecisionTrees
             Console.WriteLine("READY. Press a key to start classification process \n");
             Console.ReadKey(true);
 
-            // loader.classify_set(observations);
-            Console.WriteLine("Job's done.");
+            List<DataInstance> classified_instances = new List<DataInstance>();
+            string classifier_name = observations.target_attribute;
+            foreach(DataInstance instance in observations.instances)
+            {
+                classified_instances.Add(model.classify(instance, classifier_name));
+            }
+
+            Console.WriteLine("Job's done");
 
         }
     }

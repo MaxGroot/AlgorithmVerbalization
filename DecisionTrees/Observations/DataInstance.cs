@@ -26,5 +26,10 @@ namespace DecisionTrees
             }
             throw new Exception($"Dictionary did not contain {attribute}");
         }
+        public DataInstance overwriteProperty(string attribute, string value)
+        {
+            this.fields[attribute] = value;
+            return this;
+        }
     }
 }

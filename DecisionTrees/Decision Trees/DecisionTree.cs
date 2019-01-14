@@ -55,5 +55,12 @@ namespace DecisionTrees
             }
             Console.WriteLine(str);
         }
+
+        public DataInstance classify(DataInstance instance, string classifier_name)
+        {
+            string classifier =  this.getRoot().classify(instance);
+            instance = instance.overwriteProperty(classifier_name, classifier);
+            return instance;
+        }
     }
 }
