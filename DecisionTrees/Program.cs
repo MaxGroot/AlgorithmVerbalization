@@ -11,17 +11,35 @@ namespace DecisionTrees
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Good Day!");
+            Console.WriteLine("Good Day! Program has started.");
 
             // Create our file handler
             TextWriter writer = new TextWriter();
+            string mode = writer.askFromConfig("What mode do you want to do?", "GENERAL","mode");
+            
+            switch(mode)
+            {
+                case "training":
+                    train(writer);
+                    break;
+                case "classification":
+                    classify(writer);
+                    break;
+                default:
+                    throw new Exception($"Unknown mode entered: {mode}");
+            }
+            Console.WriteLine("Program finished.");
+            Console.ReadKey(true);
 
+        }
+        static void train(TextWriter writer)
+        {
             // Ask the important questions.
-            string location = writer.askFromConfig("Program started. Enter the file path to import data from. ", "GENERAL", "input-location");
+            string location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
 
             DataController import = new DataController();
-            ObservationSet observations =  import.importExamples(location);
-            
+            ObservationSet observations = import.importExamples(location);
+
             location = writer.askFromConfig("Enter the directory to export data to. ", "GENERAL", "export-location");
 
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
@@ -38,8 +56,8 @@ namespace DecisionTrees
             Agent agent = new ID3Agent(thoughts);
 
             Console.WriteLine("TELL");
-            agent.TELL(observations); 
-            
+            agent.TELL(observations);
+
             Console.WriteLine("TOLD. Press a key to start training process \n");
             Console.ReadKey(true);
 
@@ -58,7 +76,8 @@ namespace DecisionTrees
                     writer.filesave_string(thoughts_filename, thoughts.output());
                     throw (e);
                 }
-            } else
+            }
+            else
             {
                 model = agent.TRAIN();
             }
@@ -73,8 +92,11 @@ namespace DecisionTrees
             DrawManager drawing = new DrawManager(model);
             writer.filesave_lines(drawing_filename, drawing.lines());
             Console.WriteLine("Image saved.");
-            Console.ReadKey(true);
-            
+        }
+
+        static void classify(TextWriter writer)
+        {
+            Console.WriteLine("Classified.");
         }
     }
 }
