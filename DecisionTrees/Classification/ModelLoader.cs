@@ -74,8 +74,7 @@ namespace DecisionTrees
                 throw new Exception($"UNKNOWN TREE ELEMENT:{type}");
             }
         }
-
-
+        
         private static int node_level(Node node)
         {
             int node_level = 0;

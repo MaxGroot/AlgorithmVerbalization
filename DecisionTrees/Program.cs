@@ -106,19 +106,15 @@ namespace DecisionTrees
             // Draw the just-loaded model.
             DrawManager drawing = new DrawManager(model);
             List<string> lines = drawing.lines();
-            foreach(string l in lines)
-            {
-                Console.WriteLine(l);
-            }
 
             // Import the classification data.
             string data_location = writer.askFromConfig("Enter the file path to import the data from. ", "CLASSIFICATION", "input-location");
 
             DataController import = new DataController();
-            ObservationSet observations = import.importExamples(model_location);
+            ObservationSet observations = import.importUnclassified(data_location);
             
             // Get ready for classification.
-            string export_location = writer.askFromConfig("Enter the directory to export data to. ", "CLASSIFICATION", "export-location");
+            string export_location = writer.askFromConfig("Enter the file path to export data to. ", "CLASSIFICATION", "output-location");
 
             Console.WriteLine("READY. Press a key to start classification process \n");
             Console.ReadKey(true);
