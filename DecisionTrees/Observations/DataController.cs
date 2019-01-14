@@ -39,6 +39,12 @@ namespace DecisionTrees
             return this.importCSV(filepath, false);
         }
 
+        public void exportSet(string filepath, ObservationSet export)
+        {
+            string writestring = exportCSV_string(export);
+            File.WriteAllText(filepath, writestring);
+        }
+
         private ObservationSet importCSV(string filepath, bool set_classifiers)
         {
             var reader = new StreamReader(filepath);
@@ -98,6 +104,36 @@ namespace DecisionTrees
 
             // All data has been considered, let's return a ObservationSet.
             return new ObservationSet(this.exampleSet(), this.targetAttribute(), this.exampleAttributes());
+        }
+
+        private string exportCSV_string(ObservationSet export)
+        {
+            string seperator = ";";
+            var csv = new StringBuilder();
+            
+            // Generate the first line
+            string firstline = "";
+            foreach(string attr_name in export.attributes)
+            {
+                firstline += attr_name;
+                firstline += seperator;
+            }
+            firstline += export.target_attribute + seperator;
+            csv.AppendLine(firstline);
+            foreach (DataInstance instance in export.instances)
+            {
+                string my_line = "";
+                foreach (string attr_name in export.attributes)
+                {
+                    my_line += instance.getProperty(attr_name);
+                    my_line += seperator;
+                }
+                my_line += instance.getProperty(export.target_attribute);
+                my_line += seperator;
+
+                csv.AppendLine(my_line);
+            }
+            return csv.ToString();
         }
     }
 }

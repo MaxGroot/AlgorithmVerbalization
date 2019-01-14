@@ -110,8 +110,8 @@ namespace DecisionTrees
             // Import the classification data.
             string data_location = writer.askFromConfig("Enter the file path to import the data from. ", "CLASSIFICATION", "input-location");
 
-            DataController import = new DataController();
-            ObservationSet observations = import.importUnclassified(data_location);
+            DataController datacontroller = new DataController();
+            ObservationSet observations = datacontroller.importUnclassified(data_location);
             
             // Get ready for classification.
             string export_location = writer.askFromConfig("Enter the file path to export data to. ", "CLASSIFICATION", "output-location");
@@ -125,8 +125,10 @@ namespace DecisionTrees
             {
                 classified_instances.Add(model.classify(instance, classifier_name));
             }
+            ObservationSet export_set = new ObservationSet(classified_instances, classifier_name, observations.attributes);
 
-            Console.WriteLine("Job's done");
+            Console.WriteLine("Classification succesful, saving now.");
+            datacontroller.exportSet(export_location, export_set);
 
         }
     }
