@@ -34,38 +34,18 @@ namespace DecisionTrees
             Console.WriteLine("Initial System State and Posisble System State Attributes Recorded");
         }
 
-        public void infer_add(SystemState state)
+        public void add_thought(string occurence, string action, SystemState state)
         {
-            // Calculate new system state. 
+            // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
+            SystemState my_state = SystemState.copy(state);
             this.total_state = SystemState.Add(total_state, state);
-            this.add_thought(state.getDescriptor().name);
+            this.outputs.Add(new Output(occurence, action, my_state));
         }
-
-        public void decision_add(Decision explanation)
-        {
-            this.add_action(explanation);
-        }
-
-        private void add_action(Decision explanation)
-        {
-            // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
-            SystemState my_state = SystemState.copy(total_state);
-            this.outputs.Add(new OutputDecision(explanation, my_state));
-        }
-
-        private void add_thought(string name)
-        {
-            // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
-            SystemState my_state = SystemState.copy(total_state);
-            this.outputs.Add(new OutputThought("INFER", name, my_state));
-
-        }
-
         public string output()
         {
             string seperator = ";";
             var csv = new StringBuilder();
-            string firstline = $"Type{seperator}Utility Action{seperator}Utility Premise{seperator}Proof{seperator}Applied Action";
+            string firstline = $"Event{seperator}Action";
             foreach (string variable_name in this.total_descriptor.variable_names)
             {
                 firstline += $"{seperator}{variable_name}";

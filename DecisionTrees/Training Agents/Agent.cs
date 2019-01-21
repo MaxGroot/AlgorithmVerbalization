@@ -18,16 +18,11 @@ namespace DecisionTrees
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
-        public void THINK(SystemState state)
+        public void THINK(string occurence, string action, SystemState state)
         {
-            this.thoughts.infer_add(state);
+            this.thoughts.add_thought(occurence, action, state);
         }
-        
-        public void ACT(Decision decision)
-        {
-            this.thoughts.decision_add(decision);
-        }
-        
+
         public void prepare_system_state(List<SystemStateDescriptor> descriptors)
         {
             foreach(SystemStateDescriptor descriptor in descriptors)

@@ -52,14 +52,6 @@
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />
     <Compile Include="Training Agents\Instances\ID3\ID3Algorithm.cs" />
     <Compile Include="Training Agents\Instances\ID3\ID3Agent.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionAddBestGuessLeaf.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionAddLeaf.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionAddNode.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionIterateFurther.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionMoveUpToAttribute.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionMoveUpToValue.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionRemoveAttributeFromConsideration.cs" />
-    <Compile Include="Training Agents\Instances\Shared\Decisions\DecisionSkipAttributeValueCombination.cs" />
     <Compile Include="Training Agents\Agent.cs" />
     <Compile Include="Training Agents\Logic\Decision.cs" />
     <Compile Include="Decision Trees\Leaf.cs" />
@@ -69,9 +61,7 @@
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
     <Compile Include="Output\Model\ModelManager.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Outputs\OutputDecision.cs" />
     <Compile Include="Training Agents\Thinking Aloud\Outputs\Output.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Outputs\OutputThought.cs" />
     <Compile Include="Training Agents\Thinking Aloud\SystemStates\SystemState.cs" />
     <Compile Include="Training Agents\Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
     <Compile Include="Output\TextWriter.cs" />
