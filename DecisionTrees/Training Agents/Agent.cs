@@ -18,17 +18,13 @@ namespace DecisionTrees
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
-        public void INFER(SystemState state)
+        public void THINK(SystemState state)
         {
             this.thoughts.infer_add(state);
         }
         
-        public void DECIDE(Decision decision, int level)
+        public void ACT(Decision decision)
         {
-            for(int i=0; i<level; i++)
-            {
-                decision.appliedaction = "\t" + decision.appliedaction;
-            }
             this.thoughts.decision_add(decision);
         }
         

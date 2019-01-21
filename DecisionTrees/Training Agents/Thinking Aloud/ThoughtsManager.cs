@@ -48,21 +48,6 @@ namespace DecisionTrees
 
         private void add_action(Decision explanation)
         {
-            string applied_action = explanation.appliedaction;
-
-            // Remove tabs and double spaces from the applied action. We only do this after adding it to the reference list, 
-            // Because some lists want their applied_actions tabbed.
-            //TODO: This is legacy code and is complete bullshit.
-            char tab = '\u0009';
-            applied_action = applied_action.Replace(tab.ToString(), "");
-            while (applied_action.IndexOf("  ") > 0)
-            {
-                applied_action = applied_action.Replace("  ", " ");
-            }
-
-            // Put the tab-removed applied-action back into the explanation.
-
-            explanation.appliedaction = applied_action;
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(total_state);
             this.outputs.Add(new OutputDecision(explanation, my_state));
