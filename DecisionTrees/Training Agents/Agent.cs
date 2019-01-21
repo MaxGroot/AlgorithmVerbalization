@@ -8,29 +8,14 @@ namespace DecisionTrees
 {
     abstract class Agent
     {
-       protected List<InputInference> inferences = new List<InputInference>();
        private ThoughtsManager thoughts;
 
        public Agent(ThoughtsManager thoughts)
         {
             this.thoughts = thoughts;
-            this.addInferences();
-        }
-
-       public bool TELL(Premise premise)
-        {
-            bool accepted = false;
-            // Loop through inferences to check if they accept the premise.
-            foreach(InputInference inference in this.inferences)
-            {
-                accepted = (inference.tell(premise) || accepted);
-            }
-
-            return accepted;
         }
        
-       public abstract DecisionTree TRAIN();
-
+       public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
         public void INFER(SystemState state)
@@ -46,8 +31,6 @@ namespace DecisionTrees
             }
             this.thoughts.decision_add(decision);
         }
-
-        public abstract void addInferences();
         
         public void prepare_system_state(List<SystemStateDescriptor> descriptors)
         {
