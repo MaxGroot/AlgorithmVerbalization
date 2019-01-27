@@ -1,4 +1,5 @@
 ﻿Outlook;Temperature;Humidity;Wind;Play ball
+nominal;continuous;continuous;nominal;classifier
 Sunny;85;85;Weak;No
 Sunny;80;90;Strong;No
 Overcast;83;78;Weak;Yes
