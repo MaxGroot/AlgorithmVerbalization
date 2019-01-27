@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class ObservationSet: Premise
+    class ObservationSet
     {
         public List<DataInstance> instances;
         public string target_attribute;

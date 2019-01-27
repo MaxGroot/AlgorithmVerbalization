@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class OutputThought: Output
+    class Output
     {
-        public string type;
-        public string name;
+        public string occurence;
+        public string action;
         public SystemState state;
 
-        public OutputThought(string type, string name, SystemState state)
+        public Output(string occurence, string action, SystemState state)
         {
-            this.type = type;
-            this.name = name;
+            this.occurence = occurence;
+            this.action = action;
             this.state = state;
         }
 
         public string toLine(String seperator, SystemStateDescriptor total)
         {
-            string addline = $"{this.type}{seperator}{this.name}{seperator} {seperator} {seperator}";
+            string addline = $"{this.occurence}{seperator}{this.action}";
             foreach (string variable_name in total.variable_names)
             {
                 string value = this.state.getVariable(variable_name).ToString();

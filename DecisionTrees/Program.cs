@@ -55,11 +55,8 @@ namespace DecisionTrees
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
             Agent agent = new ID3Agent(thoughts);
-
-            Console.WriteLine("TELL");
-            agent.TELL(observations);
-
-            Console.WriteLine("TOLD. Press a key to start training process \n");
+            
+            Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
 
             // Train the algorithm based on the Training set
@@ -69,7 +66,7 @@ namespace DecisionTrees
             {
                 try
                 {
-                    model = agent.TRAIN();
+                    model = agent.TRAIN(observations);
                 }
                 catch (Exception e)
                 {
@@ -80,7 +77,7 @@ namespace DecisionTrees
             }
             else
             {
-                model = agent.TRAIN();
+                model = agent.TRAIN(observations);
             }
             Console.WriteLine("Training completed. Processing thoughts.");
             writer.filesave_string(thoughts_filename, thoughts.output());

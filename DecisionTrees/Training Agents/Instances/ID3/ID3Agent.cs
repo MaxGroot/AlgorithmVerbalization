@@ -9,7 +9,6 @@ namespace DecisionTrees
     class ID3Agent : Agent
     {
         private Algorithm algorithm = new ID3();
-        private InferenceFromSet infer1 = new InferenceFromSet();
         
         public override string ASK()
         {
@@ -21,15 +20,9 @@ namespace DecisionTrees
 
         }
 
-        public override DecisionTree TRAIN()
+        public override DecisionTree TRAIN(ObservationSet set)
         {
-            ObservationSet set = this.infer1.get();
             return algorithm.train(set.instances, set.target_attribute, set.attributes, this);
-        }
-
-        public override void addInferences()
-        {
-            this.inferences.Add(infer1);
         }
     }
 }
