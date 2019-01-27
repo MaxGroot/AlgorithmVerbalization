@@ -15,10 +15,8 @@ namespace DecisionTrees
         private Agent runner;
         
         // Make System State Descriptors
-        private SystemStateDescriptor calculate_gain = new SystemStateDescriptor("Calculate Attribute Gain", new List<string> { "attr", "my_gain", "highest_gain" });
-        private SystemStateDescriptor best_attribute = new SystemStateDescriptor("Select best attribute", new List<string> { "my_gain","highest_gain"});
-        private SystemStateDescriptor subset_size = new SystemStateDescriptor("Receive Subset For Iteration", new List<string> { "subset_size" });
-
+        private SystemStateDescriptor gain_change = new SystemStateDescriptor("Gain_Change", new List<string> { "attr", "my_gain", "highest_gain" });
+        
         public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes, Agent runner)
         {
             this.examples = examples;
@@ -28,9 +26,7 @@ namespace DecisionTrees
 
             // Prepare our runner with the right way to describe system state.
             runner.prepare_system_state(new List<SystemStateDescriptor>() {
-                calculate_gain,
-                best_attribute,
-                subset_size,
+                gain_change,
             });
 
             // First we need to know for each attribute which possible values it can hold.
@@ -52,6 +48,7 @@ namespace DecisionTrees
             foreach(string attr in attributes_copy)
             {
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
+                this.runner.THINK("gain-calculated", "determine-highest-gain", new SystemState(attr, my_gain.ToString(), highest_gain.ToString()).setDescriptor(this.gain_change));
                 if (my_gain > highest_gain)
                 {
                     best_attr = attr;
