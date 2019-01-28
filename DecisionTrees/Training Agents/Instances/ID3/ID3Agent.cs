@@ -22,7 +22,7 @@ namespace DecisionTrees
 
         public override DecisionTree TRAIN(ObservationSet set)
         {
-            return algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            return algorithm.train(set.instances, set.target_attribute, set.attributes.Keys.ToList(), this);
         }
     }
 }

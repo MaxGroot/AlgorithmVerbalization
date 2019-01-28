@@ -55,7 +55,7 @@ namespace DecisionTrees
 
             foreach(string attr in attributes)
             {
-                double gainratio = Calculator.splitInfo()
+               // double gainratio = Calculator.splitInfo()
             }
             // Compute criteria for attributes
             double global_entropy = Calculator.entropy(set, target_attribute);

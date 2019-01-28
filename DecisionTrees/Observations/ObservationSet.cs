@@ -10,9 +10,9 @@ namespace DecisionTrees
     {
         public List<DataInstance> instances;
         public string target_attribute;
-        public List<string> attributes;
+        public Dictionary<String, String> attributes;
 
-        public ObservationSet (List<DataInstance> examples, string target_attribute, List<string> attributes)
+        public ObservationSet (List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes)
         {
             this.instances = examples;
             this.target_attribute = target_attribute;
