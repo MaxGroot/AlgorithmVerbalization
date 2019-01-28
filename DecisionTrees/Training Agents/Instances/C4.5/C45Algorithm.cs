@@ -10,18 +10,25 @@ namespace DecisionTrees
     {
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
 
-        public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes, Agent runner)
+        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             Console.WriteLine("Calculating all attribute value possibilities..");
-            foreach (string attr in attributes)
+            foreach (string attr in attributes.Keys.ToList())
             {
-                possible_attribute_values[attr] = Calculator.calculateAttributePossibilities(attr, examples);
+                if (attributes[attr] == "nominal")
+                {
+                    possible_attribute_values[attr] = Calculator.calculateAttributePossibilities(attr, examples);
+                }else
+                {
+                    possible_attribute_values[attr] = null;
+                }
             }
             Console.WriteLine("Let's go bois");
+            throw new NotImplementedException();
             return this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
         }
 
-        private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, List<string> attributes, Agent runner, Node parent, string last_split)
+        private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
         {
             // Check termination criteria
             if (Calculator.subset_has_all_same_classifier(set, target_attribute))
@@ -39,7 +46,8 @@ namespace DecisionTrees
 
             double highest_gain = 0.00;
             string a_best = "DAFAQ";
-            foreach(string attr in attributes)
+            /*
+            foreach (string attr in attributes)
             {
                 double my_gain = Calculator.splitInfo(set, attr, target_attribute, this.possible_attribute_values[attr]);
                 if (my_gain > highest_gain)
@@ -48,15 +56,16 @@ namespace DecisionTrees
                     a_best = attr;
                 }
             }
+            */
             Console.WriteLine($"{a_best} selected as best attribute");
 
             // Split on a best
 
 
-            foreach(string attr in attributes)
-            {
+           // foreach(string attr in attributes)
+           // {
                // double gainratio = Calculator.splitInfo()
-            }
+           // }
             // Compute criteria for attributes
             double global_entropy = Calculator.entropy(set, target_attribute);
 
