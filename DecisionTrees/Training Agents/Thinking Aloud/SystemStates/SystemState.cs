@@ -43,6 +43,10 @@ namespace DecisionTrees
         public object getVariable(string name)
         {
             int valueIndex = this.descriptor.variable_names.IndexOf(name);
+            if (valueIndex == -1)
+            {
+                return null;
+            }
             return this.state[valueIndex];
         }
 

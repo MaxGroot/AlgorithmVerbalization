@@ -39,7 +39,7 @@ namespace DecisionTrees
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             SystemState my_state = SystemState.copy(state);
             this.total_state = SystemState.Add(total_state, state);
-            this.outputs.Add(new Output(occurence, action, my_state));
+            this.outputs.Add(new Output(occurence, action, SystemState.copy(total_state)));
         }
         public string output()
         {
