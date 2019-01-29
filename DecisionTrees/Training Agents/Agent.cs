@@ -18,19 +18,16 @@ namespace DecisionTrees
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
-        public void THINK(string occurence, string action, SystemState state = null)
+        public void THINK(SystemStateDescriptor descriptor, SystemState state)
         {
-            if (state == null)
-            {
-                if (lastState == null)
-                {
-                    throw new Exception("First state cannot be null");
-                }
-                state = lastState;
-            }
-            this.thoughts.add_thought(occurence, action, state);
+            this.thoughts.add_thought(descriptor.cause, descriptor.name, state);
 
             lastState = state;
+        }
+
+        public void DO(SystemStateDescriptor descriptor, string action, SystemState state = null)
+        {
+            // TODO.
         }
 
         public void prepare_system_state(List<SystemStateDescriptor> descriptors)

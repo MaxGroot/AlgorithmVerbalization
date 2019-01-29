@@ -9,9 +9,11 @@ namespace DecisionTrees
     class SystemStateDescriptor
     {
         public List<string> variable_names = new List<string>();
+        public string cause;
         public string name;
-        public SystemStateDescriptor(string name, List<string> variable_names)
+        public SystemStateDescriptor(string cause, string name, List<string> variable_names)
         {
+            this.cause = cause;
             this.name = name;
             this.variable_names = variable_names;
         }
@@ -30,7 +32,7 @@ namespace DecisionTrees
                 }
             }
 
-            return new SystemStateDescriptor("Total Descriptor", variable_names);
+            return new SystemStateDescriptor("This-is-irrelevant", "Total Descriptor", variable_names);
         }
     }
 }

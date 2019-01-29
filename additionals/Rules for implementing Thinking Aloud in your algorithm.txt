@@ -1,5 +1,6 @@
 1) All evaluations must be done on declared variables in memory --> No expressions in your evaluations
 2) All variables that are evaluated must have been expressed in their current value in a system state
+3) All model actions can only be done when there is an up-to-do thought outputted of the system state that they will use.
 
 
 --- This ensures all variables are known ---

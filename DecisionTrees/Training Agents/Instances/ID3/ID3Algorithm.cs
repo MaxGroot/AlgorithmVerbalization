@@ -15,9 +15,9 @@ namespace DecisionTrees
         private Agent runner;
 
         // Make System State Descriptors
-        private SystemStateDescriptor calculate_attribute_gain = new SystemStateDescriptor("calculate-attribute-gain", new List<string>() { "my_gain", "my_attr" } );
-        private SystemStateDescriptor determine_best_attribute = new SystemStateDescriptor("determine-best-attribute", new List<string>() { "highest_gain", "best_attr" });
-        private SystemStateDescriptor split_on_best_attribute = new SystemStateDescriptor("split-on-best-attribute", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
+        private SystemStateDescriptor calculate_attribute_gain = new SystemStateDescriptor("new-iteration", "calculate-attribute-gain", new List<string>() { "my_gain", "my_attr" } );
+        private SystemStateDescriptor determine_best_attribute = new SystemStateDescriptor("best-attribute-changed", "determine-best-attribute", new List<string>() { "highest_gain", "best_attr" });
+        private SystemStateDescriptor split_on_best_attribute = new SystemStateDescriptor("new-value-to-split-on", "split-on-best-attribute", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
         
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
@@ -29,7 +29,6 @@ namespace DecisionTrees
             // Prepare our runner with the right way to describe system state.
             runner.prepare_system_state(new List<SystemStateDescriptor>() {
                 //TODO: Rename to EventStateDescriptors?
-                //TODO: THINK must accept the descriptor as the eventdescription, not a string.
                 //TODO: A Descriptor must accept a list of dependencies as an optional parameter, and it inserts those variables into its lines as well.
                 //TODO: The system state descriptor must be able to create a system state itself, so you can just pass the descriptor and the variables list to THINK.
                 //TODO: Revisit if we need an action string
@@ -57,12 +56,12 @@ namespace DecisionTrees
             foreach(string attr in attributes_copy)
             { 
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
-                runner.THINK("new-iteration", "calculate-attribute-gain", new SystemState(my_gain, attr).setDescriptor(calculate_attribute_gain));
+                runner.THINK(calculate_attribute_gain, new SystemState(my_gain, attr).setDescriptor(calculate_attribute_gain));
                 if (my_gain > highest_gain)
                 {
                     best_attr = attr;
                     highest_gain = my_gain;
-                    runner.THINK("calculate-attribute-gain", "determine-best-attribute", new SystemState(highest_gain, best_attr).setDescriptor(determine_best_attribute));
+                    runner.THINK(determine_best_attribute, new SystemState(highest_gain, best_attr).setDescriptor(determine_best_attribute));
                 }
             }
             if (highest_gain == 0)
@@ -86,7 +85,7 @@ namespace DecisionTrees
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
-                runner.THINK("determine-best-attribute", "", new SystemState("todo", list_to_objectstring(attributes_copy), "todo", value_splitter).setDescriptor(split_on_best_attribute));
+                runner.THINK(split_on_best_attribute, new SystemState("todo", list_to_objectstring(attributes_copy), "todo", value_splitter).setDescriptor(split_on_best_attribute));
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
