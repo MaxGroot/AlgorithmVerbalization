@@ -1,4 +1,5 @@
 ﻿Outlook;Temperature;Humidity;Wind;Play ball
+nominal;nominal;nominal;nominal;classifier
 Sunny;Hot;High;Weak;No
 Sunny;Hot;High;Strong;No
 Overcast;Hot;High;Weak;Yes

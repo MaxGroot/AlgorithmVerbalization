@@ -54,7 +54,7 @@ namespace DecisionTrees
 
 
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
-            Agent agent = new ID3Agent(thoughts);
+            Agent agent = new C45Agent(thoughts);
             
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);

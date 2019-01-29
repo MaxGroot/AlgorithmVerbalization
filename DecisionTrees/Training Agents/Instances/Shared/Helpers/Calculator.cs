@@ -104,5 +104,50 @@ namespace DecisionTrees
             // Return classifier value that occurs most in the given set.
             return value_counter.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
         }
+
+        public static double intrinsicValue(List<DataInstance> S, string wanted_attribute, List<string> possible_values)
+        {
+            double intrinsic = 0;
+            foreach(string value in possible_values)
+            {
+                // Create a subset of data instances that only contain this value.
+                List<DataInstance> set_filtered = S.Where(A => A.getProperty(wanted_attribute) == value).ToList();
+                
+                // Calculate the proportion of this value in the set towards the size of the entire set.
+                double proportion = ((double)set_filtered.Count()) / ((double)S.Count());
+
+                // Multiply the proportion with log base 2 of itself. 
+                proportion *= Math.Log(proportion, 2);
+
+                // Add to intrinsic value
+                intrinsic += proportion;
+
+            }
+            // Return the negative of the sum.
+            return -intrinsic;
+        }
+
+        public static double splitInfo(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
+        {
+            return gain(S, wanted_attribute, targetAttribute, possible_values) / intrinsicValue(S, wanted_attribute, possible_values);
+        }
+
+        public static List<string> calculateAttributePossibilities(string attr_name, List<DataInstance> Set)
+        {
+            // Make the list we will later add to the dictionary
+            List<string> attribute_values = new List<string>();
+            // Loop through all data instances to find the possible values.
+            foreach (DataInstance instance in Set)
+            {
+                string my_value = instance.getProperty(attr_name);
+                if (!attribute_values.Contains(my_value))
+                {
+                    // A new possibility!
+                    attribute_values.Add(my_value);
+
+                }
+            }
+            return attribute_values;
+        }
     }
 }

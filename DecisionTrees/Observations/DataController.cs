@@ -11,7 +11,10 @@ namespace DecisionTrees
     {
 
         private List<DataInstance> instances = new List<DataInstance> ();
-        private List<string> attributes = new List<string> ();
+        
+        private Dictionary<String , String> attributes = new Dictionary<String, String>();
+        private List<String> column_positions = new List<String>();
+
         private string target = "";
 
         public List<DataInstance> exampleSet()
@@ -19,7 +22,11 @@ namespace DecisionTrees
             return this.instances;
         }
 
-        public List<string> exampleAttributes()
+        public List<string> exampleAttributeNames()
+        {
+            return attributes.Keys.ToList();
+        }
+        public Dictionary<String, String> exampleAttributeTypes()
         {
             return this.attributes;
         }
@@ -50,17 +57,15 @@ namespace DecisionTrees
             var reader = new StreamReader(filepath);
             int row = 0;
             char sep = ';';
-            List<string> all_attributes = new List<string>();
-
+            int classifier_column = -1;
             // Loop through CSV lines. 
             while (!reader.EndOfStream)
             {
                 row++;
                 string line = reader.ReadLine();
                 var values = line.Split(sep);
-                int classifier_column = -1;
 
-                if (row != 1)
+                if (row > 2)
                 {
                     // This is an instance. The attributes have already been established.
                     DataInstance addition = new DataInstance();
@@ -73,7 +78,15 @@ namespace DecisionTrees
                         // Final column.
                         if (  set_classifiers || column != classifier_column ) 
                         {
-                            addition.setProperty(all_attributes[column], value);
+                            string key = "ERR";
+                            if (column == classifier_column)
+                            {
+                                 key = this.targetAttribute();
+                            }else
+                            {
+                                 key = column_positions[column];
+                            }
+                            addition.setProperty(key, value);
                         }
                         column++;
                     }
@@ -81,29 +94,48 @@ namespace DecisionTrees
                 }
                 else
                 {
-                    int column = 0;
-                    // This line describes the attributes.
-                    foreach (string value in values)
+                    if (row == 1)
                     {
-                        all_attributes.Add(value);
-                        if (column == values.Length - 1)
+                        int column = 0;
+                        // This line describes the attribute names.
+                        foreach (string value in values)
                         {
-                            // This is the last column. It is the target attribute
-                            this.target = value;
-                            classifier_column = column;
+                            if (column == values.Length - 1)
+                            {
+                                // This is the last column. It is the target attribute
+                                this.target = value;
+                                classifier_column = column;
+                            }
+                            else
+                            {
+                                // Add it to the columns-that-are-not-the-classifier list.
+                                this.column_positions.Add(value);
+                                this.attributes.Add(value, "UNKNOWN");
+                            }
+                            column++;
                         }
-                        else
+                    }else if( row == 2)
+                    {
+                        int column = 0;
+                        // This line describes the attribute types
+                        foreach(string value in values)
                         {
-                            // Add it to the columns-that-are-not-the-classifier list.
-                            this.attributes.Add(value);
+                            if (column == values.Length - 1)
+                            {
+                                // Last column.
+                            }else
+                            {
+                                this.attributes[this.column_positions[column]] = value; 
+                            }
+
+                            column++;
                         }
-                        column++;
                     }
                 }
             }
 
             // All data has been considered, let's return a ObservationSet.
-            return new ObservationSet(this.exampleSet(), this.targetAttribute(), this.exampleAttributes());
+            return new ObservationSet(this.exampleSet(), this.targetAttribute(), this.exampleAttributeTypes());
         }
 
         private string exportCSV_string(ObservationSet export)
@@ -113,7 +145,7 @@ namespace DecisionTrees
             
             // Generate the first line
             string firstline = "";
-            foreach(string attr_name in export.attributes)
+            foreach(string attr_name in export.attributes.Keys.ToList())
             {
                 firstline += attr_name;
                 firstline += seperator;
@@ -123,7 +155,7 @@ namespace DecisionTrees
             foreach (DataInstance instance in export.instances)
             {
                 string my_line = "";
-                foreach (string attr_name in export.attributes)
+                foreach (string attr_name in export.attributes.Keys.ToList())
                 {
                     my_line += instance.getProperty(attr_name);
                     my_line += seperator;

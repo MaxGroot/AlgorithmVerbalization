@@ -17,11 +17,11 @@ namespace DecisionTrees
         // Make System State Descriptors
         private SystemStateDescriptor gain_change = new SystemStateDescriptor("Gain_Change", new List<string> { "attr", "my_gain", "highest_gain" });
         
-        public DecisionTree train(List<DataInstance> examples, string target_attribute, List<string> attributes, Agent runner)
+        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             this.examples = examples;
             this.target_attribute = target_attribute;
-            this.all_attributes = attributes;
+            this.all_attributes = attributes.Keys.ToList();
             this.runner = runner;
 
             // Prepare our runner with the right way to describe system state.
@@ -35,7 +35,7 @@ namespace DecisionTrees
             DecisionTree tree = new DecisionTree();
 
             // Start the iteration process on the entire set.
-            tree = this.iterate(tree, this.examples, 1, attributes, null, null);
+            tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
             return tree;
         }
 
