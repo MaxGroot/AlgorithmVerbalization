@@ -16,7 +16,7 @@ namespace DecisionTrees
         
         // Make System State Descriptors
         private SystemStateDescriptor gain_change = new SystemStateDescriptor("Gain_Change", new List<string> { "attr", "my_gain", "highest_gain" });
-        
+        private SystemStateDescriptor attributes_under_consideration = new SystemStateDescriptor("Attributes_under_consideration", new List<string> { "considered_attributes" });
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             this.examples = examples;
@@ -26,6 +26,7 @@ namespace DecisionTrees
 
             // Prepare our runner with the right way to describe system state.
             runner.prepare_system_state(new List<SystemStateDescriptor>() {
+                attributes_under_consideration,
                 gain_change,
             });
 
@@ -35,6 +36,7 @@ namespace DecisionTrees
             DecisionTree tree = new DecisionTree();
 
             // Start the iteration process on the entire set.
+            this.runner.THINK("record-initial-state", "", new SystemState(list_to_object(attributes.Keys.ToList())).setDescriptor(attributes_under_consideration));
             tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
             return tree;
         }
@@ -46,17 +48,19 @@ namespace DecisionTrees
             string best_attr = "UNDETERMINED";
             double highest_gain = 0;
             foreach(string attr in attributes_copy)
-            {
+            { 
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
-                this.runner.THINK("gain-calculated", "determine-highest-gain", new SystemState(attr, my_gain.ToString(), highest_gain.ToString()).setDescriptor(this.gain_change));
+                this.runner.THINK("gain-calculated", "", new SystemState(attr, my_gain.ToString(), highest_gain.ToString()).setDescriptor(this.gain_change));
                 if (my_gain > highest_gain)
                 {
+                    this.runner.THINK("gain-calculated", "set-highest-gain");
                     best_attr = attr;
                     highest_gain = my_gain;
                 }
             }
             if (highest_gain == 0)
             {
+                this.runner.THINK("highest-gain-known", "add-best-guess-leaf");
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
@@ -68,8 +72,10 @@ namespace DecisionTrees
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
             // Remove this attribute as a splitter for the dataset.
             attributes_copy.RemoveAt(considerable_attributes.IndexOf(best_attr));
+            this.runner.THINK("attribute-removed-from-consideration", "", new SystemState(list_to_object(considerable_attributes)).setDescriptor(this.attributes_under_consideration));
 
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
+            this.runner.THINK("attribute-removed-from-consideration", "add-node");
             Node new_node = tree.addNode(best_attr, parent_value_splitter, parent_node);
             
             // Create subsets for each possible value of the attribute we created a node for. 
@@ -125,6 +131,21 @@ namespace DecisionTrees
                 // Make the dictionary entry
                 this.possible_attribute_values.Add(attr, attribute_values);
             }
+        }
+           
+        private string list_to_object(List<string> str)
+        {
+            string ret = "{";
+            for(int i = 0; i < str.Count; i++)
+            {
+                ret += str[i];
+                if (i != str.Count - 1)
+                {
+                    ret += ",";
+                }
+            }
+            ret += "}";
+            return ret;
         }
     }
 }
