@@ -30,4 +30,15 @@
 
 
 ----- Questions I still have ----
-Which variables from a previous system state do you take with you?
+- Which variables from a previous system state do you take with you?
+	Answer: None.
+
+- Which variables do you set in the System State? The total calculation will evaluate to true false stuff, which will result in a decision tree that exactly explains the algorithm.
+
+
+Guide to implementing:
+1) Write down all variables that change during execution that are being used
+2) For each variable, write down the code line numbers where they are being changed.
+3) Based on 2, determine the events. What are the big changes to memory? 
+4) Make an event dependency graph.
+5) Now that you know which evens can take place, ...
