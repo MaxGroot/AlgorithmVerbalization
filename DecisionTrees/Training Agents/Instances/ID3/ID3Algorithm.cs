@@ -29,7 +29,6 @@ namespace DecisionTrees
             // Prepare our runner with the right way to describe system state.
             runner.prepare_system_state(new List<EventDescriptor>() {
                 //TODO: A Descriptor must accept a list of dependencies as an optional parameter, and it inserts those variables into its lines as well.
-                //TODO: Revisit if we need an action string
                 calculate_attribute_gain,
                 determine_best_attribute,
                 split_on_best_attribute,
