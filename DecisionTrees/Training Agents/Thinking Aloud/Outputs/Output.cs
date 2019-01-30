@@ -19,7 +19,7 @@ namespace DecisionTrees
             this.state = state;
         }
 
-        public string toLine(String seperator, SystemStateDescriptor total)
+        public string toLine(String seperator, EventDescriptor total)
         {
             string addline = $"{this.occurence}{seperator}{this.action}";
             foreach (string variable_name in total.variable_names)

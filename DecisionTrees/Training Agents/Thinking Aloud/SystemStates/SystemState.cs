@@ -9,7 +9,7 @@ namespace DecisionTrees
     class SystemState
     {
         public List<object> state = new List<object>();
-        private SystemStateDescriptor descriptor;
+        private EventDescriptor descriptor;
 
         public SystemState(params object[] parameters)
         {
@@ -20,13 +20,13 @@ namespace DecisionTrees
 
         }
 
-        public SystemState setDescriptor(SystemStateDescriptor descriptor)
+        public SystemState setDescriptor(EventDescriptor descriptor)
         {
             this.descriptor = descriptor;
             return this;
         }
 
-        public SystemStateDescriptor getDescriptor()
+        public EventDescriptor getDescriptor()
         {
             return this.descriptor;
         }

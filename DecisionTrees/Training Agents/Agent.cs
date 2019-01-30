@@ -18,20 +18,20 @@ namespace DecisionTrees
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
-        public void THINK(SystemStateDescriptor descriptor, params object[] state_params)
+        public void THINK(EventDescriptor descriptor, params object[] state_params)
         {
             SystemState state = new SystemState(state_params).setDescriptor(descriptor);
             this.thoughts.add_thought(descriptor.cause, descriptor.name, state);
         }
 
-        public void DO(SystemStateDescriptor descriptor, string action, SystemState state = null)
+        public void DO(EventDescriptor descriptor, string action, SystemState state = null)
         {
             // TODO.
         }
 
-        public void prepare_system_state(List<SystemStateDescriptor> descriptors)
+        public void prepare_system_state(List<EventDescriptor> descriptors)
         {
-            foreach(SystemStateDescriptor descriptor in descriptors)
+            foreach(EventDescriptor descriptor in descriptors)
             {
                 this.thoughts.add_systemstate_descriptor(descriptor);
             }

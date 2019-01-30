@@ -15,9 +15,9 @@ namespace DecisionTrees
         private Agent runner;
 
         // Make System State Descriptors
-        private SystemStateDescriptor calculate_attribute_gain = new SystemStateDescriptor("new-iteration", "calculate-attribute-gain", new List<string>() { "my_gain", "my_attr" } );
-        private SystemStateDescriptor determine_best_attribute = new SystemStateDescriptor("best-attribute-changed", "determine-best-attribute", new List<string>() { "highest_gain", "best_attr" });
-        private SystemStateDescriptor split_on_best_attribute = new SystemStateDescriptor("new-value-to-split-on", "split-on-best-attribute", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
+        private EventDescriptor calculate_attribute_gain = new EventDescriptor("new-iteration", "calculate-attribute-gain", new List<string>() { "my_gain", "my_attr" } );
+        private EventDescriptor determine_best_attribute = new EventDescriptor("best-attribute-changed", "determine-best-attribute", new List<string>() { "highest_gain", "best_attr" });
+        private EventDescriptor split_on_best_attribute = new EventDescriptor("new-value-to-split-on", "split-on-best-attribute", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
         
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
@@ -27,10 +27,9 @@ namespace DecisionTrees
             this.runner = runner;
 
             // Prepare our runner with the right way to describe system state.
-            runner.prepare_system_state(new List<SystemStateDescriptor>() {
+            runner.prepare_system_state(new List<EventDescriptor>() {
                 //TODO: Rename to EventStateDescriptors?
                 //TODO: A Descriptor must accept a list of dependencies as an optional parameter, and it inserts those variables into its lines as well.
-                //TODO: The system state descriptor must be able to create a system state itself, so you can just pass the descriptor and the variables list to THINK.
                 //TODO: Revisit if we need an action string
                 calculate_attribute_gain,
                 determine_best_attribute,

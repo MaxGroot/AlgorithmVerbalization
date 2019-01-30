@@ -11,18 +11,18 @@ namespace DecisionTrees
     {
         private List<Output> outputs = new List<Output>();
 
-        private List<SystemStateDescriptor> all_descriptors = new List<SystemStateDescriptor>();
-        private SystemStateDescriptor total_descriptor;
+        private List<EventDescriptor> all_descriptors = new List<EventDescriptor>();
+        private EventDescriptor total_descriptor;
         private SystemState total_state;
 
-        public void add_systemstate_descriptor(SystemStateDescriptor descriptor)
+        public void add_systemstate_descriptor(EventDescriptor descriptor)
         {
             all_descriptors.Add(descriptor);
         }
 
         public void generate_total_descriptor()
         {
-            this.total_descriptor = SystemStateDescriptor.generateTotal(all_descriptors);
+            this.total_descriptor = EventDescriptor.generateTotal(all_descriptors);
             List<object> current_objects = new List<object>();
             foreach (string name in this.total_descriptor.variable_names)
             {
