@@ -8,13 +8,15 @@ namespace DecisionTrees
 {
     public class Leaf: ITreeElement
     {
+        public string identifier;
         public string value_splitter;
         public string classifier;
         public Node parent;
         public bool isBestGuess = false; 
 
-        public Leaf(string value_splitter, string classifier, Node parent)
+        public Leaf(string identifier, string value_splitter, string classifier, Node parent)
         {
+            this.identifier = identifier;
             this.value_splitter = value_splitter;
             this.classifier = classifier;
             this.parent = parent;

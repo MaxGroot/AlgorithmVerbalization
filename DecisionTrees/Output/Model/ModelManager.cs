@@ -59,13 +59,13 @@ namespace DecisionTrees
         private static string nodeToLine(Node node)
         {
             int level = node_level(node);
-            return $"{level}-NODE-{node.label}-{node.value_splitter}";
+            return $"{level}-NODE-{node.identifier}-{node.label}-{node.value_splitter}";
         }
         private static string leafToLine(Leaf leaf)
         {
             int level = node_level(leaf.parent) + 1;
             string classifying_strength = leaf.isBestGuess ? "ESTIMATE" : "PERFECT";
-            return $"{level}-LEAF-{leaf.parent.label}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
+            return $"{level}-LEAF-{leaf.identifier}-{leaf.parent.label}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
     }
 }

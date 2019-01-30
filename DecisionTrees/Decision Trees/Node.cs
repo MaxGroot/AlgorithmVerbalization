@@ -12,11 +12,13 @@ namespace DecisionTrees
         public string label;
         private Node parent = null;
         public string value_splitter = "";
+        public string identifier;
         private List<Node> nodeChildren = new List<Node>();
         private List<Leaf> leafChildren = new List<Leaf>();
 
-        public Node(string label, string value_splitter)
+        public Node(string identifier, string label, string value_splitter)
         {
+            this.identifier = identifier;
             this.label = label;
             this.value_splitter = value_splitter;
         }
