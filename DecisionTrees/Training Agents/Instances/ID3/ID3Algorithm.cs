@@ -56,12 +56,12 @@ namespace DecisionTrees
             foreach(string attr in attributes_copy)
             { 
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
-                runner.THINK(calculate_attribute_gain, new SystemState(my_gain, attr).setDescriptor(calculate_attribute_gain));
+                runner.THINK(calculate_attribute_gain, my_gain, attr);
                 if (my_gain > highest_gain)
                 {
                     best_attr = attr;
                     highest_gain = my_gain;
-                    runner.THINK(determine_best_attribute, new SystemState(highest_gain, best_attr).setDescriptor(determine_best_attribute));
+                    runner.THINK(determine_best_attribute, highest_gain, best_attr);
                 }
             }
             if (highest_gain == 0)
@@ -85,7 +85,7 @@ namespace DecisionTrees
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
-                runner.THINK(split_on_best_attribute, new SystemState("todo", list_to_objectstring(attributes_copy), "todo", value_splitter).setDescriptor(split_on_best_attribute));
+                runner.THINK(split_on_best_attribute, "todo", list_to_objectstring(attributes_copy), "todo", value_splitter);
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
