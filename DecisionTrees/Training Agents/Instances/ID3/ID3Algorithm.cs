@@ -83,7 +83,7 @@ namespace DecisionTrees
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
-                runner.THINK(split_on_best_attribute, "todo", list_to_objectstring(attributes_copy), "todo", value_splitter);
+                runner.THINK(split_on_best_attribute, subset_to_objectstring(subset), list_to_objectstring(attributes_copy), new_node.identifier, value_splitter);
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
@@ -131,7 +131,20 @@ namespace DecisionTrees
                 this.possible_attribute_values.Add(attr, attribute_values);
             }
         }
-           
+        private string subset_to_objectstring(List<DataInstance> l)
+        {
+            string ret = "{";
+            for (int i = 0; i < l.Count; i++)
+            {
+                ret += l[i].identifier;
+                if (i != l.Count - 1)
+                {
+                    ret += ",";
+                }
+            }
+            ret += "}";
+            return ret;
+        }
         private string list_to_objectstring(List<string> str)
         {
             string ret = "{";

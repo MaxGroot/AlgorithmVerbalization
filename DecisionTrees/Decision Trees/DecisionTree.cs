@@ -10,12 +10,11 @@ namespace DecisionTrees
     {
         private Node root = null;
         private int element_counter = 0;
-        private List<string> alphabet = new List<string>() { "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z" };
         public Node addNode(string attribute, string value_splitter, Node parent, string element_identifier = null)
         {
             if (element_identifier == null)
             {
-                element_identifier = generateElementId(element_counter);
+                element_identifier = Calculator.generateElementId(element_counter);
             }
             Node newnode = new Node(element_identifier,attribute, value_splitter);
             if (root == null)
@@ -34,7 +33,7 @@ namespace DecisionTrees
         {
             if (element_identifier == null)
             {
-                element_identifier = generateElementId(element_counter);
+                element_identifier = Calculator.generateElementId(element_counter);
             }
             Leaf leaf = new Leaf(element_identifier, value_splitter, class_prediction, parent);
             parent.addChildLeaf(leaf);
@@ -67,13 +66,6 @@ namespace DecisionTrees
             Console.WriteLine(str);
         }
 
-        private string generateElementId(int counter)
-        {
-            int second_letter_count = counter % 26;
-            int first_letter_count = (int)counter / 26;
-
-            return alphabet[first_letter_count] + alphabet[second_letter_count];
-        }
 
         public DataInstance classify(DataInstance instance, string classifier_name)
         {
