@@ -15,9 +15,9 @@ namespace DecisionTrees
         private Agent runner;
 
         // Make System State Descriptors
-        private EventDescriptor calculate_attribute_gain = new EventDescriptor("new-iteration", "calculate-attribute-gain", new List<string>() { "my_gain", "my_attr" } );
-        private EventDescriptor determine_best_attribute = new EventDescriptor("best-attribute-changed", "determine-best-attribute", new List<string>() { "highest_gain", "best_attr" });
-        private EventDescriptor split_on_best_attribute = new EventDescriptor("new-value-to-split-on", "split-on-best-attribute", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
+        private EventDescriptor calculate_attribute_gain = new EventDescriptor("calculate-attribute-gain", "", new List<string>() { "my_gain", "my_attr" } );
+        private EventDescriptor determine_best_attribute = new EventDescriptor("determine-best-attribute", "", new List<string>() { "highest_gain", "best_attr" });
+        private EventDescriptor split_on_best_attribute = new EventDescriptor("split-on-best-attribute", "", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" });
         
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {

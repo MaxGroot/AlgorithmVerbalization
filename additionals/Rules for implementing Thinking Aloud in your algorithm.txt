@@ -43,3 +43,9 @@ Guide to implementing:
 3) Based on 2, determine the events. What are the big changes to memory? 
 4) Make an event dependency graph.
 5) Now that you know which evens can take place, ...
+
+
+
+
+----- Random thoughts -----
+When transforming the thoughts to an analyzeable format, we should make a column 'last-event', and remove the event lines from the post-formatting file. 
