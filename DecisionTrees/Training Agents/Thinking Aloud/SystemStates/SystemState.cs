@@ -8,14 +8,16 @@ namespace DecisionTrees
 {
     class SystemState
     {
-        public List<object> state = new List<object>();
+        public List<object> variable_values = new List<object>();
+        public List<string> variable_names = new List<string>();
+
         private EventDescriptor descriptor;
 
         public SystemState(params object[] parameters)
         {
             foreach(object variable in parameters)
             {
-                state.Add(variable);
+                variable_values.Add(variable);
             }
 
         }
@@ -23,6 +25,7 @@ namespace DecisionTrees
         public SystemState setDescriptor(EventDescriptor descriptor)
         {
             this.descriptor = descriptor;
+            this.variable_names = descriptor.variable_names;
             return this;
         }
 
@@ -31,13 +34,33 @@ namespace DecisionTrees
             return this.descriptor;
         }
 
-        public void setVariable(string name, object value)
+        public void setVariable(string name, object value, bool force_addition = false)
         {
             // At what position do we have the variable in our descriptor?
-            int valueIndex = this.descriptor.variable_names.IndexOf(name);
+            int valueIndex = this.variable_names.IndexOf(name);
             // On that same position we update our value.
-            this.state[valueIndex] = value;
-
+            if (valueIndex == -1)
+            {
+                if (!force_addition)
+                {
+                    throw new Exception($"Can't set {name} to {value} because it's not in my variable names contract.");
+                }
+                this.variable_values.Add(value);
+                this.variable_names.Add(name);
+            }else
+            {
+                Console.WriteLine($"{valueIndex}");
+                foreach(string vname in variable_names)
+                {
+                    Console.WriteLine(name);
+                }
+                Console.WriteLine("POEP");
+                foreach(object val in variable_values)
+                {
+                    Console.WriteLine(val.ToString());
+                }
+                this.variable_values[valueIndex] = value;
+            }
         }
 
         public object getVariable(string name)
@@ -47,7 +70,7 @@ namespace DecisionTrees
             {
                 return null;
             }
-            return this.state[valueIndex];
+            return this.variable_values[valueIndex];
         }
 
         // Adds a new state to an old state. The old states variables are leading. 
@@ -56,9 +79,9 @@ namespace DecisionTrees
         public static SystemState Add(SystemState oldstate, SystemState newstate)
         {
             // Loop through old state's variable names
-            foreach(string variable_name in oldstate.descriptor.variable_names)
+            foreach(string variable_name in oldstate.variable_names)
             {
-                if (newstate.descriptor.variable_names.Contains(variable_name))
+                if (newstate.variable_names.Contains(variable_name))
                 {
                     // The new state knows about the old state's variable. Hence, we update the old one's value.
                     oldstate.setVariable(variable_name, newstate.getVariable(variable_name));
@@ -70,12 +93,13 @@ namespace DecisionTrees
         public static SystemState copy(SystemState oldstate)
         {
             List<object> object_list = new List<object>();
-            foreach(object obj in oldstate.state)
+            foreach(object obj in oldstate.variable_values)
             {
                 object_list.Add(obj);
             }
             SystemState copy = new SystemState(object_list.ToArray());
             copy.setDescriptor(oldstate.getDescriptor());
+            copy.variable_names = oldstate.variable_names;
 
             return copy;
         }

@@ -71,16 +71,19 @@ namespace DecisionTrees
 
         private Output insert_dependencies(Output output_to_update, Dictionary<EventDescriptor, int> last_output_position_with_this_descriptor, List<Output> all_outputs)
         {
+            Console.WriteLine($"Dependency insert for {output_to_update.state.getDescriptor().dependencies.Count} dependencies, for {output_to_update.state.getDescriptor().cause}");
             foreach(EventDescriptor desc in output_to_update.state.getDescriptor().dependencies)
             {
-                Console.WriteLine($"{desc.name} dependency for {output_to_update.state.getDescriptor().name}: ");
+                Console.WriteLine($"{desc.cause} -  dependency for {output_to_update.state.getDescriptor().cause}: ");
 
                 Output last_output = all_outputs[last_output_position_with_this_descriptor[desc]];
-                Console.WriteLine($"Output found in {last_output.state.getDescriptor().name}..");
+                Console.WriteLine($"Output found in {last_output.state.getDescriptor().cause}..");
                 foreach(string key in desc.variable_names)
                 {
-                    Console.WriteLine("Getting and setting variable.");
-                    output_to_update.state.setVariable(key, last_output.state.getVariable(key)); 
+                    Console.WriteLine($"Getting and setting variable {key}..");
+                    string old_value = last_output.state.getVariable(key).ToString();
+
+                    output_to_update.state.setVariable(key, old_value, true); 
                 }
             }
             return output_to_update;
