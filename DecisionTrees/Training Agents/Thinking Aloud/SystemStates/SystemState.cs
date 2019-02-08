@@ -8,27 +8,55 @@ namespace DecisionTrees
 {
     class SystemState
     {
-        public List<object> variable_values = new List<object>();
-        public List<string> variable_names = new List<string>();
-
+        private List<object> variable_values;
+        private List<string> variable_names;
+        private string identifier;
         private EventDescriptor descriptor;
 
         public SystemState(params object[] parameters)
         {
-            foreach(object variable in parameters)
+
+            this.variable_values = new List<object>();
+            this.variable_names = new List<string>();
+
+            foreach (object variable in parameters)
             {
                 variable_values.Add(variable);
             }
-
+            this.identifier = "UNASSIGNED";
         }
-
+        private void add_pair(string name, object value)
+        {
+            this.variable_names.Add(name);
+            this.variable_values.Add(value);
+        }
+        private void clear_all_pairs()
+        {
+            this.variable_names.Clear();
+            this.variable_values.Clear();
+        }
+        private void set_empty_pairs(List<string> names)
+        {
+            foreach(string name in names)
+            {
+                this.add_pair(name, "");
+            }
+        }
         public SystemState setDescriptor(EventDescriptor descriptor)
         {
             this.descriptor = descriptor;
-            this.variable_names = descriptor.variable_names;
+            this.set_empty_pairs(descriptor.variable_names);
             return this;
         }
-
+        public SystemState setIdentifier(string identifier)
+        {
+            this.identifier = identifier;
+            return this;
+        }
+        public string getIdentifier()
+        {
+            return this.identifier;
+        }
         public EventDescriptor getDescriptor()
         {
             return this.descriptor;
@@ -45,21 +73,18 @@ namespace DecisionTrees
                 {
                     throw new Exception($"Can't set {name} to {value} because it's not in my variable names contract.");
                 }
-                this.variable_values.Add(value);
-                this.variable_names.Add(name);
-            }else
+                this.add_pair(name, value);
+                
+            }
+            else
             {
-                Console.WriteLine($"{valueIndex}");
-                foreach(string vname in variable_names)
+                if (this.variable_values.Count - 1 >= valueIndex)
                 {
-                    Console.WriteLine(name);
-                }
-                Console.WriteLine("POEP");
-                foreach(object val in variable_values)
+                    this.variable_values[valueIndex] = value;
+                }else
                 {
-                    Console.WriteLine(val.ToString());
+                    throw new Exception("Mismatch between variable values and variable names!");
                 }
-                this.variable_values[valueIndex] = value;
             }
         }
 
@@ -71,6 +96,22 @@ namespace DecisionTrees
                 return null;
             }
             return this.variable_values[valueIndex];
+        }
+
+        public void write()
+        {
+            string outt = "";
+            foreach (string n in this.variable_names)
+            {
+                outt += " - " + n;
+            }
+            Console.WriteLine($"Names: {outt}");
+            outt = "";
+            foreach (object n in variable_values)
+            {
+                outt += " - " + n.ToString();
+            }
+            Console.WriteLine($"Variables: {outt}");
         }
 
         // Adds a new state to an old state. The old states variables are leading. 
@@ -90,7 +131,7 @@ namespace DecisionTrees
             return oldstate;
         }
 
-        public static SystemState copy(SystemState oldstate)
+        public static SystemState copy(SystemState oldstate, string identifier)
         {
             List<object> object_list = new List<object>();
             foreach(object obj in oldstate.variable_values)
@@ -99,8 +140,14 @@ namespace DecisionTrees
             }
             SystemState copy = new SystemState(object_list.ToArray());
             copy.setDescriptor(oldstate.getDescriptor());
-            copy.variable_names = oldstate.variable_names;
+            copy.clear_all_pairs();
+            
+            foreach(string name in oldstate.variable_names)
+            {
+                copy.add_pair(name, oldstate.variable_values[oldstate.variable_names.IndexOf(name)]);
+            }
 
+            copy.setIdentifier(identifier);
             return copy;
         }
     }

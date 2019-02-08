@@ -7,7 +7,9 @@
 --- But how do you do this? ---
 
 3) If you change a variable --> THINK up an event, with a new state. 
-4) If you change the model --> THINK with the event that last changed the system state that you have used, action is your model action, no system state.
+4) If you change the model --> DO with the event that last changed the system state that you have used, action is your model action, no system state.
+
+Onzeker:
 5) If you evaluate what you're gonna do next --> THINK with the event that last changed the system event that you have used, action is your algorithm action, system state?
 
 
@@ -18,7 +20,6 @@
 
 -------------- Rules for making expressions ------------------
 1) If you use an event, you may only use the variables described in the system state for that event
-2) 
 
 ---- What do System State Descriptors do? ---- 
   
@@ -32,7 +33,7 @@
 
 ----- Questions I still have ----
 - Which variables from a previous system state do you take with you?
-	Answer: None.
+	Answer: None? Of: Dependencies?.
 
 - Which variables do you set in the System State? The total calculation will evaluate to true false stuff, which will result in a decision tree that exactly explains the algorithm.
 
