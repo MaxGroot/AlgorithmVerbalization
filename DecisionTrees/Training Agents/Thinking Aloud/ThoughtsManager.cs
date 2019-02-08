@@ -84,8 +84,7 @@ namespace DecisionTrees
                     Console.WriteLine($"Getting and setting variable {key}..");
                     string old_value = last_output.state.getVariable(key).ToString();
                     Console.WriteLine($"Old value: {old_value}");
-                    output_to_update.state.write();
-                    output_to_update.state.setVariable(key, old_value, true); 
+                    output_to_update.state.setVariable(key, old_value, true);
                 }
             }
             return output_to_update;

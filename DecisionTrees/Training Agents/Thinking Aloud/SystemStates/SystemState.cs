@@ -90,7 +90,7 @@ namespace DecisionTrees
 
         public object getVariable(string name)
         {
-            int valueIndex = this.descriptor.variable_names.IndexOf(name);
+            int valueIndex = this.variable_names.IndexOf(name);
             if (valueIndex == -1)
             {
                 return null;
