@@ -76,14 +76,10 @@ namespace DecisionTrees
         {
             foreach(EventDescriptor desc in output_to_update.state.getDescriptor().dependencies)
             {
-                Console.WriteLine($"{desc.cause} -  dependency for {output_to_update.state.getDescriptor().cause}: ");
                 Output last_output = all_outputs[last_output_position_with_this_descriptor[desc]];
-                Console.WriteLine($"Output found in {last_output.state.getDescriptor().cause}..");
                 foreach(string key in desc.variable_names)
                 {
-                    Console.WriteLine($"Getting and setting variable {key}..");
                     string old_value = last_output.state.getVariable(key).ToString();
-                    Console.WriteLine($"Old value: {old_value}");
                     output_to_update.state.setVariable(key, old_value, true);
                 }
             }
