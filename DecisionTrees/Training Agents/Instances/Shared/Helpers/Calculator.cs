@@ -11,8 +11,7 @@ namespace DecisionTrees
         private static List<string> alphabet()
         {
             return new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-
-    }
+        }
     public static double entropy(List<DataInstance> S, string attribute_key)
         {
             // Initialize a dictionary that will count for each value of the target attribute how many times it occures within a set. 
@@ -155,12 +154,12 @@ namespace DecisionTrees
             return attribute_values;
         }
 
-        public static string generateElementId(int counter)
+        public static string generateElementId(char character, int counter)
         {
             int second_letter_count = counter % 26;
             int first_letter_count = (int)counter / 26;
 
-            return alphabet()[first_letter_count] + alphabet()[second_letter_count];
+            return character.ToString() + "-"  + alphabet()[first_letter_count] + alphabet()[second_letter_count];
         }
     }
 }
