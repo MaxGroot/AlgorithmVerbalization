@@ -31,7 +31,26 @@ namespace DecisionTrees
         
         public void filesave_string(string filename, string output)
         {
-            File.WriteAllText(save_location + filename, output);
+            bool keep_trying = true;
+            while(keep_trying)
+            {
+                try
+                {
+                    File.WriteAllText(save_location + filename, output);
+                    keep_trying = false;
+                }
+                catch(IOException e)
+                {
+                    Console.WriteLine($"Could not save file {filename}, in use. Try again? Press enter for yes, anything else for no.");
+                    string input = Console.ReadLine();
+                    if (input != "")
+                    {
+                        keep_trying = false;
+                        Console.WriteLine($"Not saving {filename}.");
+                    }
+                }
+            }
+
         }
 
         public void filesave_lines(string filename, List<string> lines)
