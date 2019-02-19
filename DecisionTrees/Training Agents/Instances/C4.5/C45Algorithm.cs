@@ -23,63 +23,27 @@ namespace DecisionTrees
                     possible_attribute_values[attr] = null;
                 }
             }
-            Console.WriteLine("Let's go bois");
-            throw new NotImplementedException();
             return this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
         {
-            // Check termination criteria
-            if (Calculator.subset_has_all_same_classifier(set, target_attribute))
+            foreach(string attr in attributes.Keys.ToList())
             {
-                // All same class: Create a leaf node for the decision tree.
-
-                tree.addLeaf(last_split, set.First().getProperty(target_attribute), parent);
-                return tree;
-            }
-            if (set.Count == 0)
-            {
-                // Set size 0: don't do anything
-                return tree;
-            }
-
-            double highest_gain = 0.00;
-            string a_best = "DAFAQ";
-            /*
-            foreach (string attr in attributes)
-            {
-                double my_gain = Calculator.splitInfo(set, attr, target_attribute, this.possible_attribute_values[attr]);
-                if (my_gain > highest_gain)
+                Console.WriteLine($"Calculating stuff for {attr}..");
+                if (attributes[attr] == "nominal")
                 {
-                    highest_gain = my_gain;
-                    a_best = attr;
+                   // Console.WriteLine($"Gain: {Calculator.gain(set, attr, target_attribute, possible_attribute_values[attr])}");
+                   // Console.WriteLine($"Gainratio: {Calculator.gainRatio(set, attr, target_attribute, possible_attribute_values[attr])}");
+                }
+                if (attributes[attr] == "continuous")
+                {
+                    Console.WriteLine("Continuous variable..");
+                    double[] split_and_ratio = Calculator.best_split_and_ratio_for_continuous(set, attr, target_attribute);
+                    Console.WriteLine($" Best split on {split_and_ratio[0]} with ratio {split_and_ratio[1]}");
                 }
             }
-            */
-            Console.WriteLine($"{a_best} selected as best attribute");
-
-            // Split on a best
-
-
-           // foreach(string attr in attributes)
-           // {
-               // double gainratio = Calculator.splitInfo()
-           // }
-            // Compute criteria for attributes
-            double global_entropy = Calculator.entropy(set, target_attribute);
-
-            // Choose best attribute
-
-            // Create node for attribute
-
-            // Split the set based on newly created node
-
-            // For all sub data, call C4.5 to get a sub-tree
-
-            // Attach sub-tree to the node of 4.
-
-            // Return tree
+            throw new NotImplementedException("HOI");
             return tree;
         }
     }
