@@ -30,6 +30,17 @@ namespace DecisionTrees
             }
             throw new Exception($"Dictionary did not contain {attribute}");
         }
+        public double getPropertyAsDouble(string attribute)
+        {
+            string my_value_as_a_string = getProperty(attribute);
+            double my_value;
+            bool conversion_succesful = double.TryParse(my_value_as_a_string, out my_value);
+            if (!conversion_succesful)
+            {
+                throw new Exception($"Could not convert {my_value_as_a_string} to a double");
+            }
+            return my_value;
+        }
         public DataInstance overwriteProperty(string attribute, string value)
         {
             this.fields[attribute] = value;

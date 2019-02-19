@@ -45,7 +45,6 @@ namespace DecisionTrees
             return result;
         }
 
-
         public static double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute,  List <string> possible_values)
         {
             // First find the entropy of the target attribute over the given set.
@@ -109,9 +108,9 @@ namespace DecisionTrees
             return value_counter.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
         }
 
-        public static double intrinsicValue(List<DataInstance> S, string wanted_attribute, List<string> possible_values)
+        public static double splitInfo(List<DataInstance> S, string wanted_attribute, List<string> possible_values)
         {
-            double intrinsic = 0;
+            double splitinfo = 0;
             foreach(string value in possible_values)
             {
                 // Create a subset of data instances that only contain this value.
@@ -124,16 +123,72 @@ namespace DecisionTrees
                 proportion *= Math.Log(proportion, 2);
 
                 // Add to intrinsic value
-                intrinsic += proportion;
+                splitinfo += proportion;
 
             }
             // Return the negative of the sum.
-            return -intrinsic;
+            return -splitinfo;
         }
 
-        public static double splitInfo(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
+        public static double gainRatio(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
         {
-            return gain(S, wanted_attribute, targetAttribute, possible_values) / intrinsicValue(S, wanted_attribute, possible_values);
+            return gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
+        }
+
+        public static double gain_ratio_of_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute)
+        {
+            double total_set_entropy = entropy(S, target_attribute);
+
+            // Sort by the wanted attribute
+            List<DataInstance> s_sorted = S.OrderBy(o => o.getProperty(wanted_attribute)).ToList();
+            List<double> possible_values = new List<double>();
+
+            // Add posisble attribute values based on instances supplied.
+            foreach (DataInstance instance in s_sorted)
+            {
+                double my_value = instance.getPropertyAsDouble(wanted_attribute);
+                if (!possible_values.Contains(my_value)) {
+                    possible_values.Add(my_value);
+                }
+            }
+
+            // Loop through possible splits and calculate their gain ratios
+
+            double best_split = 0;
+            double best_split_gain_ratio = -1;
+            bool found_better_than_nothing = false;
+            foreach(double binary_split in possible_values)
+            {
+                // Create subsets below or equal, and above the wanted attribute's current binary split. 
+                List<DataInstance> s_below_or_equal = S.Where(o => o.getPropertyAsDouble(wanted_attribute) <= binary_split).ToList();
+                List<DataInstance> s_above = S.Where(o => o.getPropertyAsDouble(wanted_attribute) > binary_split).ToList();
+
+                double entropy_below_or_equal = entropy(s_below_or_equal, target_attribute);
+                double entropy_above = entropy(s_above, target_attribute);
+
+                double proportion_below_or_equal = ((double)s_below_or_equal.Count()) / ((double)S.Count());
+                double proportion_above = ((double)s_above.Count()) / ((double)S.Count());
+
+                // Calculare gain of splitting on this binary split
+                double gain_on_this_split = total_set_entropy - (proportion_below_or_equal * entropy_below_or_equal) - (proportion_above * entropy_above);
+
+                double splitinfo_on_this_split = -(proportion_below_or_equal * Math.Log(proportion_below_or_equal, 2)) - (proportion_above * Math.Log(proportion_above, 2));
+
+                double gain_ratio_on_this_split = gain_on_this_split / splitinfo_on_this_split;
+
+                // Finally all calculations are done! Lets find out if this one is the best one yet.
+                if (gain_ratio_on_this_split > best_split_gain_ratio)
+                {
+                    found_better_than_nothing = true;
+                    best_split_gain_ratio = gain_ratio_on_this_split;
+                    best_split = 0;
+                }
+            }
+            if (!found_better_than_nothing)
+            {
+                Console.WriteLine($"No gain ratio could be found for this attribute {wanted_attribute}");
+            }
+            return best_split;
         }
 
         public static List<string> calculateAttributePossibilities(string attr_name, List<DataInstance> Set)
