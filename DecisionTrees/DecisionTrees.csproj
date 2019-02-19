@@ -65,7 +65,7 @@
     <Compile Include="Output\Model\ModelManager.cs" />
     <Compile Include="Training Agents\Thinking Aloud\Outputs\Output.cs" />
     <Compile Include="Training Agents\Thinking Aloud\SystemStates\SystemState.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\SystemStates\SystemStateDescriptor.cs" />
+    <Compile Include="Training Agents\Thinking Aloud\SystemStates\EventDescriptor.cs" />
     <Compile Include="Output\TextWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

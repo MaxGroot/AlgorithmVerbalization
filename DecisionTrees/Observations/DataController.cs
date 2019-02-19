@@ -68,7 +68,7 @@ namespace DecisionTrees
                 if (row > 2)
                 {
                     // This is an instance. The attributes have already been established.
-                    DataInstance addition = new DataInstance();
+                    DataInstance addition = new DataInstance(Calculator.generateElementId('D', instances.Count));
                     int column = 0;
 
                     // Find the properties of this instance. 

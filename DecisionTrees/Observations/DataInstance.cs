@@ -9,7 +9,11 @@ namespace DecisionTrees
     public class DataInstance
     {
         Dictionary<string, string> fields = new Dictionary<string, string> ();
-
+        public string identifier;
+        public DataInstance(string identifier)
+        {
+            this.identifier = identifier;
+        }
         // Set an attribute to a value of this Data Instance. 
         public DataInstance setProperty(string attribute, string value)
         {

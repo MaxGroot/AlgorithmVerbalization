@@ -9,7 +9,7 @@ namespace DecisionTrees
     abstract class Agent
     {
        private ThoughtsManager thoughts;
-
+       private SystemState lastState = null;
        public Agent(ThoughtsManager thoughts)
         {
             this.thoughts = thoughts;
@@ -18,14 +18,20 @@ namespace DecisionTrees
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
 
-        public void THINK(string occurence, string action, SystemState state)
+        public void THINK(EventDescriptor descriptor, params object[] state_params)
         {
-            this.thoughts.add_thought(occurence, action, state);
+            SystemState state = new SystemState(state_params).setDescriptor(descriptor);
+            this.thoughts.add_thought(descriptor.cause, descriptor.name, state);
         }
 
-        public void prepare_system_state(List<SystemStateDescriptor> descriptors)
+        public void DO(EventDescriptor descriptor, string action, SystemState state = null)
         {
-            foreach(SystemStateDescriptor descriptor in descriptors)
+            // TODO.
+        }
+
+        public void prepare_system_state(List<EventDescriptor> descriptors)
+        {
+            foreach(EventDescriptor descriptor in descriptors)
             {
                 this.thoughts.add_systemstate_descriptor(descriptor);
             }

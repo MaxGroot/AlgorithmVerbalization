@@ -1,0 +1,52 @@
+1) All evaluations must be done on declared variables in memory --> No expressions in your evaluations
+2) All variables that are evaluated must have been expressed in their current value in a system state
+3) All model actions can only be done when there is an up-to-do thought outputted of the system state that they will use.
+
+
+--- This ensures all variables are known ---
+--- But how do you do this? ---
+
+3) If you change a variable --> THINK up an event, with a new state. 
+4) If you change the model --> DO with the event that last changed the system state that you have used, action is your model action, no system state.
+
+Onzeker:
+5) If you evaluate what you're gonna do next --> THINK with the event that last changed the system event that you have used, action is your algorithm action, system state?
+
+
+--- Rules for thoughts ---
+6) If you use the same system state descriptor, you need the same event. 
+7) You're allowed not to supply a System State if you know for certain not a single variable of system state has occured.
+
+
+-------------- Rules for making expressions ------------------
+1) If you use an event, you may only use the variables described in the system state for that event
+
+---- What do System State Descriptors do? ---- 
+  
+
+
+
+---- Consequences for thought results -----
+1) The same event might result in different actions, but all those actions look at the same system state!!
+
+
+
+----- Questions I still have ----
+- Which variables from a previous system state do you take with you?
+	Answer: None? Of: Dependencies?.
+
+- Which variables do you set in the System State? The total calculation will evaluate to true false stuff, which will result in a decision tree that exactly explains the algorithm.
+
+
+Guide to implementing:
+1) Write down all variables that change during execution that are being used
+2) For each variable, write down the code line numbers where they are being changed.
+3) Based on 2, determine the events. What are the big changes to memory? 
+4) Make an event dependency graph.
+5) Now that you know which evens can take place, ...
+
+
+
+
+----- Random thoughts -----
+When transforming the thoughts to an analyzeable format, we should make a column 'last-event', and remove the event lines from the post-formatting file. 

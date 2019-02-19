@@ -67,7 +67,6 @@ namespace DecisionTrees
                     break;
                 default:
                     throw new Exception($"Unknown algorithm given: {algorithm}");
-                    break;
             }
             
             Console.WriteLine("ADDED. Press a key to start training process \n");

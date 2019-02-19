@@ -9,10 +9,14 @@ namespace DecisionTrees
     class DecisionTree
     {
         private Node root = null;
-
-        public Node addNode(string attribute, string value_splitter, Node parent)
+        private int element_counter = 0;
+        public Node addNode(string attribute, string value_splitter, Node parent, string element_identifier = null)
         {
-            Node newnode = new Node(attribute, value_splitter);
+            if (element_identifier == null)
+            {
+                element_identifier = Calculator.generateElementId('T',element_counter);
+            }
+            Node newnode = new Node(element_identifier,attribute, value_splitter);
             if (root == null)
             {
                 root = newnode;
@@ -21,14 +25,20 @@ namespace DecisionTrees
                 parent.addChildNode(newnode);
                 newnode.addParentNode(parent);
             }
+            element_counter++;
             return newnode;
         }
 
-        public Leaf addLeaf(string value_splitter, string class_prediction, Node parent)
+        public Leaf addLeaf(string value_splitter, string class_prediction, Node parent, string element_identifier = null)
         {
-            Leaf leaf = new Leaf(value_splitter, class_prediction, parent);
+            if (element_identifier == null)
+            {
+                element_identifier = Calculator.generateElementId('T', element_counter);
+            }
+            Leaf leaf = new Leaf(element_identifier, value_splitter, class_prediction, parent);
             parent.addChildLeaf(leaf);
 
+            element_counter++;
             return leaf;
         }
 
@@ -55,6 +65,7 @@ namespace DecisionTrees
             }
             Console.WriteLine(str);
         }
+
 
         public DataInstance classify(DataInstance instance, string classifier_name)
         {

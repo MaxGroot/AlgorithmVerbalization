@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class SystemStateDescriptor
+    class EventDescriptor
     {
         public List<string> variable_names = new List<string>();
+        public List<EventDescriptor> dependencies = new List<EventDescriptor>();
+        public string cause;
         public string name;
-        public SystemStateDescriptor(string name, List<string> variable_names)
+        public EventDescriptor(string cause, string name, List<string> variable_names, List<EventDescriptor> dependencies)
         {
+            this.cause = cause;
             this.name = name;
             this.variable_names = variable_names;
+            this.dependencies = dependencies;
         }
 
-        public static SystemStateDescriptor generateTotal(List<SystemStateDescriptor> list)
+        public static EventDescriptor generateTotal(List<EventDescriptor> list)
         {
             List<string> variable_names = new List<string>();
-            foreach(SystemStateDescriptor descriptor in list)
+            foreach(EventDescriptor descriptor in list)
             {
                 foreach(string name in descriptor.variable_names)
                 {
@@ -30,7 +34,7 @@ namespace DecisionTrees
                 }
             }
 
-            return new SystemStateDescriptor("Total Descriptor", variable_names);
+            return new EventDescriptor("This-is-irrelevant", "Total Descriptor", variable_names, new List<EventDescriptor>() { });
         }
     }
 }
