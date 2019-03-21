@@ -12,16 +12,17 @@ namespace DecisionTrees
         {
             return new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
         }
-    public static double entropy(List<DataInstance> S, string attribute_key)
+
+        public static double entropy(List<DataInstance> S, string attribute_key)
         {
             // Initialize a dictionary that will count for each value of the target attribute how many times it occures within a set. 
             Dictionary<string, float> proportions = new Dictionary<string, float>();
 
-            
+
             foreach (DataInstance example in S)
             {
                 string my_value = example.getProperty(attribute_key);
-                
+
                 if (!proportions.ContainsKey(my_value))
                 {
                     proportions[my_value] = 0;
@@ -45,11 +46,11 @@ namespace DecisionTrees
             return result;
         }
 
-        public static double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute,  List <string> possible_values)
+        public static double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
         {
             // First find the entropy of the target attribute over the given set.
             double result = entropy(S, targetAttribute);
-            
+
             // Loop through possible values of the wanted attribute
             foreach (string value in possible_values)
             {
@@ -92,9 +93,9 @@ namespace DecisionTrees
         {
             // Initialize Dictionary
             Dictionary<String, int> value_counter = new Dictionary<string, int>();
-            
+
             // Set classifier frequency in dictionary
-            foreach(DataInstance instance in S)
+            foreach (DataInstance instance in S)
             {
                 string my_classifier = instance.getProperty(target_attribute);
                 if (!value_counter.ContainsKey(my_classifier))
@@ -111,11 +112,11 @@ namespace DecisionTrees
         public static double splitInfo(List<DataInstance> S, string wanted_attribute, List<string> possible_values)
         {
             double splitinfo = 0;
-            foreach(string value in possible_values)
+            foreach (string value in possible_values)
             {
                 // Create a subset of data instances that only contain this value.
                 List<DataInstance> set_filtered = S.Where(A => A.getProperty(wanted_attribute) == value).ToList();
-                
+
                 // Calculate the proportion of this value in the set towards the size of the entire set.
                 double proportion = ((double)set_filtered.Count()) / ((double)S.Count());
 
@@ -147,7 +148,8 @@ namespace DecisionTrees
             foreach (DataInstance instance in s_sorted)
             {
                 double my_value = instance.getPropertyAsDouble(wanted_attribute);
-                if (!possible_values.Contains(my_value)) {
+                if (!possible_values.Contains(my_value))
+                {
                     possible_values.Add(my_value);
                 }
             }
@@ -158,7 +160,7 @@ namespace DecisionTrees
             double best_split_gain = -1;
             double best_split_gain_ratio = -1;
             bool found_better_than_nothing = false;
-            foreach(double binary_split in possible_values)
+            foreach (double binary_split in possible_values)
             {
 
                 // Create subsets below or equal, and above the wanted attribute's current binary split. 
@@ -170,12 +172,12 @@ namespace DecisionTrees
 
                 double proportion_below_or_equal = ((double)s_below_or_equal.Count()) / ((double)S.Count());
                 double proportion_above = ((double)s_above.Count()) / ((double)S.Count());
-                
+
                 // Calculare gain of splitting on this binary split
                 double gain_on_this_split = total_set_entropy - (proportion_below_or_equal * entropy_below_or_equal) - (proportion_above * entropy_above);
                 double splitinfo_on_this_split = -(proportion_below_or_equal * Math.Log(proportion_below_or_equal, 2)) - (proportion_above * Math.Log(proportion_above, 2));
                 double gain_ratio_on_this_split = gain_on_this_split / splitinfo_on_this_split;
-               
+
                 // Finally all calculations are done! Lets find out if this one is the best one yet.
                 if (gain_on_this_split > best_split_gain)
                 {
@@ -215,7 +217,34 @@ namespace DecisionTrees
             int second_letter_count = counter % 26;
             int first_letter_count = (int)counter / 26;
 
-            return character.ToString() + "-"  + alphabet()[first_letter_count] + alphabet()[second_letter_count];
+            return character.ToString() + "-" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
+        }
+
+        public static List<List<DataInstance>> subsetOnAttributeNominal(List<DataInstance> set, string attribute, List<string> possible_attribute_values)
+        {
+            List<List<DataInstance>> list_of_subsets = new List<List<DataInstance>>();
+            foreach (string value_splitter in possible_attribute_values)
+            {
+                List<DataInstance> subset = set.Where(A => A.getProperty(attribute) == value_splitter).ToList();
+                Console.WriteLine($"Subset on {value_splitter} : {subset.Count} instances out of {set.Count}.");
+                list_of_subsets.Add(subset);
+            }
+            return list_of_subsets;
+        }
+
+
+        public static List<List<DataInstance>> subsetOnAttributeContinuous(List<DataInstance> set, string attribute, double threshold)
+        {
+            List<List<DataInstance>> list_of_subsets = new List<List<DataInstance>>();
+            List<DataInstance> less_than_equal = set.Where(A => A.getPropertyAsDouble(attribute) <= threshold).ToList();
+            Console.WriteLine($" <= {threshold} : {less_than_equal.Count} / {set.Count}");
+
+            List<DataInstance> above = set.Where(A => A.getPropertyAsDouble(attribute) > threshold).ToList();
+            Console.WriteLine($" > {threshold} : {above.Count} / {set.Count}");
+
+            list_of_subsets.Add(less_than_equal);
+            list_of_subsets.Add(above);
+            return list_of_subsets;
         }
     }
 }

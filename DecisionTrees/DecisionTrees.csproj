@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classification\ModelLoader.cs" />
+    <Compile Include="Decision Trees\ContinuousNode.cs" />
     <Compile Include="Decision Trees\ITreeElement.cs" />
     <Compile Include="Output\Drawing\DrawElement.cs" />
     <Compile Include="Output\Drawing\DrawManager.cs" />

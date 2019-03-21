@@ -28,6 +28,25 @@ namespace DecisionTrees
             element_counter++;
             return newnode;
         }
+        public ContinuousNode addContinuousNode(string attribute, string value_splitter, double attribute_threshold, Node parent, string element_identifier = null)
+        {
+            if (element_identifier == null)
+            {
+                element_identifier = Calculator.generateElementId('T', element_counter);
+            }
+            ContinuousNode newnode = new ContinuousNode(element_identifier, attribute, value_splitter).setThreshold(attribute_threshold);
+            if (root == null)
+            {
+                root = newnode;
+            }
+            else
+            {
+                parent.addChildNode(newnode);
+                newnode.addParentNode(parent);
+            }
+            element_counter++;
+            return newnode;
+        }
 
         public Leaf addLeaf(string value_splitter, string class_prediction, Node parent, string element_identifier = null)
         {
