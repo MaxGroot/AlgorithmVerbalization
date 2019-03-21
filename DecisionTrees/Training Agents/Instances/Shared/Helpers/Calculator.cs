@@ -220,31 +220,33 @@ namespace DecisionTrees
             return character.ToString() + "-" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
         }
 
-        public static List<List<DataInstance>> subsetOnAttributeNominal(List<DataInstance> set, string attribute, List<string> possible_attribute_values)
+        public static Dictionary<string, List<DataInstance>> subsetOnAttributeNominal(List<DataInstance> set, string attribute, List<string> possible_attribute_values)
         {
-            List<List<DataInstance>> list_of_subsets = new List<List<DataInstance>>();
+            Dictionary<string, List<DataInstance>> subset_collection = new Dictionary<string, List<DataInstance>>();
+
             foreach (string value_splitter in possible_attribute_values)
             {
                 List<DataInstance> subset = set.Where(A => A.getProperty(attribute) == value_splitter).ToList();
                 Console.WriteLine($"Subset on {value_splitter} : {subset.Count} instances out of {set.Count}.");
-                list_of_subsets.Add(subset);
+                subset_collection.Add(value_splitter, subset);
             }
-            return list_of_subsets;
+            return subset_collection;
         }
 
 
-        public static List<List<DataInstance>> subsetOnAttributeContinuous(List<DataInstance> set, string attribute, double threshold)
+        public static Dictionary<string, List<DataInstance>> subsetOnAttributeContinuous(List<DataInstance> set, string attribute, double threshold)
         {
-            List<List<DataInstance>> list_of_subsets = new List<List<DataInstance>>();
+            Dictionary<string, List<DataInstance>> subset_collection = new Dictionary<string, List<DataInstance>>();
+            
             List<DataInstance> less_than_equal = set.Where(A => A.getPropertyAsDouble(attribute) <= threshold).ToList();
             Console.WriteLine($" <= {threshold} : {less_than_equal.Count} / {set.Count}");
 
             List<DataInstance> above = set.Where(A => A.getPropertyAsDouble(attribute) > threshold).ToList();
             Console.WriteLine($" > {threshold} : {above.Count} / {set.Count}");
 
-            list_of_subsets.Add(less_than_equal);
-            list_of_subsets.Add(above);
-            return list_of_subsets;
+            subset_collection.Add("<=", less_than_equal);
+            subset_collection.Add(">", above);
+            return subset_collection;
         }
     }
 }
