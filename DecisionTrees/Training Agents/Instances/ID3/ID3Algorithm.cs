@@ -74,7 +74,7 @@ namespace DecisionTrees
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
-                string classifier_value = Calculator.subset_most_common_classifier(sets_todo, target_attribute);
+                string classifier_value = SetHelper.mostCommonClassifier(sets_todo, target_attribute);
                 tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
                 return tree;
             }
@@ -96,7 +96,7 @@ namespace DecisionTrees
                     // There are no more of this subset. We need to skip this iteration.
                     continue;
                 }
-                if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
+                if (SetHelper.hasUniformClassifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 

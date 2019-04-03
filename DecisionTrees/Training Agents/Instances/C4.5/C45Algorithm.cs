@@ -21,7 +21,7 @@ namespace DecisionTrees
             {
                 if (attributes[attr] == "nominal")
                 {
-                    possible_attribute_values[attr] = Calculator.calculateAttributePossibilities(attr, examples);
+                    possible_attribute_values[attr] = SetHelper.attributePossibilities(attr, examples);
                 }else
                 {
                     possible_attribute_values[attr] = null;
@@ -70,13 +70,13 @@ namespace DecisionTrees
             {
                 newnode = tree.addContinuousNode(best_split_attribute, last_split, threshold, parent);
                 
-                subsets = Calculator.subsetOnAttributeContinuous(set, best_split_attribute, threshold);
+                subsets = SetHelper.subsetOnAttributeContinuous(set, best_split_attribute, threshold);
             }
             else
             {
                 newnode = tree.addNode(best_split_attribute, last_split, parent);
                 
-                subsets = Calculator.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
+                subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
             }
             
             foreach(string subset_splitter in subsets.Keys)
@@ -88,7 +88,7 @@ namespace DecisionTrees
                     // There are no more of this subset. We need to skip this iteration.
                     continue;
                 }
-                if (Calculator.subset_has_all_same_classifier(subset, target_attribute))
+                if (SetHelper.hasUniformClassifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 

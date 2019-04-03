@@ -43,7 +43,7 @@ namespace DecisionTrees
         {
             // Since we do not want to refer to the same object (ruining the list), we copy the state we had before.
             state_counter++;
-            SystemState my_state = SystemState.copy(state, Calculator.generateElementId('S', this.state_counter));
+            SystemState my_state = SystemState.copy(state, ElementHelper.generateElementId('S', this.state_counter));
 
             this.outputs.Add(new Output(occurence, action, my_state));
             this.last_output_position_with_this_descriptor[state.getDescriptor()] = this.outputs.Count - 1;
