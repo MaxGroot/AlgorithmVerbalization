@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 namespace DecisionTrees
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             Console.WriteLine("Good Day! Program has started.");
@@ -16,7 +18,7 @@ namespace DecisionTrees
             // Create our file handler
             TextWriter writer = new TextWriter();
             string mode = writer.askFromConfig("What mode do you want to do?", "GENERAL","mode");
-            
+
             switch(mode)
             {
                 case "training":
@@ -72,6 +74,9 @@ namespace DecisionTrees
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
             DecisionTree model = new DecisionTree();
@@ -92,17 +97,22 @@ namespace DecisionTrees
             {
                 model = agent.TRAIN(observations);
             }
+            long training_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Training completed. Processing thoughts.");
-           // writer.filesave_string(thoughts_filename, thoughts.output());
-
+            // writer.filesave_string(thoughts_filename, thoughts.output());
+            long thought_processing_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Thoughts processed. Processing model.");
             writer.filesave_lines(model_filename, ModelManager.output(model));
-
+            long saving_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Model saved. Saving image.");
 
             DrawManager drawing = new DrawManager(model);
             writer.filesave_lines(drawing_filename, drawing.lines());
+            long drawing_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Image saved.");
+
+            Console.WriteLine($"Training time: {training_time}. Thought processing time: {thought_processing_time - training_time}");
+            Console.WriteLine($"Model saving time: {saving_time - thought_processing_time}. Drawing saving time: {drawing_time - saving_time}.");
         }
 
         static void classify(TextWriter writer)
