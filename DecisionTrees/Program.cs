@@ -93,7 +93,7 @@ namespace DecisionTrees
                 model = agent.TRAIN(observations);
             }
             Console.WriteLine("Training completed. Processing thoughts.");
-            writer.filesave_string(thoughts_filename, thoughts.output());
+           // writer.filesave_string(thoughts_filename, thoughts.output());
 
             Console.WriteLine("Thoughts processed. Processing model.");
             writer.filesave_lines(model_filename, ModelManager.output(model));

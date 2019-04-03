@@ -14,7 +14,7 @@ namespace DecisionTrees
         {
             if (element_identifier == null)
             {
-                element_identifier = Calculator.generateElementId('T',element_counter);
+                element_identifier = ElementHelper.generateElementId('T',element_counter);
             }
             Node newnode = new Node(element_identifier,attribute, value_splitter);
             if (root == null)
@@ -28,12 +28,31 @@ namespace DecisionTrees
             element_counter++;
             return newnode;
         }
+        public ContinuousNode addContinuousNode(string attribute, string value_splitter, double attribute_threshold, Node parent, string element_identifier = null)
+        {
+            if (element_identifier == null)
+            {
+                element_identifier = ElementHelper.generateElementId('T', element_counter);
+            }
+            ContinuousNode newnode = new ContinuousNode(element_identifier, attribute, value_splitter).setThreshold(attribute_threshold);
+            if (root == null)
+            {
+                root = newnode;
+            }
+            else
+            {
+                parent.addChildNode(newnode);
+                newnode.addParentNode(parent);
+            }
+            element_counter++;
+            return newnode;
+        }
 
         public Leaf addLeaf(string value_splitter, string class_prediction, Node parent, string element_identifier = null)
         {
             if (element_identifier == null)
             {
-                element_identifier = Calculator.generateElementId('T', element_counter);
+                element_identifier = ElementHelper.generateElementId('T', element_counter);
             }
             Leaf leaf = new Leaf(element_identifier, value_splitter, class_prediction, parent);
             parent.addChildLeaf(leaf);
@@ -45,7 +64,13 @@ namespace DecisionTrees
         public Leaf addBestGuessLeaf(string value_splitter, string class_prediction, Node parent)
         {
             Leaf leaf = this.addLeaf(value_splitter, class_prediction, parent);
-            leaf.isBestGuess = true;
+            leaf.certainty = -1;
+            return leaf;
+        }
+        public Leaf addUncertainLeaf(string value_splitter, string class_prediction, Node parent, double certainty)
+        {
+            Leaf leaf = this.addLeaf(value_splitter, class_prediction, parent);
+            leaf.certainty = certainty;
             return leaf;
         }
 

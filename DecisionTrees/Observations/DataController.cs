@@ -68,7 +68,7 @@ namespace DecisionTrees
                 if (row > 2)
                 {
                     // This is an instance. The attributes have already been established.
-                    DataInstance addition = new DataInstance(Calculator.generateElementId('D', instances.Count));
+                    DataInstance addition = new DataInstance(ElementHelper.generateElementId('D', instances.Count));
                     int column = 0;
 
                     // Find the properties of this instance. 
@@ -86,7 +86,13 @@ namespace DecisionTrees
                             {
                                  key = column_positions[column];
                             }
-                            addition.setProperty(key, value);
+                            if (value == "")
+                            {
+                                addition.setProperty(key, null);
+                            } else
+                            {
+                                addition.setProperty(key, value);
+                            }
                         }
                         column++;
                     }

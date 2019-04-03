@@ -59,12 +59,17 @@ namespace DecisionTrees
         private static string nodeToLine(Node node)
         {
             int level = node_level(node);
-            return $"{level}-NODE-{node.identifier}-{node.label}-{node.value_splitter}";
+            ContinuousNode cNode = null;
+            if (node is ContinuousNode)
+            {
+                cNode = (ContinuousNode) node;
+            }
+            return $"{level}-NODE-{(node is ContinuousNode ? 'C' : 'N')}-{node.identifier}-{node.label}-{node.value_splitter}{(node is ContinuousNode ? $"-{cNode.threshold}" : "")}";
         }
         private static string leafToLine(Leaf leaf)
         {
             int level = node_level(leaf.parent) + 1;
-            string classifying_strength = leaf.isBestGuess ? "ESTIMATE" : "PERFECT";
+            string classifying_strength = leaf.certainty.ToString();
             return $"{level}-LEAF-{leaf.identifier}-{leaf.parent.label}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
     }
