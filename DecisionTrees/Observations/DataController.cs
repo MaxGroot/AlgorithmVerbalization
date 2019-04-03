@@ -86,7 +86,13 @@ namespace DecisionTrees
                             {
                                  key = column_positions[column];
                             }
-                            addition.setProperty(key, value);
+                            if (value == "")
+                            {
+                                addition.setProperty(key, null);
+                            } else
+                            {
+                                addition.setProperty(key, value);
+                            }
                         }
                         column++;
                     }
