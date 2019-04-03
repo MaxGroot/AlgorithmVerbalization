@@ -64,7 +64,13 @@ namespace DecisionTrees
         public Leaf addBestGuessLeaf(string value_splitter, string class_prediction, Node parent)
         {
             Leaf leaf = this.addLeaf(value_splitter, class_prediction, parent);
-            leaf.isBestGuess = true;
+            leaf.certainty = -1;
+            return leaf;
+        }
+        public Leaf addUncertainLeaf(string value_splitter, string class_prediction, Node parent, double certainty)
+        {
+            Leaf leaf = this.addLeaf(value_splitter, class_prediction, parent);
+            leaf.certainty = certainty;
             return leaf;
         }
 

@@ -40,7 +40,7 @@ namespace DecisionTrees
             // After the loop, we have the correct entropy.
             return result;
         }
-
+         
         public static double gain(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
         {
             // First find the entropy of the target attribute over the given set.
@@ -90,7 +90,12 @@ namespace DecisionTrees
 
         public static double gainRatio(List<DataInstance> S, string wanted_attribute, string targetAttribute, List<string> possible_values)
         {
-            return gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
+
+            // Adjust for missing data
+            double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
+            Console.WriteLine($"Fraction: {missingFraction}");
+
+            return (1 - missingFraction) * gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
         }
 
         public static double[] best_split_and_ratio_for_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute)
@@ -148,7 +153,10 @@ namespace DecisionTrees
             {
                 Console.WriteLine($"No gain ratio could be found for this attribute {wanted_attribute}");
             }
-            return new double[] { best_split, best_split_gain_ratio };
+            // Adjust for missing data
+            double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
+            best_split_gain_ratio = (1 - missingFraction) * best_split_gain_ratio;
+            return new double[] { best_split, best_split_gain_ratio};
         }
      
 }

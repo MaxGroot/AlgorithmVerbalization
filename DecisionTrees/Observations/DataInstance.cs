@@ -8,11 +8,32 @@ namespace DecisionTrees
 {
     public class DataInstance
     {
-        Dictionary<string, string> fields = new Dictionary<string, string> ();
+        protected Dictionary<string, string> fields = new Dictionary<string, string> ();
         public string identifier;
+        private double weight;
+
+        public static DataInstance copy(string identifier, DataInstance old)
+        {
+            DataInstance output = new DataInstance(identifier);
+            foreach (string key in old.fields.Keys.ToList())
+            {
+                output.setProperty(key, old.getProperty(key));
+            }
+            return output;
+        }
+
         public DataInstance(string identifier)
         {
             this.identifier = identifier;
+            this.weight = 1;
+        }
+        public double getWeight()
+        {
+            return this.weight;
+        }
+        public void setWeight(double weight)
+        {
+            this.weight = weight;
         }
         // Set an attribute to a value of this Data Instance. 
         public DataInstance setProperty(string attribute, string value)
@@ -30,6 +51,7 @@ namespace DecisionTrees
             }
             throw new Exception($"Dictionary did not contain {attribute}");
         }
+
         public double getPropertyAsDouble(string attribute)
         {
             string my_value_as_a_string = getProperty(attribute);

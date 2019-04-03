@@ -93,14 +93,38 @@ namespace DecisionTrees
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
                     string classifier_value = subset.First().getProperty(target_attribute);
-                    Leaf leaf = tree.addLeaf(subset_splitter, classifier_value, newnode);
+
+                    double certainty = 0;
+                    foreach(DataInstance instance in subset)
+                    {
+                        certainty += instance.getWeight();
+                    }
+                    certainty /= (double)subset.Count;
+
+                    Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                 }
                 else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
+                    if (attributes_for_further_iteration.Count == 0)
+                    {
+                        string most_common_classifier = SetHelper.mostCommonClassifier(subset, target_attribute);
 
-                    this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
-
+                        // Adjust for the uncertainty that comes with this prediction. 
+                        double percentage_with_this_classifier = (double) subset.Where(A => A.getProperty(target_attribute) == most_common_classifier).ToList().Count / (double) subset.Count;
+                        double certainty = 0;
+                        foreach (DataInstance instance in subset)
+                        {
+                            certainty += instance.getWeight();
+                        }
+                        certainty /= (double)subset.Count;
+                        
+                        Leaf lead = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty * percentage_with_this_classifier);
+                    }
+                    else
+                    {
+                        this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
+                    }
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                 }
             }

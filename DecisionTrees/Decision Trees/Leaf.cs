@@ -12,7 +12,7 @@ namespace DecisionTrees
         public string value_splitter;
         public string classifier;
         public Node parent;
-        public bool isBestGuess = false; 
+        public double certainty; 
 
         public Leaf(string identifier, string value_splitter, string classifier, Node parent)
         {
@@ -20,6 +20,7 @@ namespace DecisionTrees
             this.value_splitter = value_splitter;
             this.classifier = classifier;
             this.parent = parent;
+            this.certainty = 1;
         }
 
         public string myRule(string targetAttribute)
