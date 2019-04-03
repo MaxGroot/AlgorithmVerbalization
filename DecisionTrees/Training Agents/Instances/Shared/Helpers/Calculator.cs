@@ -227,7 +227,6 @@ namespace DecisionTrees
             foreach (string value_splitter in possible_attribute_values)
             {
                 List<DataInstance> subset = set.Where(A => A.getProperty(attribute) == value_splitter).ToList();
-                Console.WriteLine($"Subset on {value_splitter} : {subset.Count} instances out of {set.Count}.");
                 subset_collection.Add(value_splitter, subset);
             }
             return subset_collection;
@@ -239,11 +238,9 @@ namespace DecisionTrees
             Dictionary<string, List<DataInstance>> subset_collection = new Dictionary<string, List<DataInstance>>();
             
             List<DataInstance> less_than_equal = set.Where(A => A.getPropertyAsDouble(attribute) <= threshold).ToList();
-            Console.WriteLine($" <= {threshold} : {less_than_equal.Count} / {set.Count}");
-
+            
             List<DataInstance> above = set.Where(A => A.getPropertyAsDouble(attribute) > threshold).ToList();
-            Console.WriteLine($" > {threshold} : {above.Count} / {set.Count}");
-
+           
             subset_collection.Add("<=", less_than_equal);
             subset_collection.Add(">", above);
             return subset_collection;
