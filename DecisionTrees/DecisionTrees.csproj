@@ -47,6 +47,7 @@
     <Compile Include="Decision Trees\ITreeElement.cs" />
     <Compile Include="Output\Drawing\DrawElement.cs" />
     <Compile Include="Output\Drawing\DrawManager.cs" />
+    <Compile Include="Output\Drawing\VZExporter.cs" />
     <Compile Include="Output\IniFile.cs" />
     <Compile Include="Training Agents\Instances\C4.5\C45Agent.cs" />
     <Compile Include="Training Agents\Instances\C4.5\C45Algorithm.cs" />

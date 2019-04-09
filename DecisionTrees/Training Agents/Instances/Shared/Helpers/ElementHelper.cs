@@ -19,7 +19,7 @@ namespace DecisionTrees
             int second_letter_count = counter % 26;
             int first_letter_count = (int)counter / 26;
 
-            return character.ToString() + "-" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
+            return character.ToString() + "_" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
         }
     }
 }

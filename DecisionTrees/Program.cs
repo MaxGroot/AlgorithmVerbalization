@@ -107,6 +107,11 @@ namespace DecisionTrees
             Console.WriteLine("Model saved. Saving image.");
 
             DrawManager drawing = new DrawManager(model);
+
+            Console.WriteLine("Saving VZ image.");
+            VZExporter drawer2 = new VZExporter();
+            writer.filesave_lines(drawing_filename + ".vz", drawer2.lines(model));
+
             writer.filesave_lines(drawing_filename, drawing.lines());
             long drawing_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Image saved.");
