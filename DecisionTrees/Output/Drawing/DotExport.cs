@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class VZExporter
+    class DotExport
     {
         public List<string> lines(DecisionTree tree)
         {
@@ -84,7 +84,7 @@ namespace DecisionTrees
         }
         private string leafToLine(Leaf leaf)
         {
-            return $"L{leaf.identifier} [label=\"{leaf.classifier}\"];";
+            return $"L{leaf.identifier} [shape=none, label=\"{leaf.classifier} ({Math.Round(leaf.certainty, 2)})\", color=blue];";
         }
     }
 }

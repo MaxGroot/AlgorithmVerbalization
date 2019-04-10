@@ -104,15 +104,11 @@ namespace DecisionTrees
             Console.WriteLine("Thoughts processed. Processing model.");
             writer.filesave_lines(model_filename, ModelManager.output(model));
             long saving_time = stopwatch.ElapsedMilliseconds;
+
             Console.WriteLine("Model saved. Saving image.");
+            DotExport drawer = new DotExport();
+            writer.filesave_lines(drawing_filename, drawer.lines(model));
 
-            DrawManager drawing = new DrawManager(model);
-
-            Console.WriteLine("Saving VZ image.");
-            VZExporter drawer2 = new VZExporter();
-            writer.filesave_lines(drawing_filename + ".vz", drawer2.lines(model));
-
-            writer.filesave_lines(drawing_filename, drawing.lines());
             long drawing_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Image saved.");
 
@@ -127,11 +123,7 @@ namespace DecisionTrees
             // Ask the important questions.
             string model_location = writer.askFromConfig("Enter the file path to import the model from. ", "CLASSIFICATION", "model-location");
             DecisionTree model = loader.load_model(model_location);
-
-            // Draw the just-loaded model.
-            DrawManager drawing = new DrawManager(model);
-            List<string> lines = drawing.lines();
-
+            
             // Import the classification data.
             string data_location = writer.askFromConfig("Enter the file path to import the data from. ", "CLASSIFICATION", "input-location");
 

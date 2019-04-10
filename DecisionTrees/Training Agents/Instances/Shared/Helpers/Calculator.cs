@@ -93,8 +93,7 @@ namespace DecisionTrees
 
             // Adjust for missing data
             double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
-            Console.WriteLine($"Fraction: {missingFraction}");
-
+            
             return (1 - missingFraction) * gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
         }
 

@@ -16,7 +16,6 @@ namespace DecisionTrees
 
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
-            Console.WriteLine("[C4.5] : Calculating all attribute value possibilities..");
             foreach (string attr in attributes.Keys.ToList())
             {
                 if (attributes[attr] == "nominal")
@@ -28,10 +27,7 @@ namespace DecisionTrees
                 }
             }
 
-            Console.WriteLine("[C4.5] : Calculating attribute gains and thresholds...");
             this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
-
-            Console.WriteLine("[C4.5] : Commencing first iteration."); 
             return this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
         }
 
