@@ -55,7 +55,7 @@ namespace DecisionTrees
 
         private string nodeToLine(Node node)
         {
-            return $"N{node.identifier} [shape=box, label=\"{node.label}\"];";
+            return $"N{node.identifier} [shape=box, label=\"{node.label} \n [{node.identifier}]\"];";
         }
         private List<string> nodeConnections(Node node)
         {
@@ -84,7 +84,7 @@ namespace DecisionTrees
         }
         private string leafToLine(Leaf leaf)
         {
-            return $"L{leaf.identifier} [shape=none, label=\"{leaf.classifier} ({Math.Round(leaf.certainty, 2)})\", color=blue];";
+            return $"L{leaf.identifier} [shape=underline, label=\"{leaf.classifier} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\", color=blue];";
         }
     }
 }
