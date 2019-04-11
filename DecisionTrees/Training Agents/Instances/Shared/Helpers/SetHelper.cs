@@ -133,5 +133,27 @@ namespace DecisionTrees
             }
             return output;
         }
+
+        public static List<string> subset_ToString(List<DataInstance> set, List<string> attributes, string classifier)
+        {
+            List<string> return_lines = new List<string>();
+
+            int i = 0;
+            Console.WriteLine("Attributes to consider: ");
+            Console.WriteLine(String.Join("-", attributes.ToList()));
+            foreach(DataInstance a in set)
+            {
+                i++;
+                string line = i.ToString() + " : [";
+                foreach(string attr in attributes)
+                {
+                    line += $"{attr}={a.getProperty(attr)}, ";
+                }
+                 line += $"]: {a.getProperty(classifier)}";
+                return_lines.Add(line);
+            }
+
+            return return_lines;
+        }
     }
 }

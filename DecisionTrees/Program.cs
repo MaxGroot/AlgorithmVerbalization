@@ -51,7 +51,7 @@ namespace DecisionTrees
 
             ThoughtsManager thoughts = new ThoughtsManager();
             string model_filename = "decisiontree.txt";
-            string drawing_filename = "drawing.txt";
+            string drawing_filename = "drawing.GRAPH";
             string thoughts_filename = "thoughts.csv";
 
 

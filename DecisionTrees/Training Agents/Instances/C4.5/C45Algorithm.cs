@@ -14,6 +14,8 @@ namespace DecisionTrees
 
         private Dictionary<string, double> continuous_thresholds = new Dictionary<string, double>();
 
+        private List<string> all_attribute_keys;
+
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             foreach (string attr in attributes.Keys.ToList())
@@ -26,7 +28,7 @@ namespace DecisionTrees
                     possible_attribute_values[attr] = null;
                 }
             }
-
+            all_attribute_keys = attributes.Keys.ToList();
             this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
             return this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
         }
@@ -53,8 +55,9 @@ namespace DecisionTrees
                     }
                 }
             }
+
             // This attribute can now not be used anymore!
-            Dictionary<string, string> attributes_for_further_iteration = attributes;
+            Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
             attributes_for_further_iteration.Remove(best_split_attribute);
 
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
@@ -65,7 +68,7 @@ namespace DecisionTrees
             if (split_on_continuous)
             {
                 newnode = tree.addContinuousNode(best_split_attribute, last_split, threshold, parent);
-                
+
                 subsets = SetHelper.subsetOnAttributeContinuous(set, best_split_attribute, threshold);
             }
             else
@@ -96,7 +99,7 @@ namespace DecisionTrees
                         certainty += instance.getWeight();
                     }
                     certainty /= (double)subset.Count;
-
+                    
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                 }
                 else
@@ -121,7 +124,8 @@ namespace DecisionTrees
                     {
                         this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
                     }
-                    // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
+                    // If we got here in the code then the set that was previously not all the same classifier has been resolved. 
+                    // Therefore we can let the foreach continue further!
                 }
             }
             
