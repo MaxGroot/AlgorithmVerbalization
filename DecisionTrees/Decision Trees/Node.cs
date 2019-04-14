@@ -28,6 +28,21 @@ namespace DecisionTrees
             this.nodeChildren.Add(child);
         }
 
+        public void removeChildNode(Node child)
+        {
+            for(int i =0; i<this.nodeChildren.Count; i++)
+            {
+                Node node = this.nodeChildren[i];
+
+                if (node.identifier == child.identifier)
+                {
+                    nodeChildren.RemoveAt(i);
+                    return;
+                }
+            }
+            throw new Exception($"Child removal request on a node that doesn't have it: {child.identifier}");
+        }
+
         public void addParentNode(Node parent)
         {
             this.parent = parent;

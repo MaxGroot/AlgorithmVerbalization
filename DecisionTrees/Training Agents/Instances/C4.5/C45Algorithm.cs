@@ -184,6 +184,8 @@ namespace DecisionTrees
             Node node = queue[0];
             queue.RemoveAt(0);
 
+            Console.WriteLine($"{node.identifier}");
+
             // Lets consider this node.
 
             double z = 0.69;
@@ -192,23 +194,38 @@ namespace DecisionTrees
 
             double predicted_errors_by_leafs = 0;
             List<DataInstance> total_subset_of_node = new List<DataInstance>();
-
             foreach (Leaf leaf in node.getLeafChildren())
             {
                 List<DataInstance> leaf_set = data_locations[leaf];
                 total_subset_of_node.AddRange(leaf_set);
 
                 double f = SetHelper.subset_error_rate(leaf_set, target_attribute);
-                Console.WriteLine($"{leaf.value_splitter} : Error rate of {f}");
                 predicted_errors_by_leafs += leaf_set.Count * Calculator.upperBound(f, leaf_set.Count, z);
             }
 
-            
-
             double errorsInNodeSet = SetHelper.subset_error_rate(total_subset_of_node, target_attribute);
-            
             double predicted_errors_by_node = Calculator.upperBound(errorsInNodeSet, total_subset_of_node.Count, z) * total_subset_of_node.Count;
-            Console.WriteLine($"{node.identifier} | Leaf errors prediction: {predicted_errors_by_leafs} | Node errors prediction: {predicted_errors_by_node}");
+
+            Console.WriteLine($"{predicted_errors_by_node} VS {predicted_errors_by_leafs}");
+            if (predicted_errors_by_node < predicted_errors_by_leafs)
+            {
+                // We can prune this one! We replace this node by a leaf with the most common classifier.
+                string most_common_classifier = SetHelper.mostCommonClassifier(total_subset_of_node, target_attribute);
+                List<DataInstance> set_with_most_common_classifier = total_subset_of_node.Where(A => A.getProperty(target_attribute) == most_common_classifier).ToList();
+                double certainty = (double)set_with_most_common_classifier.Count / (double)total_subset_of_node.Count;
+
+                
+                // Replace this node by a leaf
+                Leaf prunedLeaf = tree.addUncertainLeaf(node.value_splitter, most_common_classifier, node.getParent(), certainty);
+                prunedLeaf.parent.removeChildNode(node);
+
+                Console.WriteLine($"Replacing node {node.identifier} with leaf {prunedLeaf.identifier}");
+
+                if (!queue.Contains(prunedLeaf.parent))
+                {
+                    queue.Add(prunedLeaf.parent);
+                }
+            }
 
             if (queue.Count > 0)
             {
