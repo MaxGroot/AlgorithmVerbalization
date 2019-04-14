@@ -21,5 +21,22 @@ namespace DecisionTrees
 
             return character.ToString() + "_" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
         }
+
+        public static int parentCount(Node node)
+        {
+            int i = 0;
+            while(true)
+            {
+                if (node.getParent() != null)
+                {
+                    node = node.getParent();
+                    i++;
+                }else
+                {
+                    break;
+                }
+            }
+            return i;
+        }
     }
 }

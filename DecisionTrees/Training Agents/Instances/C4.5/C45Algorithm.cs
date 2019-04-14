@@ -16,6 +16,8 @@ namespace DecisionTrees
 
         private List<string> all_attribute_keys;
 
+        private Dictionary<Leaf, List<DataInstance>> data_locations = new Dictionary<Leaf, List<DataInstance>>();
+        
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             foreach (string attr in attributes.Keys.ToList())
@@ -30,7 +32,49 @@ namespace DecisionTrees
             }
             all_attribute_keys = attributes.Keys.ToList();
             this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
-            return this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
+
+            DecisionTree final_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
+
+            Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
+
+            // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
+            Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
+            foreach (Leaf leaf in data_locations.Keys.ToList())
+            {
+                if (! node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
+                {
+                    // This node has not yet been added, so add it now.
+                    node_queue_with_identifiers.Add(leaf.parent.identifier, leaf.parent);
+                }
+            }
+
+            // We now have a queue of nodes that have at least 1 leaf child. However, we need to sort it such that we will go through it bottom-up.
+            // First, convert it to a dictionary containing the parent counts.
+
+            Dictionary<Node, int> node_queue_with_parentcounts = new Dictionary<Node, int>();
+            foreach(Node node in node_queue_with_identifiers.Values.ToList())
+            {
+                node_queue_with_parentcounts[node] = ElementHelper.parentCount(node);
+            }
+
+            // Then, convert it to a sorted dictionary, descending by parent count to ensure bottom-up.
+            List<KeyValuePair<Node, int>> sortedNodes = node_queue_with_parentcounts.ToList();
+            sortedNodes.Sort(
+                delegate (KeyValuePair<Node, int> pair1,
+                KeyValuePair<Node, int> pair2)
+                {
+                    return - pair1.Value.CompareTo(pair2.Value);
+                }
+            );
+            // Make a queue out of the sorted dictionary.
+            List<Node> queue = new List<Node>();
+            foreach (KeyValuePair<Node, int> row in sortedNodes)
+            {
+                queue.Add(row.Key);
+            }
+
+            // Start post-pruning with this queue (TODO)
+            return final_tree;
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
@@ -101,6 +145,7 @@ namespace DecisionTrees
                     certainty /= (double)subset.Count;
                     
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
+                    this.data_locations[leaf] = subset;
                 }
                 else
                 {
@@ -118,7 +163,8 @@ namespace DecisionTrees
                         }
                         certainty /= (double)subset.Count;
                         
-                        Leaf lead = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty * percentage_with_this_classifier);
+                        Leaf leaf = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty * percentage_with_this_classifier);
+                        this.data_locations[leaf] = subset;
                     }
                     else
                     {
@@ -129,6 +175,12 @@ namespace DecisionTrees
                 }
             }
             
+            return tree;
+        }
+
+        private DecisionTree postPrune(DecisionTree tree, Dictionary<string, List<DataInstance>> data_locations)
+        {
+            Console.WriteLine($"{Calculator.upperBound(0.33, 6, 0.69)}");
             return tree;
         }
 
