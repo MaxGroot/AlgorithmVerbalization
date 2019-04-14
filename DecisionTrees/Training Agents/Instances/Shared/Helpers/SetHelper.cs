@@ -155,5 +155,19 @@ namespace DecisionTrees
 
             return return_lines;
         }
+
+        public static double subset_error_rate(List<DataInstance> set, string target_attribute)
+        {
+            if (! hasUniformClassifier(set, target_attribute))
+            {
+                // No uniform classifier. Let's calculate the error rate.
+                string majority_value = SetHelper.mostCommonClassifier(set, target_attribute);
+                List<DataInstance> set_without_majority_clasifier = set.Where(A => A.getProperty(target_attribute) != majority_value).ToList();
+                double f = ( (double) set_without_majority_clasifier.Count) / (double)set.Count;
+
+                return f;
+            }
+            return 0;
+        }
     }
 }
