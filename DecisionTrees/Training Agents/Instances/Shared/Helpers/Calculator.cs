@@ -171,5 +171,5 @@ namespace DecisionTrees
 
             return (f + zSquaredOver2N + (z * sqrt)) / onePlusZsquaredOverN;
         }
-}
+    }
 }

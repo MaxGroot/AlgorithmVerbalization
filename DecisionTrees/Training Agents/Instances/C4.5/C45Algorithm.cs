@@ -72,9 +72,9 @@ namespace DecisionTrees
             {
                 queue.Add(row.Key);
             }
-
-            // Start post-pruning with this queue (TODO)
-            return final_tree;
+            
+            // Start post-pruning with this queue.
+            return postPrune(final_tree, queue, target_attribute);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
@@ -178,9 +178,43 @@ namespace DecisionTrees
             return tree;
         }
 
-        private DecisionTree postPrune(DecisionTree tree, Dictionary<string, List<DataInstance>> data_locations)
+        private DecisionTree postPrune(DecisionTree tree, List<Node> queue, string target_attribute)
         {
-            Console.WriteLine($"{Calculator.upperBound(0.33, 6, 0.69)}");
+            // Manage queue.
+            Node node = queue[0];
+            queue.RemoveAt(0);
+
+            // Lets consider this node.
+
+            double z = 0.69;
+            
+            // Calculate combined error rate of leafs
+
+            double predicted_errors_by_leafs = 0;
+            List<DataInstance> total_subset_of_node = new List<DataInstance>();
+
+            foreach (Leaf leaf in node.getLeafChildren())
+            {
+                List<DataInstance> leaf_set = data_locations[leaf];
+                total_subset_of_node.AddRange(leaf_set);
+
+                double f = SetHelper.subset_error_rate(leaf_set, target_attribute);
+                Console.WriteLine($"{leaf.value_splitter} : Error rate of {f}");
+                predicted_errors_by_leafs += leaf_set.Count * Calculator.upperBound(f, leaf_set.Count, z);
+            }
+
+            
+
+            double errorsInNodeSet = SetHelper.subset_error_rate(total_subset_of_node, target_attribute);
+            
+            double predicted_errors_by_node = Calculator.upperBound(errorsInNodeSet, total_subset_of_node.Count, z) * total_subset_of_node.Count;
+            Console.WriteLine($"{node.identifier} | Leaf errors prediction: {predicted_errors_by_leafs} | Node errors prediction: {predicted_errors_by_node}");
+
+            if (queue.Count > 0)
+            {
+                tree = this.postPrune(tree, queue, target_attribute);
+            }
+
             return tree;
         }
 
