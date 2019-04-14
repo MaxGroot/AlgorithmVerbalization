@@ -158,5 +158,18 @@ namespace DecisionTrees
             return new double[] { best_split, best_split_gain_ratio};
         }
      
+        public static double upperBound(double f, double N, double z)
+        {
+            double fOverN = (f / N);
+            double fSquaredOverN = ((f * f) / N);
+            double zSquaredOver4Nsquared = ((z * z) / (4 * N * N));
+
+            double zSquaredOver2N = ((z * z) / (2 * N));
+            double onePlusZsquaredOverN = 1 + ((z * z) / N);
+            
+            double sqrt = Math.Sqrt(fOverN - fSquaredOverN + zSquaredOver4Nsquared);
+
+            return (f + zSquaredOver2N + (z * sqrt)) / onePlusZsquaredOverN;
+        }
 }
 }
