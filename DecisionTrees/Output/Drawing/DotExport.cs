@@ -93,7 +93,21 @@ namespace DecisionTrees
 
         private string leafToLine(Leaf leaf)
         {
-            return $"L{leaf.identifier} [shape=underline, label=\"{leaf.classifier} \n {tree.data_locations[leaf].Count} / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\", color=blue];";
+            double leaf_percentage = (double) this.tree.data_locations[leaf].Count / (double) this.total_set_count;
+
+            int has_classifier = 0;
+            foreach(DataInstance instance in this.tree.data_locations[leaf])
+            {
+                if (instance.getProperty(tree.target_attribute) == leaf.classifier)
+                {
+                    has_classifier++;
+                }
+            }
+
+            int percentageColor = 255 - (int) (leaf_percentage * 255);
+            string percentageHex = percentageColor.ToString("X2").ToUpper();
+            string hex = $"#{percentageHex}{percentageHex}FF";
+            return $"L{leaf.identifier} [shape=plaintext, style=\"filled\", fillcolor=\"{hex}\", label=\"{leaf.classifier} \n {has_classifier} Corrects, {tree.data_locations[leaf].Count - has_classifier} Mistakes. \n {tree.data_locations[leaf].Count} / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\"];";
         }
     }
 }
