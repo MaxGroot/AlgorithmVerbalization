@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics.Distributions;
+using System.Net.Http;
 
 namespace DecisionTrees
 {
     static class Calculator
     {
+        private static readonly HttpClient client = new HttpClient();
+
         public static double entropy(List<DataInstance> S, string attribute_key)
         {
             // Initialize a dictionary that will count for each value of the target attribute how many times it occures within a set. 
@@ -170,6 +174,36 @@ namespace DecisionTrees
             double sqrt = Math.Sqrt(fOverN - fSquaredOverN + zSquaredOver4Nsquared);
 
             return (f + zSquaredOver2N + (z * sqrt)) / onePlusZsquaredOverN;
+        }
+
+        public static double upperBoundGood(int successes, int sampleSize, int confidence)
+        {
+
+            var values = new Dictionary<string, string>
+            {
+               { "func", $"BinomialHigh({successes},{sampleSize},{confidence})" },
+            };
+
+            var content = new FormUrlEncodedContent(values);
+            var response = client.PostAsync("https://www.medcalc.org/inc/getmedcalcvalue.php", content).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = response.Content;
+
+                // by calling .Result you are synchronously reading the result
+                string responseString = responseContent.ReadAsStringAsync().Result;
+                try
+                {
+                    double upperBound = Double.Parse(responseString);
+                    return upperBound;
+                }catch(FormatException e)
+                {
+                    throw new Exception($"Could not convert {responseString} to a double..");
+                }
+            }else
+            {
+                throw new Exception("Http request not succesful.");
+            }         
         }
     }
 }

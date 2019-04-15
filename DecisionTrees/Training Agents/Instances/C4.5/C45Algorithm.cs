@@ -36,6 +36,8 @@ namespace DecisionTrees
             DecisionTree final_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
 
             Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
+            Console.WriteLine($"{Calculator.upperBoundGood(0, 6, 50)}");
+            return final_tree;
 
             // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
             Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
