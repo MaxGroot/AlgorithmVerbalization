@@ -20,7 +20,7 @@ namespace DecisionTrees
 
             List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
-
+            
             // Start post-pruning with this queue.
             DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
 
@@ -47,13 +47,13 @@ namespace DecisionTrees
             List<DataInstance> node_set = new List<DataInstance>();
 
             // Calculate error estimate of the leafs
-
+        
             double leaf_errors = 0;
             foreach(Leaf child in node.getLeafChildren())
             {
                 List<DataInstance> leaf_set = tree.data_locations[child];
                 node_set.AddRange(leaf_set);
-
+ 
 
                 // Calculate estimated error.
                 int errors = SetHelper.subset_errors(leaf_set, target_attribute);
@@ -61,7 +61,7 @@ namespace DecisionTrees
                 double estimatedError = errorRate * leaf_set.Count;
                 leaf_errors += estimatedError;
             }
-
+        
             // Calculate estimated error of node.
             int node_errors = SetHelper.subset_errors(node_set, target_attribute);
             double nodeErrorRate = this.calcErrorRate(node_errors, node_set.Count);
@@ -85,6 +85,7 @@ namespace DecisionTrees
             return tree;
             
         }
+
         private List<Node> nodes_with_leafs(List<Leaf> leafs)
         {
             // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
@@ -100,6 +101,7 @@ namespace DecisionTrees
 
             return node_queue_with_identifiers.Values.ToList();
         }
+
         private List<Node> sort_nodes_bottom_up(List<Node> nodes)
         {
 
@@ -132,6 +134,7 @@ namespace DecisionTrees
 
             return queue;
         }
+
         private double calcErrorRate(int successes, int sampleSize)
         {
             string calculationKey = $"{successes},{sampleSize}";
@@ -144,6 +147,7 @@ namespace DecisionTrees
             return calculated_upperBounds[calculationKey];
             
         }
+
         private DecisionTree replaceNodeByNewLeaf(DecisionTree tree, Node node, List<DataInstance> node_set, string target_attribute)
         {
             // Create the new leaf

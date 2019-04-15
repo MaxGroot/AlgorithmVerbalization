@@ -194,6 +194,14 @@ namespace DecisionTrees
                 try
                 {
                     double upperBound = Double.Parse(responseString);
+
+                    // God damnit my PC does decimals using , not .
+                    if (upperBound > 1)
+                    {
+                        responseString = responseString.Replace(".", ",");
+                        upperBound = Double.Parse(responseString);
+                    }
+                    
                     return upperBound;
                 }catch(FormatException e)
                 {
