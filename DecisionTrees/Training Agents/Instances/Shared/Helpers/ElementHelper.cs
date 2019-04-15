@@ -39,11 +39,30 @@ namespace DecisionTrees
             return i;
         }
 
-        public static DecisionTree nodeAsTree(Node node)
+        public static DecisionTree nodeAsTree(DecisionTree originaltree, Node node)
         {
-            DecisionTree tree = new DecisionTree();
-            return tree.fromNode(node);
-            
+            DecisionTree newtree = new DecisionTree("UNKNOWN");
+            newtree = newtree.fromNode(node);
+
+            List<Node> queue = new List<Node>();
+            queue.Add(node);
+
+            while(queue.Count > 0)
+            {
+                Node check = queue[0];
+                queue.RemoveAt(0);
+
+                // Add children nodes to queue
+                queue.AddRange(check.getNodeChildren());
+
+                // Add data locations of my leafs
+                foreach(Leaf leaf in check.getLeafChildren())
+                {
+                    newtree.data_locations[leaf] = originaltree.data_locations[leaf];    
+                }
+            }
+
+            return newtree;
         }
     }
 }

@@ -169,5 +169,15 @@ namespace DecisionTrees
             // If this subset has a uniform classifier, it has 0 errors.
             return 0;
         }
+
+        public static List<DataInstance> total_subset_of_data_locations(Dictionary<Leaf, List<DataInstance>> data_locations)
+        {
+            List<DataInstance> ret = new List<DataInstance>();
+            foreach(List<DataInstance> set in data_locations.Values.ToList())
+            {
+                ret.AddRange(set);
+            }
+            return ret;
+        }
     }
 }

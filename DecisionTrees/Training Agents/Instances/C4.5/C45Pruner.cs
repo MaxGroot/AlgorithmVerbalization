@@ -13,14 +13,12 @@ namespace DecisionTrees
 
         // 25 * 2
         private int confidence = 50;
-        private Dictionary<Leaf, List<DataInstance>> data_locations;
         private Agent runner;
-        public DecisionTree prune(DecisionTree tree, string target_attribute, Dictionary<Leaf, List<DataInstance>> data_locations, Agent runner)
+        public DecisionTree prune(DecisionTree tree, string target_attribute, Agent runner)
         {
-            this.data_locations = data_locations;
             this.runner = runner;
 
-            List<Node> nodes_unsorted = this.nodes_with_leafs(this.data_locations.Keys.ToList());
+            List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
 
             // Start post-pruning with this queue.
@@ -30,7 +28,7 @@ namespace DecisionTrees
 
             foreach(Node node in pruned_nodes.Values.ToList())
             {
-                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(node);
+                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(tree, node);
                 runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
             }
 
@@ -53,7 +51,7 @@ namespace DecisionTrees
             double leaf_errors = 0;
             foreach(Leaf child in node.getLeafChildren())
             {
-                List<DataInstance> leaf_set = this.data_locations[child];
+                List<DataInstance> leaf_set = tree.data_locations[child];
                 node_set.AddRange(leaf_set);
 
 
@@ -156,7 +154,7 @@ namespace DecisionTrees
             Leaf newleaf = tree.addUncertainLeaf(node.value_splitter, prediction, parent, uncertainty);
 
             // Make sure we can access this leaf's new subset!
-            data_locations[newleaf] = node_set;
+            tree.data_locations[newleaf] = node_set;
 
             // Remove the old node from its parent.
             if (parent != null)

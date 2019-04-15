@@ -15,8 +15,6 @@ namespace DecisionTrees
         private Dictionary<string, double> continuous_thresholds = new Dictionary<string, double>();
 
         private List<string> all_attribute_keys;
-
-        private Dictionary<Leaf, List<DataInstance>> data_locations = new Dictionary<Leaf, List<DataInstance>>();
         
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
@@ -33,14 +31,14 @@ namespace DecisionTrees
             all_attribute_keys = attributes.Keys.ToList();
             this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
 
-            DecisionTree full_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
+            DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, runner, null, null);
 
             runner.SNAPSHOT("pre-pruning", full_tree);
             Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
 
             C45Pruner pruner = new C45Pruner();
 
-            return pruner.prune(full_tree, target_attribute, data_locations, runner);
+            return pruner.prune(full_tree, target_attribute, runner);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
@@ -111,7 +109,7 @@ namespace DecisionTrees
                     certainty /= (double)subset.Count;
                     
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
-                    this.data_locations[leaf] = subset;
+                    tree.data_locations[leaf] = subset;
                 }
                 else
                 {
@@ -130,7 +128,7 @@ namespace DecisionTrees
                         certainty /= (double)subset.Count;
                         
                         Leaf leaf = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty * percentage_with_this_classifier);
-                        this.data_locations[leaf] = subset;
+                        tree.data_locations[leaf] = subset;
                     }
                     else
                     {

@@ -8,9 +8,16 @@ namespace DecisionTrees
 {
     class DotExport
     {
-        public List<string> lines(DecisionTree tree)
+        private int total_set_count;
+        private DecisionTree tree;
+
+        public List<string> lines(DecisionTree input_tree)
         {
+            this.tree = input_tree;
+
             List<string> output_lines = new List<string>();
+
+            this.total_set_count = SetHelper.total_subset_of_data_locations(tree.data_locations).Count;
 
             output_lines.Add("digraph DecisionTree {");
             output_lines.Add("// Nodes and leafs");
@@ -84,7 +91,7 @@ namespace DecisionTrees
         }
         private string leafToLine(Leaf leaf)
         {
-            return $"L{leaf.identifier} [shape=underline, label=\"{leaf.classifier} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\", color=blue];";
+            return $"L{leaf.identifier} [shape=underline, label=\"{leaf.classifier} \n {tree.data_locations[leaf].Count} / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\", color=blue];";
         }
     }
 }

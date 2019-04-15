@@ -10,6 +10,15 @@ namespace DecisionTrees
     {
         private Node root = null;
         private int element_counter = 0;
+        public Dictionary<Leaf, List<DataInstance>> data_locations;
+        public string target_attribute;
+
+        public DecisionTree(string target_attribute)
+        {
+            this.target_attribute = target_attribute;
+            data_locations = new Dictionary<Leaf, List<DataInstance>>();
+        }
+
         public Node addNode(string attribute, string value_splitter, Node parent, string element_identifier = null)
         {
             if (element_identifier == null)

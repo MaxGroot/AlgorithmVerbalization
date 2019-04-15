@@ -11,7 +11,7 @@ namespace DecisionTrees
     {
         public DecisionTree load_model(string model_location)
         {
-            DecisionTree model = new DecisionTree();
+            DecisionTree model = new DecisionTree("UNKNOWN");
             var reader = new StreamReader(model_location);
             Node last_node = null;
 

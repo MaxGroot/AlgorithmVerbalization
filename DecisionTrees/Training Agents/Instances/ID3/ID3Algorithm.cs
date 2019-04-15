@@ -45,7 +45,7 @@ namespace DecisionTrees
             // First we need to know for each attribute which possible values it can hold.
             this.calculateAttributePossibilities();
         
-            DecisionTree tree = new DecisionTree();
+            DecisionTree tree = new DecisionTree(target_attribute);
 
             // Start the iteration process on the entire set.
             tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
