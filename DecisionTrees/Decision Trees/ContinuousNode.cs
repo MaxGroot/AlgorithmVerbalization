@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class ContinuousNode : Node
+    public class ContinuousNode : Node
     {
         // A Continuous node has the following properties:
         // Identifier: Unique ID

@@ -9,14 +9,21 @@ namespace DecisionTrees
     abstract class Agent
     {
        private ThoughtsManager thoughts;
+        private SnapShot snapShot;
        private SystemState lastState = null;
-       public Agent(ThoughtsManager thoughts)
+       public Agent(ThoughtsManager thoughts, SnapShot snapShot)
         {
+            this.snapShot = snapShot;
             this.thoughts = thoughts;
         }
        
        public abstract DecisionTree TRAIN(ObservationSet set);
        public abstract string ASK();
+
+        public void SNAPSHOT(string name,DecisionTree tree)
+        {
+            this.snapShot.Make(name, tree);
+        }
 
         public void THINK(EventDescriptor descriptor, params object[] state_params)
         {

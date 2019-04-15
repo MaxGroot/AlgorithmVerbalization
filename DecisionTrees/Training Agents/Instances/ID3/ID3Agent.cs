@@ -15,14 +15,16 @@ namespace DecisionTrees
             throw new NotImplementedException();
         }
 
-        public ID3Agent(ThoughtsManager thoughts): base(thoughts)
+        public ID3Agent(ThoughtsManager thoughts, SnapShot snapShot): base(thoughts, snapShot)
         {
 
         }
 
         public override DecisionTree TRAIN(ObservationSet set)
         {
-            return algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            DecisionTree tree = algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            this.SNAPSHOT("final", tree);
+            return tree;
         }
     }
 }

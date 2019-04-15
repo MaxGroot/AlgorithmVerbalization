@@ -37,24 +37,23 @@ namespace DecisionTrees
         static void train(TextWriter writer)
         {
             // Ask the important questions.
-            string location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
+            string input_location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
+            string snapshot_location = writer.askFromConfig("Enter the directory to output snapshots to. ", "EXPORT", "snapshot-location");
+            string thoughts_location = writer.askFromConfig("Enter the directory to output thoughts to. ", "EXPORT", "thoughts-location");
+            
+            string model_extension = "txt";
+            string drawing_extension = "GRAPH";
+            string thoughts_filename = "thoughts.csv";
 
             DataController import = new DataController();
-            ObservationSet observations = import.importExamples(location);
-
-            location = writer.askFromConfig("Enter the directory to export data to. ", "GENERAL", "export-location");
-            writer.set_location(location);
-
+            ObservationSet observations = import.importExamples(input_location);
+            
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
 
-
             ThoughtsManager thoughts = new ThoughtsManager();
-            string model_filename = "decisiontree.txt";
-            string drawing_filename = "drawing.GRAPH";
-            string thoughts_filename = "thoughts.csv";
-
-
+            SnapShot snapShot = new SnapShot(writer, snapshot_location, model_extension, drawing_extension);
+          
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
 
             string algorithm = writer.askFromConfig("What algorithm should be used? [ID3, C4.5]", "GENERAL", "algorithm");
@@ -62,10 +61,10 @@ namespace DecisionTrees
             switch (algorithm)
             {
                 case "ID3":
-                    agent = new ID3Agent(thoughts);
+                    agent = new ID3Agent(thoughts, snapShot);
                     break;
                 case "C4.5":
-                    agent = new C45Agent(thoughts);
+                    agent = new C45Agent(thoughts, snapShot);
                     break;
                 default:
                     throw new Exception($"Unknown algorithm given: {algorithm}");
@@ -79,12 +78,11 @@ namespace DecisionTrees
 
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
-            DecisionTree model = new DecisionTree();
             if (catcherror)
             {
                 try
                 {
-                    model = agent.TRAIN(observations);
+                    agent.TRAIN(observations);
                 }
                 catch (Exception e)
                 {
@@ -95,25 +93,14 @@ namespace DecisionTrees
             }
             else
             {
-                model = agent.TRAIN(observations);
+                agent.TRAIN(observations);
             }
             long training_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Training completed. Processing thoughts.");
-            // writer.filesave_string(thoughts_filename, thoughts.output());
-            long thought_processing_time = stopwatch.ElapsedMilliseconds;
-            Console.WriteLine("Thoughts processed. Processing model.");
-            writer.filesave_lines(model_filename, ModelManager.output(model));
-            long saving_time = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine("Model saved. Saving image.");
-            DotExport drawer = new DotExport();
-            writer.filesave_lines(drawing_filename, drawer.lines(model));
-
-            long drawing_time = stopwatch.ElapsedMilliseconds;
-            Console.WriteLine("Image saved.");
-
-            Console.WriteLine($"Training time: {training_time}. Thought processing time: {thought_processing_time - training_time}");
-            Console.WriteLine($"Model saving time: {saving_time - thought_processing_time}. Drawing saving time: {drawing_time - saving_time}.");
+            writer.set_location(thoughts_location);
+            long thought_time = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"Training time: {training_time}ms. Thoughts processing time: {thought_time - training_time}ms.");
         }
 
         static void classify(TextWriter writer)

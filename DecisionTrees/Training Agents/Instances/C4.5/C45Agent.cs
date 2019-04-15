@@ -9,7 +9,7 @@ namespace DecisionTrees
     class C45Agent : Agent
     {
         private Algorithm algorithm = new C45Algorithm();
-        public C45Agent(ThoughtsManager thoughts) : base(thoughts)
+        public C45Agent(ThoughtsManager thoughts, SnapShot snapShot) : base(thoughts, snapShot)
         {
         }
 
@@ -20,7 +20,9 @@ namespace DecisionTrees
 
         public override DecisionTree TRAIN(ObservationSet set)
         {
-            return this.algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            DecisionTree tree = this.algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            this.SNAPSHOT("final", tree);
+            return tree;
         }
     }
 }

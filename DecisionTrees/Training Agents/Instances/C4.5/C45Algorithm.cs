@@ -33,13 +33,14 @@ namespace DecisionTrees
             all_attribute_keys = attributes.Keys.ToList();
             this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
 
-            DecisionTree final_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
+            DecisionTree full_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
 
+            runner.SNAPSHOT("pre-pruning", full_tree);
             Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
 
             C45Pruner pruner = new C45Pruner();
 
-            return pruner.prune(final_tree, target_attribute, data_locations);
+            return pruner.prune(full_tree, target_attribute, data_locations);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)

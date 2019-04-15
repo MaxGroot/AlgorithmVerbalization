@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class DecisionTree
+    public class DecisionTree
     {
         private Node root = null;
         private int element_counter = 0;
