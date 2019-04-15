@@ -9,7 +9,7 @@ namespace DecisionTrees
     class C45Pruner
     {
         private Dictionary<string, double> calculated_upperBounds = new Dictionary<string, double>();
-
+        private Dictionary<string, Node> pruned_nodes = new Dictionary<string, Node>();
 
         // 25 * 2
         private int confidence = 50;
@@ -24,7 +24,17 @@ namespace DecisionTrees
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
 
             // Start post-pruning with this queue.
-            return pruneIterate(tree, queue, target_attribute);
+            DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
+
+            Console.WriteLine("Saving snapshots.");
+
+            foreach(Node node in pruned_nodes.Values.ToList())
+            {
+                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(node);
+                runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
+            }
+
+            return pruned_tree;
 
         }
 
@@ -36,7 +46,6 @@ namespace DecisionTrees
 
 
             // Lets consider this node.
-            Console.WriteLine($"{node.identifier} under consideration. ");
             List<DataInstance> node_set = new List<DataInstance>();
 
             // Calculate error estimate of the leafs
@@ -63,12 +72,10 @@ namespace DecisionTrees
             // Compare
             if (nodeEstimatedError < leaf_errors)
             {
-                Console.WriteLine($"[C4.5] prune {node.identifier}");
-                Console.WriteLine($"[C4.5] This node has {node.getLeafChildren().Count} leafs and {node.getNodeChildren().Count} nodes");
-                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(node);
-
-                runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
                 // We need to prune!
+
+                this.prepareSnapshot(node);
+
                 tree = this.replaceNodeByNewLeaf(tree, node, node_set, target_attribute);
             }
 
@@ -158,6 +165,19 @@ namespace DecisionTrees
             }
 
             return tree;
+        }
+
+        private void prepareSnapshot(Node node)
+        {
+            Console.WriteLine($"[C4.5] prune {node.identifier}");
+            foreach(Node child in node.getNodeChildren())
+            {
+                if (pruned_nodes.ContainsKey(child.identifier))
+                {
+                    pruned_nodes.Remove(child.identifier);
+                }
+            }
+            pruned_nodes[node.identifier] = node;
         }
     }
 }
