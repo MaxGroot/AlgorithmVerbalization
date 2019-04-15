@@ -64,6 +64,7 @@ namespace DecisionTrees
         {
             return $"N{node.identifier} [shape=box, label=\"{node.label} \n [{node.identifier}]\"];";
         }
+
         private List<string> nodeConnections(Node node)
         {
             List<string> new_lines = new List<string>();
@@ -89,6 +90,7 @@ namespace DecisionTrees
 
             return new_lines;
         }
+
         private string leafToLine(Leaf leaf)
         {
             return $"L{leaf.identifier} [shape=underline, label=\"{leaf.classifier} \n {tree.data_locations[leaf].Count} / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\", color=blue];";

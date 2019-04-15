@@ -20,16 +20,23 @@ namespace DecisionTrees
 
             List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
-            
+
             // Start post-pruning with this queue.
             DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
-
-            Console.WriteLine("Saving snapshots.");
+            
+            Console.WriteLine("Saving snapshots and removing disconnected leafs.");
 
             foreach(Node node in pruned_nodes.Values.ToList())
             {
                 DecisionTree nodeAsTree = ElementHelper.nodeAsTree(tree, node);
-                runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
+
+                // Remove the old leafs from the DecisionTree's data location dictionary.
+                foreach (Leaf leaf in node.getLeafChildren())
+                {
+                    tree.data_locations.Remove(leaf);
+                }
+                // Temporarily disable prune-part snapshots
+                // runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
             }
 
             return pruned_tree;
@@ -73,7 +80,7 @@ namespace DecisionTrees
                 // We need to prune!
 
                 this.prepareSnapshot(node);
-
+                
                 tree = this.replaceNodeByNewLeaf(tree, node, node_set, target_attribute);
             }
 
@@ -153,10 +160,10 @@ namespace DecisionTrees
             // Create the new leaf
             string prediction = SetHelper.mostCommonClassifier(node_set, target_attribute);
             double uncertainty = (double) SetHelper.subset_errors(node_set, target_attribute) / (double) node_set.Count;
-
+            
             Node parent = node.getParent();
             Leaf newleaf = tree.addUncertainLeaf(node.value_splitter, prediction, parent, uncertainty);
-
+            
             // Make sure we can access this leaf's new subset!
             tree.data_locations[newleaf] = node_set;
 
@@ -171,7 +178,6 @@ namespace DecisionTrees
 
         private void prepareSnapshot(Node node)
         {
-            Console.WriteLine($"[C4.5] prune {node.identifier}");
             foreach(Node child in node.getNodeChildren())
             {
                 if (pruned_nodes.ContainsKey(child.identifier))
