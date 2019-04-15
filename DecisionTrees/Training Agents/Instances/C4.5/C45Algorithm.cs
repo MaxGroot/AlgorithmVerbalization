@@ -36,47 +36,10 @@ namespace DecisionTrees
             DecisionTree final_tree = this.iterate(new DecisionTree(), examples, target_attribute, attributes, runner, null, null);
 
             Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
-            Console.WriteLine($"{Calculator.upperBoundGood(0, 6, 50)}");
-            return final_tree;
 
-            // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
-            Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
-            foreach (Leaf leaf in data_locations.Keys.ToList())
-            {
-                if (! node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
-                {
-                    // This node has not yet been added, so add it now.
-                    node_queue_with_identifiers.Add(leaf.parent.identifier, leaf.parent);
-                }
-            }
+            C45Pruner pruner = new C45Pruner();
 
-            // We now have a queue of nodes that have at least 1 leaf child. However, we need to sort it such that we will go through it bottom-up.
-            // First, convert it to a dictionary containing the parent counts.
-
-            Dictionary<Node, int> node_queue_with_parentcounts = new Dictionary<Node, int>();
-            foreach(Node node in node_queue_with_identifiers.Values.ToList())
-            {
-                node_queue_with_parentcounts[node] = ElementHelper.parentCount(node);
-            }
-
-            // Then, convert it to a sorted dictionary, descending by parent count to ensure bottom-up.
-            List<KeyValuePair<Node, int>> sortedNodes = node_queue_with_parentcounts.ToList();
-            sortedNodes.Sort(
-                delegate (KeyValuePair<Node, int> pair1,
-                KeyValuePair<Node, int> pair2)
-                {
-                    return - pair1.Value.CompareTo(pair2.Value);
-                }
-            );
-            // Make a queue out of the sorted dictionary.
-            List<Node> queue = new List<Node>();
-            foreach (KeyValuePair<Node, int> row in sortedNodes)
-            {
-                queue.Add(row.Key);
-            }
-            
-            // Start post-pruning with this queue.
-            return postPrune(final_tree, queue, target_attribute);
+            return pruner.prune(final_tree, target_attribute, data_locations);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
@@ -177,63 +140,6 @@ namespace DecisionTrees
                 }
             }
             
-            return tree;
-        }
-
-        private DecisionTree postPrune(DecisionTree tree, List<Node> queue, string target_attribute)
-        {
-            // Manage queue.
-            Node node = queue[0];
-            queue.RemoveAt(0);
-
-            Console.WriteLine($"{node.identifier}");
-
-            // Lets consider this node.
-
-            double z = 0.69;
-            
-            // Calculate combined error rate of leafs
-
-            double predicted_errors_by_leafs = 0;
-            List<DataInstance> total_subset_of_node = new List<DataInstance>();
-            foreach (Leaf leaf in node.getLeafChildren())
-            {
-                List<DataInstance> leaf_set = data_locations[leaf];
-                total_subset_of_node.AddRange(leaf_set);
-
-                double f = SetHelper.subset_error_rate(leaf_set, target_attribute);
-                predicted_errors_by_leafs += leaf_set.Count * Calculator.upperBound(f, leaf_set.Count, z);
-            }
-
-            double errorsInNodeSet = SetHelper.subset_error_rate(total_subset_of_node, target_attribute);
-            double predicted_errors_by_node = Calculator.upperBound(errorsInNodeSet, total_subset_of_node.Count, z) * total_subset_of_node.Count;
-
-            Console.WriteLine($"{predicted_errors_by_node} VS {predicted_errors_by_leafs}");
-            if (predicted_errors_by_node < predicted_errors_by_leafs)
-            {
-                // We can prune this one! We replace this node by a leaf with the most common classifier.
-                string most_common_classifier = SetHelper.mostCommonClassifier(total_subset_of_node, target_attribute);
-                List<DataInstance> set_with_most_common_classifier = total_subset_of_node.Where(A => A.getProperty(target_attribute) == most_common_classifier).ToList();
-                double certainty = (double)set_with_most_common_classifier.Count / (double)total_subset_of_node.Count;
-
-                
-                // Replace this node by a leaf
-                Leaf prunedLeaf = tree.addUncertainLeaf(node.value_splitter, most_common_classifier, node.getParent(), certainty);
-                prunedLeaf.parent.removeChildNode(node);
-
-                Console.WriteLine($"Replacing node {node.identifier} with leaf {prunedLeaf.identifier}");
-
-                if (!queue.Contains(prunedLeaf.parent))
-                {
-                    queue.Add(prunedLeaf.parent);
-                }
-            }
-
-            if (queue.Count > 0)
-            {
-                tree = this.postPrune(tree, queue, target_attribute);
-            }
-
             return tree;
         }
 
