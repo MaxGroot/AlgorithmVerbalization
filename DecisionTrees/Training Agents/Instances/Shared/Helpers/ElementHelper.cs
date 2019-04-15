@@ -38,5 +38,12 @@ namespace DecisionTrees
             }
             return i;
         }
+
+        public static DecisionTree nodeAsTree(Node node)
+        {
+            DecisionTree tree = new DecisionTree();
+            return tree.fromNode(node);
+            
+        }
     }
 }

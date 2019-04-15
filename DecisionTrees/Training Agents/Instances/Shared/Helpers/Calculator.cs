@@ -178,7 +178,6 @@ namespace DecisionTrees
 
         public static double upperBoundGood(int successes, int sampleSize, int confidence)
         {
-            Console.WriteLine($"GET BinomialHigh({successes},{sampleSize},{confidence}");
             var values = new Dictionary<string, string>
             {
                { "func", $"BinomialHigh({successes},{sampleSize},{confidence})" },

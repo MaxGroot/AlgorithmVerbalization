@@ -91,6 +91,11 @@ namespace DecisionTrees
             Console.WriteLine(str);
         }
 
+        public DecisionTree fromNode(Node node)
+        {
+            this.root = node;
+            return this;
+        }
 
         public DataInstance classify(DataInstance instance, string classifier_name)
         {

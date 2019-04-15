@@ -14,11 +14,11 @@ namespace DecisionTrees
         // 25 * 2
         private int confidence = 50;
         private Dictionary<Leaf, List<DataInstance>> data_locations;
-
-        public DecisionTree prune(DecisionTree tree, string target_attribute, Dictionary<Leaf, List<DataInstance>> data_locations)
+        private Agent runner;
+        public DecisionTree prune(DecisionTree tree, string target_attribute, Dictionary<Leaf, List<DataInstance>> data_locations, Agent runner)
         {
             this.data_locations = data_locations;
-
+            this.runner = runner;
 
             List<Node> nodes_unsorted = this.nodes_with_leafs(this.data_locations.Keys.ToList());
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
@@ -61,10 +61,13 @@ namespace DecisionTrees
             double nodeEstimatedError = nodeErrorRate * node_set.Count;
 
             // Compare
-            Console.WriteLine($"Node error rate: {nodeEstimatedError}. Leaf estimated error: {leaf_errors}. Prune: {nodeEstimatedError < leaf_errors}");
             if (nodeEstimatedError < leaf_errors)
             {
-                Console.WriteLine("PRUNE!");
+                Console.WriteLine($"[C4.5] prune {node.identifier}");
+                Console.WriteLine($"[C4.5] This node has {node.getLeafChildren().Count} leafs and {node.getNodeChildren().Count} nodes");
+                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(node);
+
+                runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
                 // We need to prune!
                 tree = this.replaceNodeByNewLeaf(tree, node, node_set, target_attribute);
             }

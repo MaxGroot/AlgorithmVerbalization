@@ -40,7 +40,7 @@ namespace DecisionTrees
 
             C45Pruner pruner = new C45Pruner();
 
-            return pruner.prune(full_tree, target_attribute, data_locations);
+            return pruner.prune(full_tree, target_attribute, data_locations, runner);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
