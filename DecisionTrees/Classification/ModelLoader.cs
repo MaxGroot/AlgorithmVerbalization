@@ -9,61 +9,58 @@ namespace DecisionTrees
 {
     class ModelLoader
     {
+        private Dictionary<string, Node> node_identifiers = new Dictionary<string, Node>();
+
         public DecisionTree load_model(string model_location, string target_attribute)
         {
             DecisionTree model = new DecisionTree(target_attribute);
             var reader = new StreamReader(model_location);
-            Node last_node = null;
-
+            
             while(!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
-                update_model_with_line(ref model, ref last_node, line);
+                update_model_with_line(ref model, line);
             }
-
             return model;
         }
 
-        private void update_model_with_line(ref DecisionTree model, ref Node previous_node, string line)
+        private void update_model_with_line(ref DecisionTree model, string line)
         {
-            Console.WriteLine(line);
             string[] split = line.Split('-');
-
-            int level = int.Parse(split[0]);
-            // We know that our parent is the first node we encounter on the previous level, since we do depth-first save.
-            int wanted_level = level - 1;
-
-            string type = split[1];
+            string type = split[0];
+            string identifier = split[1];
+            string parentidentifier = split[2];
+            Node parent = null;
+            if (this.node_identifiers.ContainsKey(parentidentifier))
+            {
+                parent = this.node_identifiers[parentidentifier];
+            }
+            else
+            {
+                // We could not find the parent for this element. Maybe its the root element? If so, we can accept parent equalling null.
+                if (parentidentifier != "ROOT")
+                {
+                    // Its not root! Throw an exception.
+                    throw new Exception($"Could not find parent {parentidentifier} of {identifier}");
+                }
+            }
             if (type == "NODE")
             {
-                string typeOfNode = split[2];
-                string identifier = split[3];
+                string typeOfNode = split[3];
                 string label = split[4];
                 string value_split = split[5];
 
-                if (previous_node != null)
-                {
-                    while (node_level(previous_node) > wanted_level)
-                    {
-                        previous_node = previous_node.getParent();
-                        if (previous_node == null)
-                        {
-                            throw new Exception($"No parent found for {line}");
-                        }
-                    }
-                }
-
-                Node node = model.addNode(label, value_split, previous_node);
+                Node node = model.addNode(label, value_split, parent);
                 node.identifier = identifier;
-                previous_node = node;
+                this.node_identifiers[identifier] = node;
+
             } else if (type == "LEAF")
             {
-                string identifier = split[2];
                 string leaf_value_splitter = split[3];
                 string leaf_classifier = split[4];
                 double leaf_certainty = double.Parse(split[5]);
                 
-                Leaf leaf = model.addUncertainLeaf(leaf_value_splitter, leaf_classifier, previous_node, leaf_certainty);
+                Leaf leaf = model.addUncertainLeaf(leaf_value_splitter, leaf_classifier, parent, leaf_certainty);
                 leaf.identifier = identifier;
             } else
             {

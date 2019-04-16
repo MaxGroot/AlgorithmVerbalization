@@ -64,13 +64,14 @@ namespace DecisionTrees
             {
                 cNode = (ContinuousNode) node;
             }
-            return $"{level}-NODE-{(node is ContinuousNode ? 'C' : 'N')}-{node.identifier}-{node.label}-{node.value_splitter}{(node is ContinuousNode ? $"-{cNode.threshold}" : "")}";
+            string parentidentifier = (node.getParent() == null) ? "ROOT" : node.getParent().identifier;
+            return $"NODE-{node.identifier}-{parentidentifier}-{(node is ContinuousNode ? 'C' : 'N')}-{node.label}-{node.value_splitter}{(node is ContinuousNode ? $"-{cNode.threshold}" : "")}";
         }
         private static string leafToLine(Leaf leaf)
         {
             int level = node_level(leaf.parent) + 1;
             string classifying_strength = leaf.certainty.ToString();
-            return $"{level}-LEAF-{leaf.identifier}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
+            return $"LEAF-{leaf.identifier}-{leaf.parent.identifier}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
     }
 }
