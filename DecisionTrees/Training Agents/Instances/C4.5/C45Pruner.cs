@@ -24,20 +24,8 @@ namespace DecisionTrees
             // Start post-pruning with this queue.
             DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
             
-            Console.WriteLine("Saving snapshots and removing disconnected leafs.");
-
-            foreach(Node node in pruned_nodes.Values.ToList())
-            {
-                DecisionTree nodeAsTree = ElementHelper.nodeAsTree(tree, node);
-
-                // Remove the old leafs from the DecisionTree's data location dictionary.
-                foreach (Leaf leaf in node.getLeafChildren())
-                {
-                    tree.data_locations.Remove(leaf);
-                }
-                // Temporarily disable prune-part snapshots
-                // runner.SNAPSHOT($"pruned-{node.identifier}", nodeAsTree);
-            }
+            Console.WriteLine("Saving snapshots.");
+            //TODO: Save snapshots again?
 
             return pruned_tree;
 
@@ -81,7 +69,7 @@ namespace DecisionTrees
 
                 this.prepareSnapshot(node);
                 
-                tree = this.replaceNodeByNewLeaf(tree, node, node_set, target_attribute);
+                tree = this.replaceNodeByNewLeaf(tree, node);
             }
 
             // Iterate further if necessary. 
@@ -155,22 +143,42 @@ namespace DecisionTrees
             
         }
 
-        private DecisionTree replaceNodeByNewLeaf(DecisionTree tree, Node node, List<DataInstance> node_set, string target_attribute)
+        private DecisionTree replaceNodeByNewLeaf(DecisionTree tree, Node removeNode)
         {
             // Create the new leaf
-            string prediction = SetHelper.mostCommonClassifier(node_set, target_attribute);
-            double uncertainty = (double) SetHelper.subset_errors(node_set, target_attribute) / (double) node_set.Count;
-            
-            Node parent = node.getParent();
-            Leaf newleaf = tree.addUncertainLeaf(node.value_splitter, prediction, parent, uncertainty);
+            List<DataInstance> total_set = new List<DataInstance>();
+            List<Node> queue = new List<Node>();
+            queue.Add(removeNode);
+
+            // Get all instances that I should cover.
+            while(queue.Count > 0)
+            {
+                Node node = queue[0];
+                queue.RemoveAt(0);
+
+                foreach(Leaf child in node.getLeafChildren())
+                {
+                    total_set.AddRange(tree.data_locations[child]);
+                    tree.data_locations.Remove(child);
+                }
+
+                // Add child nodes to queue
+                queue.AddRange(node.getNodeChildren());
+            }
+
+            // Make the new leaf
+            string prediction = SetHelper.mostCommonClassifier(total_set, tree.target_attribute);
+            double uncertainty = (double) SetHelper.subset_errors(total_set, tree.target_attribute) / (double) total_set.Count;
+            Node parent = removeNode.getParent();
+            Leaf newleaf = tree.addUncertainLeaf(removeNode.value_splitter, prediction, parent, uncertainty);
             
             // Make sure we can access this leaf's new subset!
-            tree.data_locations[newleaf] = node_set;
+            tree.data_locations[newleaf] = total_set;
 
             // Remove the old node from its parent.
             if (parent != null)
             {
-                parent.removeChildNode(node);
+                parent.removeChildNode(removeNode);
             }
 
             return tree;

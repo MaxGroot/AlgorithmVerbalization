@@ -10,13 +10,13 @@ namespace DecisionTrees
     {
         private int total_set_count;
         private DecisionTree tree;
-
+        
         public List<string> lines(DecisionTree input_tree)
         {
             this.tree = input_tree;
 
             List<string> output_lines = new List<string>();
-
+            
             this.total_set_count = SetHelper.total_subset_of_data_locations(tree.data_locations).Count;
 
             output_lines.Add("digraph DecisionTree {");
@@ -62,7 +62,7 @@ namespace DecisionTrees
 
         private string nodeToLine(Node node)
         {
-            return $"N{node.identifier} [shape=box, label=\"{node.label} \n [{node.identifier}]\"];";
+            return $"N{node.identifier} [shape=oval, label=\"{node.label} \n [{node.identifier}]\"];";
         }
 
         private List<string> nodeConnections(Node node)
@@ -94,7 +94,7 @@ namespace DecisionTrees
         private string leafToLine(Leaf leaf)
         {
             double leaf_percentage = (double) this.tree.data_locations[leaf].Count / (double) this.total_set_count;
-
+            
             int has_classifier = 0;
             foreach(DataInstance instance in this.tree.data_locations[leaf])
             {
@@ -107,7 +107,7 @@ namespace DecisionTrees
             int percentageColor = 255 - (int) (leaf_percentage * 255);
             string percentageHex = percentageColor.ToString("X2").ToUpper();
             string hex = $"#{percentageHex}{percentageHex}FF";
-            return $"L{leaf.identifier} [shape=plaintext, style=\"filled\", fillcolor=\"{hex}\", label=\"{leaf.classifier} \n {has_classifier} Corrects, {tree.data_locations[leaf].Count - has_classifier} Mistakes. \n {tree.data_locations[leaf].Count} / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\"];";
+            return $"L{leaf.identifier} [shape=box, style=\"filled\", fillcolor=\"{hex}\", label=\"{leaf.classifier} \n [{has_classifier}+{tree.data_locations[leaf].Count - has_classifier}] / {total_set_count} ({Math.Round(leaf.certainty, 2)}) \n [{leaf.identifier}]\"];";
         }
     }
 }
