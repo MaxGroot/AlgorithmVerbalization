@@ -106,11 +106,9 @@ namespace DecisionTrees
             return this;
         }
 
-        public DataInstance classify(DataInstance instance, string classifier_name)
+        public string classify(DataInstance instance)
         {
-            string classifier =  this.getRoot().classify(instance);
-            instance = instance.overwriteProperty(classifier_name, classifier);
-            return instance;
+            return this.getRoot().classify(instance);
         }
     }
 }

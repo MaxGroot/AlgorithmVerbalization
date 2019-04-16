@@ -31,7 +31,23 @@ namespace DecisionTrees
             // Save image
             writer.filesave_lines(name + "." + this.drawing_extension, drawer.lines(tree));
 
-            Console.WriteLine($"[SNAPSHOT] : Snapshot {name} made.");
+            // Lets see how well it classifies.
+            List<DataInstance> total_set = new List<DataInstance>();
+            foreach(Leaf leaf in tree.data_locations.Keys.ToList())
+            {
+                total_set.AddRange(tree.data_locations[leaf]);    
+            }
+            int correct_classifications = 0;
+            foreach(DataInstance instance in total_set)
+            {
+                if (tree.classify(instance) == instance.getProperty(tree.target_attribute))
+                {
+                    correct_classifications++;
+                }
+            }
+            double succesPercentage = Math.Round(((double) correct_classifications / (double) total_set.Count) * 100, 2);
+
+            Console.WriteLine($"[SNAPSHOT] : Snapshot {name} made with success rate of {succesPercentage}% ({correct_classifications} / {total_set.Count}).");
         }
     }
 }

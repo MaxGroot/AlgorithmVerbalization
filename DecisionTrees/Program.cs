@@ -97,7 +97,7 @@ namespace DecisionTrees
             }
             long training_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine("Training completed. Processing thoughts.");
-
+            
             writer.set_location(thoughts_location);
             long thought_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine($"Training time: {training_time}ms. Thoughts processing time: {thought_time - training_time}ms.");
@@ -127,7 +127,8 @@ namespace DecisionTrees
             string classifier_name = observations.target_attribute;
             foreach(DataInstance instance in observations.instances)
             {
-                classified_instances.Add(model.classify(instance, classifier_name));
+                instance.setProperty(classifier_name, model.classify(instance));
+                classified_instances.Add(instance);
             }
             ObservationSet export_set = new ObservationSet(classified_instances, classifier_name, observations.attributes);
 

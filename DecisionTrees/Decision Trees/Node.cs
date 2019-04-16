@@ -99,16 +99,20 @@ namespace DecisionTrees
             return ret;
         }
 
-        public string classify(DataInstance instance)
+        public virtual string classify(DataInstance instance)
         {
             string value_of_instance = instance.getProperty(this.label);
-            foreach(Node child in this.getNodeChildren())
+
+            // Check if we should pass this instance down to another node..
+            foreach (Node child in this.getNodeChildren())
             {
                 if (value_of_instance == child.value_splitter)
                 {
                     return child.classify(instance);
                 }
             }
+
+            // Check if we should pass this instance down to one of our leafs.
             foreach(Leaf child in this.getLeafChildren())
             {
                 if (value_of_instance == child.value_splitter)
@@ -116,6 +120,7 @@ namespace DecisionTrees
                     return child.classifier;
                 }
             }
+
             // If we got here, the instance has a value for an attribute that this model does not know. ERROR TIME!
             throw new Exception($"Unknown value {value_of_instance} for {this.label}");
         }
