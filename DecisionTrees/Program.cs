@@ -56,20 +56,20 @@ namespace DecisionTrees
           
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
 
-            string algorithm = writer.askFromConfig("What algorithm should be used? [ID3, C4.5]", "GENERAL", "algorithm");
-            Agent agent = null;
-            switch (algorithm)
+            string algorithmChoice = writer.askFromConfig("What algorithm should be used? [ID3, C4.5]", "GENERAL", "algorithm");
+            Algorithm algorithm = null;
+            switch (algorithmChoice)
             {
                 case "ID3":
-                    agent = new ID3Agent(thoughts, snapShot);
+                    algorithm = new ID3Algorithm();
                     break;
                 case "C4.5":
-                    agent = new C45Agent(thoughts, snapShot);
+                    algorithm = new C45Algorithm();
                     break;
                 default:
                     throw new Exception($"Unknown algorithm given: {algorithm}");
             }
-            
+            Agent agent = new Agent(algorithm, thoughts, snapShot);
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
 

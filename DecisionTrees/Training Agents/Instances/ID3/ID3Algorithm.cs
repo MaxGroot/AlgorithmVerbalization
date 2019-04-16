@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class ID3 : Algorithm
+    class ID3Algorithm : Algorithm
     {
         private List<DataInstance> examples;
         private string target_attribute;
@@ -18,7 +18,7 @@ namespace DecisionTrees
         private EventDescriptor determine_best_attribute;
         private EventDescriptor split_on_best_attribute;
 
-        public ID3()
+        public ID3Algorithm()
         {
             // Make System State Descriptors
             calculate_attribute_gain = new EventDescriptor("calculate-attribute-gain", "", new List<string>() { "my_gain", "my_attr" }, new List<EventDescriptor>() { });

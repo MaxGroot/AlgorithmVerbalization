@@ -6,19 +6,26 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    abstract class Agent
+    class Agent
     {
        private ThoughtsManager thoughts;
-        private SnapShot snapShot;
+       private SnapShot snapShot;
        private SystemState lastState = null;
-       public Agent(ThoughtsManager thoughts, SnapShot snapShot)
+       private Algorithm algorithm;
+
+        public Agent(Algorithm algorithm, ThoughtsManager thoughts, SnapShot snapShot)
         {
-            this.snapShot = snapShot;
+            this.algorithm = algorithm;
             this.thoughts = thoughts;
+            this.snapShot = snapShot;
         }
-       
-       public abstract DecisionTree TRAIN(ObservationSet set);
-       public abstract string ASK();
+
+        public DecisionTree TRAIN(ObservationSet set)
+        {
+            DecisionTree tree = this.algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            this.SNAPSHOT("final", tree);
+            return tree;
+        }
 
         public void SNAPSHOT(string name,DecisionTree tree)
         {
