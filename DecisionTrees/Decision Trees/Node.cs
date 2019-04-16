@@ -103,12 +103,16 @@ namespace DecisionTrees
         {
             string value_of_instance = instance.getProperty(this.label);
 
+            Console.WriteLine($"Looking for my label, which is {this.label}, the instance has {value_of_instance}");
             // Check if we should pass this instance down to another node..
             foreach (Node child in this.getNodeChildren())
             {
                 if (value_of_instance == child.value_splitter)
                 {
                     return child.classify(instance);
+                }else
+                {
+                    Console.WriteLine($"As {child.identifier}, I was looking for {child.value_splitter}");
                 }
             }
 
@@ -118,6 +122,9 @@ namespace DecisionTrees
                 if (value_of_instance == child.value_splitter)
                 {
                     return child.classifier;
+                }else
+                {
+                    Console.WriteLine($"As {child.identifier}, I was looking for {child.value_splitter}");
                 }
             }
 

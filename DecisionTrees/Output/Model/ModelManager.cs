@@ -70,7 +70,7 @@ namespace DecisionTrees
         {
             int level = node_level(leaf.parent) + 1;
             string classifying_strength = leaf.certainty.ToString();
-            return $"{level}-LEAF-{leaf.identifier}-{leaf.parent.label}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
+            return $"{level}-LEAF-{leaf.identifier}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
     }
 }

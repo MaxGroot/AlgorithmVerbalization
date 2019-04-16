@@ -9,9 +9,9 @@ namespace DecisionTrees
 {
     class ModelLoader
     {
-        public DecisionTree load_model(string model_location)
+        public DecisionTree load_model(string model_location, string target_attribute)
         {
-            DecisionTree model = new DecisionTree("UNKNOWN");
+            DecisionTree model = new DecisionTree(target_attribute);
             var reader = new StreamReader(model_location);
             Node last_node = null;
 
@@ -34,11 +34,13 @@ namespace DecisionTrees
             int wanted_level = level - 1;
 
             string type = split[1];
-            string label = split[2];
-            string value_split = split[3];
-            
             if (type == "NODE")
             {
+                string typeOfNode = split[2];
+                string identifier = split[3];
+                string label = split[4];
+                string value_split = split[5];
+
                 if (previous_node != null)
                 {
                     while (node_level(previous_node) > wanted_level)
@@ -52,23 +54,17 @@ namespace DecisionTrees
                 }
 
                 Node node = model.addNode(label, value_split, previous_node);
+                node.identifier = identifier;
                 previous_node = node;
             } else if (type == "LEAF")
             {
+                string identifier = split[2];
+                string leaf_value_splitter = split[3];
                 string leaf_classifier = split[4];
-                string leaf_type = split[5];
-
-                if (leaf_type=="ESTIMATE")
-                {
-                    model.addBestGuessLeaf(value_split, leaf_classifier, previous_node);
-                }else if (leaf_type=="PERFECT")
-                {
-                    model.addLeaf(value_split, leaf_classifier, previous_node);
-                }
-                else
-                {
-                    throw new Exception($"UNKNOWN LEAF TYPE:{leaf_type}");
-                }
+                double leaf_certainty = double.Parse(split[5]);
+                
+                Leaf leaf = model.addUncertainLeaf(leaf_value_splitter, leaf_classifier, previous_node, leaf_certainty);
+                leaf.identifier = identifier;
             } else
             {
                 throw new Exception($"UNKNOWN TREE ELEMENT:{type}");

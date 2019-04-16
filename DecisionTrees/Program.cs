@@ -106,33 +106,49 @@ namespace DecisionTrees
         static void classify(TextWriter writer)
         {
             ModelLoader loader = new ModelLoader();
+            DataController datacontroller = new DataController();
 
-            // Ask the important questions.
-            string model_location = writer.askFromConfig("Enter the file path to import the model from. ", "CLASSIFICATION", "model-location");
-            DecisionTree model = loader.load_model(model_location);
-            
             // Import the classification data.
             string data_location = writer.askFromConfig("Enter the file path to import the data from. ", "CLASSIFICATION", "input-location");
-
-            DataController datacontroller = new DataController();
             ObservationSet observations = datacontroller.importUnclassified(data_location);
+            string classifier_name = observations.target_attribute;
+            
+            // Import the model
+            string model_location = writer.askFromConfig("Enter the file path to import the model from. ", "CLASSIFICATION", "model-location");
+            DecisionTree model = loader.load_model(model_location, classifier_name);
             
             // Get ready for classification.
             string export_location = writer.askFromConfig("Enter the file path to export data to. ", "CLASSIFICATION", "output-location");
 
-            Console.WriteLine("READY. Press a key to start classification process \n");
-            Console.ReadKey(true);
+            // Check if the data is already classified, and thus we are in verification mode and will check how our model holds up.
+            string verification_mode_string = writer.askFromConfig("Verification mode? (TRUE or FALSE) ", "CLASSIFICATION", "verification-mode");
+            bool verification_mode = (verification_mode_string == "TRUE");
 
+            Console.WriteLine($"READY for classification{(verification_mode ? " in verification mode" : "")}. Press a key to start classification process \n");
+            Console.ReadKey(true);
+            
             List<DataInstance> classified_instances = new List<DataInstance>();
-            string classifier_name = observations.target_attribute;
+            int correct_classifications = 0;
+            string line = "";
             foreach(DataInstance instance in observations.instances)
             {
+                line = "";
+                string prediction = model.classify(instance);
+                if (verification_mode && instance.getProperty(classifier_name) == prediction)
+                {
+                    correct_classifications++;
+                }
                 instance.setProperty(classifier_name, model.classify(instance));
                 classified_instances.Add(instance);
             }
             ObservationSet export_set = new ObservationSet(classified_instances, classifier_name, observations.attributes);
-
             Console.WriteLine("Classification succesful, saving now.");
+
+            if (verification_mode)
+            {
+                double succesPercentage = Math.Round(((double)correct_classifications / (double)classified_instances.Count) * 100, 2);
+                Console.WriteLine($"Verification mode results: success rate of {succesPercentage}% ({correct_classifications} / {classified_instances.Count}).");
+            }
             datacontroller.exportSet(export_location, export_set);
 
         }

@@ -108,7 +108,7 @@ namespace DecisionTrees
                         {
                             if (column == values.Length - 1)
                             {
-                                // This is the last column. It is the target attribute
+                                // This is the last column. It is the target attribute. [TODO: Search for classifier specification instead of selecting last column]
                                 this.target = value;
                                 classifier_column = column;
                             }
