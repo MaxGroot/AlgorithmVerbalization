@@ -49,8 +49,18 @@ namespace DecisionTrees
                 string typeOfNode = split[3];
                 string label = split[4];
                 string value_split = split[5];
-
-                Node node = model.addNode(label, value_split, parent);
+                Node node = null;
+                if (typeOfNode == "C")
+                {
+                    // Continuous node
+                    string threshold_string = split[6];
+                    double threshold = double.Parse(threshold_string);
+                    node = model.addContinuousNode(label, value_split, threshold, parent);
+                }else
+                {
+                    // Nominal node
+                    node = model.addNode(label, value_split, parent);
+                }
                 node.identifier = identifier;
                 this.node_identifiers[identifier] = node;
 
