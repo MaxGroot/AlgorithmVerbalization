@@ -42,6 +42,7 @@ namespace DecisionTrees
             string thoughts_location = writer.askFromConfig("Enter the directory to output thoughts to. ", "EXPORT", "thoughts-location");
             
             string model_extension = "txt";
+            string rules_extension = "rules.txt";
             string drawing_extension = "GRAPH";
             string thoughts_filename = "thoughts.csv";
 
@@ -52,7 +53,7 @@ namespace DecisionTrees
             bool catcherror = (catchinput == "TRUE");
 
             ThoughtsManager thoughts = new ThoughtsManager();
-            SnapShot snapShot = new SnapShot(writer, snapshot_location, model_extension, drawing_extension);
+            SnapShot snapShot = new SnapShot(writer, snapshot_location, model_extension, rules_extension, drawing_extension);
           
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
 

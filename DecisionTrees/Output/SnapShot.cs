@@ -10,23 +10,29 @@ namespace DecisionTrees
     {
         private string location;
         private string model_extension;
+        private string rules_extension;
         private string drawing_extension;
         private DotExport drawer;
         private TextWriter writer;
 
-        public SnapShot(TextWriter writer, string location, string model_extension, string drawing_extension)
+        public SnapShot(TextWriter writer, string location, string model_extension, string rules_extension, string drawing_extension)
         {
             this.writer = writer;
             this.location = location;
             this.model_extension = model_extension;
+            this.rules_extension = rules_extension;
             this.drawing_extension = drawing_extension;
+
             drawer = new DotExport();
         }
         public void Make(string name, DecisionTree tree)
         {
             // Save model
             writer.set_location(location);
-            writer.filesave_lines(name + "." + this.model_extension, ModelManager.output(tree));
+            writer.filesave_lines(name + "." + this.model_extension, ModelManager.generate_model(tree));
+
+            // Save model as rule set
+            writer.filesave_lines(name + "." + this.rules_extension, ModelManager.generate_rules(tree));
 
             // Save image
             writer.filesave_lines(name + "." + this.drawing_extension, drawer.lines(tree));

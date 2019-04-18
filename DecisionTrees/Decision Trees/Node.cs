@@ -52,25 +52,7 @@ namespace DecisionTrees
         {
             this.leafChildren.Add(leaf);
         }
-        
-        public string triggerRule(string value_splitter)
-        {
-            string add = " ";
-            
-            if (parent != null)
-            {
-                add = parent.triggerRule(this.value_splitter) + " AND ";
-            }
-            else
-            {
-                add = "IF ";
-            }
-            
-
-            add += this.label + " = " + value_splitter;
-            return add;
-        }
-
+      
         public Node getParent()
         {
             return this.parent;
@@ -99,6 +81,23 @@ namespace DecisionTrees
             return ret;
         }
 
+        public virtual string rule()
+        {
+            string rule = "";
+            if (this.getParent() != null)
+            {
+                ContinuousNode cNode = null;
+                if (this.getParent() is ContinuousNode)
+                {
+                    cNode = (ContinuousNode)this.getParent();
+                    rule = this.value_splitter + cNode.threshold.ToString() + " : ";
+                }else
+                {
+                    rule = this.value_splitter + " : ";
+                }
+            }
+            return rule + this.label;
+        }
         public virtual string classify(DataInstance instance)
         {
             string value_of_instance = instance.getProperty(this.label);

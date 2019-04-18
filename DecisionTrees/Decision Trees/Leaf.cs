@@ -23,14 +23,6 @@ namespace DecisionTrees
             this.certainty = 1;
         }
 
-        public string myRule(string targetAttribute)
-        {
-            string rule = this.parent.triggerRule(value_splitter);
-            
-            rule += " THEN " + targetAttribute + " = " + this.classifier;
-            return rule;
-        }
-
         public string line()
         {
             return this.value_splitter;
@@ -46,6 +38,25 @@ namespace DecisionTrees
         public List<Leaf> leafchildren()
         {
             return new List<Leaf>();
+        }
+
+        public string rule()
+        {
+            string rule = "";
+            if (this.parent != null)
+            {
+                ContinuousNode cNode = null;
+                if (this.parent is ContinuousNode)
+                {
+                    cNode = (ContinuousNode)this.parent;
+                    rule = this.value_splitter + cNode.threshold.ToString() + " : ";
+                }
+                else
+                {
+                    rule = this.value_splitter + " : ";
+                }
+            }
+            return rule + this.classifier;
         }
     }
 }

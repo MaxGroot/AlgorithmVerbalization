@@ -8,35 +8,50 @@ namespace DecisionTrees
 {
     class ModelManager
     {
-        public static List<string> output(DecisionTree tree)
+        public static List<string> generate_model(DecisionTree tree)
         {
-            List<string> output_lines = new List<string>();
+            List<string> model_lines = new List<string>();
             List<Node> queue = new List<Node>();
             queue.Add(tree.getRoot());
 
             while(queue.Count > 0)
             {
-                iterate(ref queue, ref output_lines);
+                iterate_model(ref queue, ref model_lines);
             }
 
-            return output_lines;
+            return model_lines;
+        }
+        public static List<string> generate_rules(DecisionTree tree)
+        {
+            List<string> rules = new List<string>();
+            List<Node> queue = new List<Node>();
+            queue.Add(tree.getRoot());
+            
+            while(queue.Count > 0)
+            {
+                iterate_rules(ref queue, ref rules);
+            }
+
+            return rules;
         }
 
-
-        private static void iterate(ref List<Node> queue, ref List<string> outputs)
+        private static void iterate_rules(ref List<Node> queue, ref List<string> rule_lines)
         {
             Node node = queue[0];
             queue.RemoveAt(0);
-            outputs.Add(nodeToLine(node));
-            foreach (Node child in node.getNodeChildren())
+            int tabs = node_level(node);
+            rule_lines.AddRange(nodeToRuleLines(node));
+
+            int i = 0;
+            // We want to save the rules depth-first. Therefore, we add the node children to the front of the queue.
+            // We keep tally with i to make sure the children are not all added to the front because that would insert them in reversed order.
+            foreach(Node child in node.getNodeChildren())
             {
-                queue.Add(child);
+                queue.Insert(i, child);
+                i++;
             }
-            foreach(Leaf child in node.getLeafChildren())
-            {
-                outputs.Add(leafToLine(child));
-            }
-        }
+
+       }
 
         private static int node_level(Node node)
         {
@@ -56,9 +71,40 @@ namespace DecisionTrees
             return node_level;
         }
 
-        private static string nodeToLine(Node node)
+        private static List<string> nodeToRuleLines(Node node)
         {
-            int level = node_level(node);
+            List<string> lines = new List<string>();
+            int amountOfTabs = node_level(node);
+            string tabs = new string('\t', amountOfTabs);
+
+            lines.Add(tabs + node.rule());
+
+            foreach(Leaf child in node.getLeafChildren())
+            {
+                lines.Add(new string('\t', amountOfTabs + 1) + child.rule());
+            }
+
+            return lines;
+            
+        }
+
+        private static void iterate_model(ref List<Node> queue, ref List<string> outputs)
+        {
+            Node node = queue[0];
+            queue.RemoveAt(0);
+            outputs.Add(nodeToModelLine(node));
+            foreach (Node child in node.getNodeChildren())
+            {
+                queue.Add(child);
+            }
+            foreach(Leaf child in node.getLeafChildren())
+            {
+                outputs.Add(leafToModelLine(child));
+            }
+        }
+
+        private static string nodeToModelLine(Node node)
+        {
             ContinuousNode cNode = null;
             if (node is ContinuousNode)
             {
@@ -67,9 +113,9 @@ namespace DecisionTrees
             string parentidentifier = (node.getParent() == null) ? "ROOT" : node.getParent().identifier;
             return $"NODE-{node.identifier}-{parentidentifier}-{(node is ContinuousNode ? 'C' : 'N')}-{node.label}-{node.value_splitter}{(node is ContinuousNode ? $"-{cNode.threshold}" : "")}";
         }
-        private static string leafToLine(Leaf leaf)
+
+        private static string leafToModelLine(Leaf leaf)
         {
-            int level = node_level(leaf.parent) + 1;
             string classifying_strength = leaf.certainty.ToString();
             return $"LEAF-{leaf.identifier}-{leaf.parent.identifier}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
         }
