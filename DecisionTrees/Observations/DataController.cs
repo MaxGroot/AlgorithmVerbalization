@@ -106,18 +106,9 @@ namespace DecisionTrees
                         // This line describes the attribute names.
                         foreach (string value in values)
                         {
-                            if (column == values.Length - 1)
-                            {
-                                // This is the last column. It is the target attribute. [TODO: Search for classifier specification instead of selecting last column]
-                                this.target = value;
-                                classifier_column = column;
-                            }
-                            else
-                            {
-                                // Add it to the columns-that-are-not-the-classifier list.
-                                this.column_positions.Add(value);
-                                this.attributes.Add(value, "UNKNOWN");
-                            }
+                            // Add it to the columns list.
+                            this.column_positions.Add(value);
+                            this.attributes.Add(value, "UNKNOWN");
                             column++;
                         }
                     }else if( row == 2)
@@ -126,9 +117,15 @@ namespace DecisionTrees
                         // This line describes the attribute types
                         foreach(string value in values)
                         {
-                            if (column == values.Length - 1)
+                            if (value == "classifier")
                             {
-                                // Last column.
+                                // Classifier column.
+                                // First we remove it from the attributes dictionary, since we do not want the classifier to show up in the attributes.
+                                this.attributes.Remove(this.column_positions[column]);
+
+                                // Then, we make sure that we know the correct classifier.
+                                this.target = this.column_positions[column];
+                                classifier_column = column;
                             }else
                             {
                                 this.attributes[this.column_positions[column]] = value; 
