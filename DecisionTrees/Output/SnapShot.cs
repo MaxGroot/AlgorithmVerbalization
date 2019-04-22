@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace DecisionTrees
 {
@@ -14,10 +15,15 @@ namespace DecisionTrees
         private string drawing_extension;
         private DotExport drawer;
         private TextWriter writer;
+        private Stopwatch stopwatch;
+        public long secondsBySnapShot;
 
-        public SnapShot(TextWriter writer, string location, string model_extension, string rules_extension, string drawing_extension)
+        public SnapShot(TextWriter writer, Stopwatch stopwatch,  string location, string model_extension, string rules_extension, string drawing_extension)
         {
             this.writer = writer;
+            this.stopwatch = stopwatch;
+            secondsBySnapShot = 0;
+
             this.location = location;
             this.model_extension = model_extension;
             this.rules_extension = rules_extension;
@@ -27,6 +33,7 @@ namespace DecisionTrees
         }
         public void Make(string name, DecisionTree tree)
         {
+            long beforeSnapShot = this.stopwatch.ElapsedMilliseconds;
             // Save model
             writer.set_location(location);
             writer.filesave_lines(name + "." + this.model_extension, ModelManager.generate_model(tree));
@@ -54,6 +61,7 @@ namespace DecisionTrees
             double succesPercentage = Math.Round(((double) correct_classifications / (double) total_set.Count) * 100, 2);
 
             Console.WriteLine($"[SNAPSHOT] : Snapshot {name} made with success rate of {succesPercentage}% ({correct_classifications} / {total_set.Count}).");
+            this.secondsBySnapShot += (this.stopwatch.ElapsedMilliseconds - beforeSnapShot);
         }
     }
 }

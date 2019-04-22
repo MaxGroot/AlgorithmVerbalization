@@ -53,7 +53,8 @@ namespace DecisionTrees
             bool catcherror = (catchinput == "TRUE");
 
             ThoughtsManager thoughts = new ThoughtsManager();
-            SnapShot snapShot = new SnapShot(writer, snapshot_location, model_extension, rules_extension, drawing_extension);
+            Stopwatch stopwatch = new Stopwatch();
+            SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
           
             Console.WriteLine("ADD UTILITY KNOWLEDGE");
 
@@ -74,7 +75,6 @@ namespace DecisionTrees
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
 
-            Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
             // Train the algorithm based on the Training set
@@ -97,11 +97,13 @@ namespace DecisionTrees
                 agent.TRAIN(observations);
             }
             long training_time = stopwatch.ElapsedMilliseconds;
+            long snapshot_time = training_time - snapShot.secondsBySnapShot;
+
             Console.WriteLine("Training completed. Processing thoughts.");
             
             writer.set_location(thoughts_location);
             long thought_time = stopwatch.ElapsedMilliseconds;
-            Console.WriteLine($"Training time: {training_time}ms. Thoughts processing time: {thought_time - training_time}ms.");
+            Console.WriteLine($"Training time: {training_time}ms including snapshotting, {snapshot_time}ms excluding. Thoughts processing time: {thought_time - training_time}ms.");
         }
 
         static void classify(TextWriter writer)
