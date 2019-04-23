@@ -16,10 +16,11 @@ namespace DecisionTrees
 
         public static string generateElementId(char character, int counter)
         {
-            int second_letter_count = counter % 26;
-            int first_letter_count = (int)counter / 26;
-
-            return character.ToString() + "_" + alphabet()[first_letter_count] + alphabet()[second_letter_count];
+            int third_letter_count = counter % 26;
+            int second_letter_count = ((int)counter / 26 ) % 26;
+            int first_letter_count = (int)counter / (26 * 26);
+            string identifier =  character.ToString() + "_" + alphabet()[first_letter_count] + alphabet()[second_letter_count] + alphabet()[third_letter_count];
+            return identifier;
         }
 
         public static int parentCount(Node node)
