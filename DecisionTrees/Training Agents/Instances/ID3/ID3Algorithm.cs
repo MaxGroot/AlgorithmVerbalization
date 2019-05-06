@@ -127,8 +127,10 @@ namespace DecisionTrees
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                 }
-                Console.WriteLine("Continue to next attribute");
-                
+                if (!(value_splitter == this.possible_attribute_values[best_attr].Last()))
+                {
+                    Console.WriteLine("Continue to next attribute");
+                }
             }
             Console.WriteLine("RETURN TREE TO SELF");
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
