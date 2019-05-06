@@ -76,13 +76,11 @@ namespace DecisionTrees
             if (split_on_continuous)
             {
                 newnode = tree.addContinuousNode(best_split_attribute, last_split, threshold, parent);
-
                 subsets = SetHelper.subsetOnAttributeContinuous(set, best_split_attribute, threshold);
             }
             else
             {
-                newnode = tree.addNode(best_split_attribute, last_split, parent);
-                
+                newnode = tree.addNode(best_split_attribute, last_split, parent);   
                 subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
             }
             

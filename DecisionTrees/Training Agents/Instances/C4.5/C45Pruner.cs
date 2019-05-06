@@ -63,6 +63,7 @@ namespace DecisionTrees
             double nodeEstimatedError = nodeErrorRate * node_set.Count;
 
             // Compare
+            // If a node has a lower estimated error than its leafs, it should be pruned. 
             if (nodeEstimatedError < leaf_errors)
             {
                 // We need to prune!
