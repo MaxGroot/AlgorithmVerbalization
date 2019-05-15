@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class Vocabulary
+    class InferenceOutput
     {
+        public string filename;
+        public List<string> inference_ids;
         public List<Inference> inferences = new List<Inference>();
-        public List<InferenceOutput> inference_outputs = new List<InferenceOutput>();
     }
 }

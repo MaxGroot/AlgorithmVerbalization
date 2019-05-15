@@ -16,6 +16,18 @@ namespace DecisionTrees
             string file_contents = File.ReadAllText(location);
             this.vocabulary = JsonConvert.DeserializeObject<Vocabulary>(file_contents);
             
+            foreach(InferenceOutput output in vocabulary.inference_outputs)
+            {
+                foreach(string inference_id in output.inference_ids)
+                {
+                    Inference inference = vocabulary.inferences.Find(i => i.id == inference_id);
+                    if (inference == null)
+                    {
+                        throw new Exception($"Inference output {output.filename} requires {inference_id} but no such inference is found in this vocabulary.");
+                    }
+                    output.inferences.Add(inference);
+                }
+            }
         }
     }
 }

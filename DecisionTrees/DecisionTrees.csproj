@@ -81,6 +81,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabularies\Inference.cs" />
+    <Compile Include="Vocabularies\InferenceOutput.cs" />
     <Compile Include="Vocabularies\Vocabulary.cs" />
     <Compile Include="Vocabularies\VocabularyImporter.cs" />
   </ItemGroup>

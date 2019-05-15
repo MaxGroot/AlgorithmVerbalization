@@ -8,6 +8,7 @@ namespace DecisionTrees
 {
     class Inference
     {
+        public string id;
         public string action;
         public string situation;
         public Dictionary<string, string> considerations = new Dictionary<string, string>();

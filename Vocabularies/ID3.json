@@ -2,6 +2,7 @@
     "inferences": 
     [
         {
+            "id"    : "add-node",
             "action" : "ADD NODE",
             "situation" : "Best attribute determined",
             "considerations" : {
@@ -11,6 +12,7 @@
             }
         },
         {
+            "id"    : "add-best-guess-leaf",
             "action" : "ADD BEST GUESS LEAF",
             "situation" : "Best attribute determined",
             "considerations" : {
@@ -19,5 +21,12 @@
                 "possible_attributes" : "int"
             }
         } 
+    ],
+    "inference_outputs":
+    [
+        {
+            "filename" : "best_attribute.csv",
+            "inference_ids" : ["add-node", "add-best-guess-leaf"]
+        }
     ]
 }
