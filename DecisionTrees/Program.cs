@@ -57,6 +57,7 @@ namespace DecisionTrees
             bool catcherror = (catchinput == "TRUE");
 
             ThoughtsManager thoughts = new ThoughtsManager(vocab.vocabulary);
+            InferenceManager inferences = new InferenceManager(vocab.vocabulary);
 
             Stopwatch stopwatch = new Stopwatch();
             SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
