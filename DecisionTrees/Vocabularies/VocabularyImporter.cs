@@ -24,10 +24,6 @@ namespace DecisionTrees
                     throw new Exception($"Inference {inferencetype.id} requires state descriptor {inferencetype.state_descriptor_id} but no such descriptor was found.");
                 }
                 inferencetype.descriptor = descriptor;
-                foreach(KeyValuePair<string, string> pair in inferencetype.descriptor.considerations)
-                {
-                    Console.WriteLine($"{inferencetype.id} - {descriptor.id} : [{pair.Key} = {pair.Value}");
-                }
             }
 
             // Convert the list of ids that outputs have specified to the actual instances of those inference types.

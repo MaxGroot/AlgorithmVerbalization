@@ -19,7 +19,7 @@
         {
             "id" : "best-attribute",
             "considerations" : {
-                "best_attribute" : "double",
+                "best_attribute" : "string",
                 "highest_gain" : "double",
                 "possible_attributes" : "int"
             }

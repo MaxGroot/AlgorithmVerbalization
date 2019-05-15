@@ -56,7 +56,6 @@ namespace DecisionTrees
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
 
-            ThoughtsManager thoughts = new ThoughtsManager(vocab.vocabulary);
             InferenceManager inferences = new InferenceManager(vocab.vocabulary);
 
             Stopwatch stopwatch = new Stopwatch();
@@ -77,7 +76,7 @@ namespace DecisionTrees
                 default:
                     throw new Exception($"Unknown algorithm given: {algorithm}");
             }
-            Agent agent = new Agent(algorithm, thoughts, snapShot);
+            Agent agent = new Agent(algorithm, inferences, snapShot);
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
 
@@ -94,7 +93,7 @@ namespace DecisionTrees
                 catch (Exception e)
                 {
                     Console.WriteLine("Encountered an error! Writing output and model anyways.");
-                    writer.filesave_string(thoughts_filename, thoughts.output());
+                    // writer.filesave_string(thoughts_filename, thoughts.output());
                     throw (e);
                 }
             }
@@ -108,6 +107,8 @@ namespace DecisionTrees
             Console.WriteLine("Training completed. Processing thoughts.");
             
             writer.set_location(thoughts_location);
+            inferences.write(thoughts_location);
+
             long thought_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine($"Training time: {training_time}ms including snapshotting, {snapshot_time}ms excluding. Thoughts processing time: {thought_time - training_time}ms.");
         }
