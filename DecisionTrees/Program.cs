@@ -40,7 +40,8 @@ namespace DecisionTrees
             string input_location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
             string snapshot_location = writer.askFromConfig("Enter the directory to output snapshots to. ", "EXPORT", "snapshot-location");
             string thoughts_location = writer.askFromConfig("Enter the directory to output thoughts to. ", "EXPORT", "thoughts-location");
-            
+            string vocabulary_location = writer.askFromConfig("Enter the file path to import the vocabulary form ", "VOCABULARY", "location");
+
             string model_extension = "txt";
             string rules_extension = "rules.txt";
             string drawing_extension = "GRAPH";
@@ -48,11 +49,15 @@ namespace DecisionTrees
 
             DataController import = new DataController();
             ObservationSet observations = import.importExamples(input_location);
-            
+
+            VocabularyImporter vocab = new VocabularyImporter();
+            vocab.import(vocabulary_location);
+
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
 
-            ThoughtsManager thoughts = new ThoughtsManager();
+            ThoughtsManager thoughts = new ThoughtsManager(vocab.vocabulary);
+
             Stopwatch stopwatch = new Stopwatch();
             SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
           

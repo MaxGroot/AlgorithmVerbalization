@@ -17,9 +17,12 @@ namespace DecisionTrees
 
         private Dictionary<EventDescriptor, int> last_output_position_with_this_descriptor = new Dictionary<EventDescriptor, int>();
 
-        public ThoughtsManager()
+        private Vocabulary vocabulary;
+
+        public ThoughtsManager(Vocabulary vocabulary)
         {
             state_counter = 0;
+            this.vocabulary = vocabulary;
         }
 
         public void add_systemstate_descriptor(EventDescriptor descriptor)

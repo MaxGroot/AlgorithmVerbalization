@@ -1,0 +1,23 @@
+{
+    "inferences": 
+    [
+        {
+            "action" : "ADD NODE",
+            "situation" : "Best attribute determined",
+            "considerations" : {
+                "best_attribute" : "double",
+                "highest_gain" : "double",
+                "possible_attributes" : "int"
+            }
+        },
+        {
+            "action" : "ADD BEST GUESS LEAF",
+            "situation" : "Best attribute determined",
+            "considerations" : {
+                "best_attribute" : "double",
+                "highest_gain" : "double",
+                "possible_attributes" : "int"
+            }
+        } 
+    ]
+}
