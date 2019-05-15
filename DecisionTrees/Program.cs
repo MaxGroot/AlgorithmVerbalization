@@ -39,7 +39,7 @@ namespace DecisionTrees
             // Ask the important questions.
             string input_location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
             string snapshot_location = writer.askFromConfig("Enter the directory to output snapshots to. ", "EXPORT", "snapshot-location");
-            string thoughts_location = writer.askFromConfig("Enter the directory to output thoughts to. ", "EXPORT", "thoughts-location");
+            string thoughts_location = writer.askFromConfig("Enter the directory to output inferences to. ", "EXPORT", "inference-location");
             string vocabulary_location = writer.askFromConfig("Enter the file path to import the vocabulary form ", "VOCABULARY", "location");
 
             string model_extension = "txt";
@@ -107,7 +107,7 @@ namespace DecisionTrees
             Console.WriteLine("Training completed. Processing thoughts.");
             
             writer.set_location(thoughts_location);
-            inferences.write(thoughts_location);
+            inferences.write(writer);
 
             long thought_time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine($"Training time: {training_time}ms including snapshotting, {snapshot_time}ms excluding. Thoughts processing time: {thought_time - training_time}ms.");

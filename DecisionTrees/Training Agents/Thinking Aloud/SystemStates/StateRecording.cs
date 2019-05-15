@@ -54,6 +54,17 @@ namespace DecisionTrees
             }
             this.finished = true;
         }
+
+        public string toLine(string seperator)
+        {
+            string ret = $"{this.action}{seperator}";
+            foreach(string variableName in this.state.Keys.ToList())
+            {
+                ret += $"{this.state[variableName]}{seperator}";
+            }
+            return ret;
+        }
+
         protected static bool verifyType(string type, object check)
         {
             switch(type)

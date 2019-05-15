@@ -24,22 +24,7 @@ namespace DecisionTrees
                     throw new Exception($"Inference {inferencetype.id} requires state descriptor {inferencetype.state_descriptor_id} but no such descriptor was found.");
                 }
                 inferencetype.descriptor = descriptor;
-            }
-
-            // Convert the list of ids that outputs have specified to the actual instances of those inference types.
-            foreach(InferenceOutput output in vocabulary.inference_outputs)
-            {
-                foreach(string inference_id in output.inference_ids)
-                {
-                    InferenceType inference = vocabulary.inferences.Find(i => i.id == inference_id);
-                    if (inference == null)
-                    {
-                        throw new Exception($"Inference output {output.filename} requires {inference_id} but no such inference is found in this vocabulary.");
-                    }
-                    output.inferences.Add(inference);
-                }
-            }
-            
+            } 
         }
     }
 }

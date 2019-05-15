@@ -24,12 +24,5 @@
                 "possible_attributes" : "int"
             }
         }
-    ],
-    "inference_outputs":
-    [
-        {
-            "filename" : "best_attribute.csv",
-            "inference_ids" : ["add-node", "add-best-guess-leaf"]
-        }
     ]
 }

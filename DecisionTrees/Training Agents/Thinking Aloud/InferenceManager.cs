@@ -40,16 +40,32 @@ namespace DecisionTrees
             return ret;
         }
 
-        public void write(string location)
+        public void write(TextWriter writer)
         {
-            foreach(StateDescriptor desc in state_record.Keys.ToList())
+            foreach(StateDescriptor descriptor in this.vocabulary.state_descriptors)
             {
-                Console.WriteLine(desc.id);
-                foreach(StateRecording rec in state_record[desc])
-                {
-                    Console.WriteLine(rec.action);
-                }
+                writer.filesave_string(descriptor.id + ".csv", csv_individual_descriptor(descriptor));
             }
+        }
+
+        private string csv_individual_descriptor(StateDescriptor descriptor)
+        {
+            string seperator = ";";
+            var csv = new StringBuilder();
+            string firstline = "action";
+            foreach (string variableName in descriptor.considerations.Keys.ToList())
+            {
+                firstline += $"{seperator}{variableName}";
+            }
+            firstline += seperator;
+            csv.AppendLine(firstline);
+
+            foreach (StateRecording recording in this.state_record[descriptor])
+            {
+                csv.AppendLine(recording.toLine(seperator));
+            }
+
+            return csv.ToString();
         }
     }
 }
