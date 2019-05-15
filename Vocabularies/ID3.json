@@ -5,22 +5,25 @@
             "id"    : "add-node",
             "action" : "ADD NODE",
             "situation" : "Best attribute determined",
-            "considerations" : {
-                "best_attribute" : "double",
-                "highest_gain" : "double",
-                "possible_attributes" : "int"
-            }
-        },
+            "state_descriptor_id" : "best-attribute"
+         },
         {
             "id"    : "add-best-guess-leaf",
             "action" : "ADD BEST GUESS LEAF",
             "situation" : "Best attribute determined",
+            "state_descriptor_id" : "best-attribute"
+        } 
+    ],
+    "state_descriptors":
+    [
+        {
+            "id" : "best-attribute",
             "considerations" : {
                 "best_attribute" : "double",
                 "highest_gain" : "double",
                 "possible_attributes" : "int"
             }
-        } 
+        }
     ],
     "inference_outputs":
     [

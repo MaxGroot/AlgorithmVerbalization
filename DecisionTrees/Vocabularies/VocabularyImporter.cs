@@ -16,11 +16,26 @@ namespace DecisionTrees
             string file_contents = File.ReadAllText(location);
             this.vocabulary = JsonConvert.DeserializeObject<Vocabulary>(file_contents);
             
+            foreach(InferenceType inferencetype in vocabulary.inferences)
+            {
+                StateDescriptor descriptor = vocabulary.state_descriptors.Find(d => d.id == inferencetype.state_descriptor_id);
+                if (descriptor == null)
+                {
+                    throw new Exception($"Inference {inferencetype.id} requires state descriptor {inferencetype.state_descriptor_id} but no such descriptor was found.");
+                }
+                inferencetype.descriptor = descriptor;
+                foreach(KeyValuePair<string, string> pair in inferencetype.descriptor.considerations)
+                {
+                    Console.WriteLine($"{inferencetype.id} - {descriptor.id} : [{pair.Key} = {pair.Value}");
+                }
+            }
+
+            // Convert the list of ids that outputs have specified to the actual instances of those inference types.
             foreach(InferenceOutput output in vocabulary.inference_outputs)
             {
                 foreach(string inference_id in output.inference_ids)
                 {
-                    Inference inference = vocabulary.inferences.Find(i => i.id == inference_id);
+                    InferenceType inference = vocabulary.inferences.Find(i => i.id == inference_id);
                     if (inference == null)
                     {
                         throw new Exception($"Inference output {output.filename} requires {inference_id} but no such inference is found in this vocabulary.");
@@ -28,6 +43,7 @@ namespace DecisionTrees
                     output.inferences.Add(inference);
                 }
             }
+            
         }
     }
 }

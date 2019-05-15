@@ -61,6 +61,7 @@
     <Compile Include="Training Agents\Instances\Shared\Helpers\AttributeHelper.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\ElementHelper.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\SetHelper.cs" />
+    <Compile Include="Training Agents\Thinking Aloud\SystemStates\StateDescriptor.cs" />
     <Compile Include="Training Agents\Thinking Aloud\ThoughtsManager.cs" />
     <Compile Include="Training Agents\Algorithm.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="Output\TextWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Vocabularies\Inference.cs" />
+    <Compile Include="Vocabularies\InferenceType.cs" />
     <Compile Include="Vocabularies\InferenceOutput.cs" />
     <Compile Include="Vocabularies\Vocabulary.cs" />
     <Compile Include="Vocabularies\VocabularyImporter.cs" />

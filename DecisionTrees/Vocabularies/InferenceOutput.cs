@@ -10,6 +10,6 @@ namespace DecisionTrees
     {
         public string filename;
         public List<string> inference_ids;
-        public List<Inference> inferences = new List<Inference>();
+        public List<InferenceType> inferences = new List<InferenceType>();
     }
 }

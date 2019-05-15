@@ -8,7 +8,8 @@ namespace DecisionTrees
 {
     class Vocabulary
     {
-        public List<Inference> inferences = new List<Inference>();
+        public List<InferenceType> inferences = new List<InferenceType>();
         public List<InferenceOutput> inference_outputs = new List<InferenceOutput>();
+        public List<StateDescriptor> state_descriptors = new List<StateDescriptor>();
     }
 }

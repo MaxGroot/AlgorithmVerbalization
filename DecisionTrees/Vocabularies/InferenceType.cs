@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace DecisionTrees
 {
-    class Inference
+    class InferenceType
     {
         public string id;
         public string action;
         public string situation;
-        public Dictionary<string, string> considerations = new Dictionary<string, string>();
+        public string state_descriptor_id;
+        public StateDescriptor descriptor;
     }
 }
