@@ -10,7 +10,8 @@ namespace DecisionTrees
     {
         private Vocabulary vocabulary;
         public Dictionary<StateDescriptor, List<StateRecording>> state_record = new Dictionary<StateDescriptor, List<StateRecording>>();
-        
+        public List<String> all_actions_in_order = new List<String>();
+
         public InferenceManager(Vocabulary vocabulary)
         {
             this.vocabulary = vocabulary;
@@ -30,6 +31,8 @@ namespace DecisionTrees
                     ret = new StateRecording(inference_id, inference.descriptor);
 
                     this.state_record[inference.descriptor].Add(ret);
+                    this.all_actions_in_order.Add(inference.action);
+
                     break;
                 }
             }
@@ -46,6 +49,8 @@ namespace DecisionTrees
             {
                 writer.filesave_string(descriptor.id + ".csv", csv_individual_descriptor(descriptor));
             }
+
+            writer.filesave_lines("all_actions.txt", all_actions_in_order);
         }
 
         private string csv_individual_descriptor(StateDescriptor descriptor)
