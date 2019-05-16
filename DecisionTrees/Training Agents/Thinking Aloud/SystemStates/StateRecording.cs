@@ -23,11 +23,11 @@ namespace DecisionTrees
         {
             if (! descriptor.considerations.ContainsKey(name))
             {
-                throw new Exception($"Cannot set {name}, descriptor {descriptor.id} has no such key");
+                throw new Exception($"Cannot set {name} for {action}, as descriptor {descriptor.id} has no such key");
             }
             if (! verifyType(descriptor.considerations[name], value))
             {
-                throw new Exception($"Cannot set {value} for {name}, that variable has {descriptor.considerations[name]} as a type");
+                throw new Exception($"Cannot set {value} for variable {name} of {action}, that variable has {descriptor.considerations[name]} as a type");
             }
             this.state[name] = value;
             return this;
