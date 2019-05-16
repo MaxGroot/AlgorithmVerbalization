@@ -48,7 +48,31 @@
             "action" : "ADD BEST GUESS LEAF",
             "situation" : "Best attribute determined",
             "state_descriptor_id" : "best-attribute-determined"
-        } 
+        },
+        {
+            "id" : "subset-on-value",
+            "action" : "Create subset with this value",
+            "situation" : "Considering attribute values",
+            "state_descriptor_id" : "considering-attribute-values"
+        },
+        {
+            "id" : "add-leaf",
+            "action" : "ADD LEAF",
+            "situation" : "Considering subset",
+            "state_descriptor_id" : "considering-subset"
+        },
+        {
+            "id" : "ignore-value",
+            "action" : "Ignore value",
+            "situation" : "Considering subset",
+            "state_descriptor_id" : "considering-subset"
+        },
+        {
+            "id" : "iterate-further",
+            "action" : "Iterate further",
+            "situation" : "Considering subset",
+            "state_descriptor_id" : "considering-subset"
+        }
     ],
     "state_descriptors":
     [
@@ -73,6 +97,19 @@
                 "competing_attribute" : "string",
                 "current_gain" : "double",
                 "competing_gain" : "double"
+            }
+        },
+        {
+            "id"    : "considering-attribute-values",
+            "considerations" : {
+                "values_left" : "int"
+            }
+        },
+        {
+            "id" : "considering-subset",
+            "considerations" : {
+                "split_attribute" : "string",
+                "split_value" : "string"
             }
         }
     ]

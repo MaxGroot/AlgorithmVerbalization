@@ -76,19 +76,21 @@ namespace DecisionTrees
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
+                runner.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0).set("possible_attributes", attributes_copy.Count).finish();
                 string classifier_value = SetHelper.mostCommonClassifier(sets_todo, target_attribute);
                 tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
                 return tree;
             }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
+            runner.THINK("add-node").set("best_attribute", best_attr).set("highest_gain", highest_gain).set("possible_attributes", attributes_copy.Count).finish();
+
             // Remove this attribute as a splitter for the dataset.
             attributes_copy.RemoveAt(considerable_attributes.IndexOf(best_attr));
             
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
             Node new_node = tree.addNode(best_attr, parent_value_splitter, parent_node);
-            runner.THINK("add-node").set("best_attribute", best_attr).set("highest_gain", highest_gain).set("possible_attributes", attributes_copy.Count).finish();
-
+            
             // Create subsets for each possible value of the attribute we created a node for. 
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
@@ -96,18 +98,21 @@ namespace DecisionTrees
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
+                    runner.THINK("ignore-value").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
                     continue;
                 }
                 if (SetHelper.hasUniformClassifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
+                    runner.THINK("add-leaf").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
                     string classifier_value = subset.First().getProperty(target_attribute);
                     Leaf leaf = tree.addLeaf(value_splitter, classifier_value, new_node);
                     tree.data_locations[leaf] = subset;
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
+                    runner.THINK("iterate-further").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
                     this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
