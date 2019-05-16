@@ -41,29 +41,36 @@ namespace DecisionTrees
             DecisionTree tree = new DecisionTree(target_attribute);
 
             // Start the iteration process on the entire set.
+            runner.THINK("start").finish();
             tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
             return tree;
         }
 
         public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, Node parent_node, string parent_value_splitter)
         {
-
+            
+            runner.THINK("iterate").finish();
             List <string> attributes_copy = new List<string>(considerable_attributes.ToArray());
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
             string best_attr = "UNDETERMINED";
             double highest_gain = 0;
             foreach(string attr in attributes_copy)
             {
+                runner.THINK("consider-attribute").set("attributes_left", attributes_copy.Count).finish();
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
                 if (my_gain > highest_gain)
                 {
+                    runner.THINK("set-new-best-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
                     best_attr = attr;
                     highest_gain = my_gain;
                 }
                 else
                 {
+                    runner.THINK("keep-old-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
                 }
             }
+            runner.THINK("end-loop").set("attributes_left", 0).finish();
+
             if (highest_gain == 0)
             {
                 // This set cannot be split further.

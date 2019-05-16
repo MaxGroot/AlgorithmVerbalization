@@ -2,26 +2,77 @@
     "inferences": 
     [
         {
+            "id"    : "start",
+            "action" : "Start Training Process",
+            "situation": "Program loaded",
+            "state_descriptor_id": null
+        },
+        {
+            "id"    : "iterate",
+            "action" : "Iterate on set",
+            "situation" : "Ready for iteration",
+            "state_descriptor_id" : null
+        },
+        {
+            "id"    : "consider-attribute",
+            "action" : "Consider attribute for split",
+            "situation" : "Determining best attribute",
+            "state_descriptor_id": "determine-best-attribute"
+        },
+        {
+            "id"        : "set-new-best-attribute",
+            "action"    : "Set new best attribute",
+            "situation" : "Comparing attributes",
+            "state_descriptor_id" : "comparing-attributes"
+        },
+        {
+            "id"        : "keep-old-attribute",
+            "action"    : "Do not set new best attribute",
+            "situation" : "Comparing attributes",
+            "state_descriptor_id" : "comparing-attributes"
+        },
+        {
+            "id"        : "end-loop",
+            "action"    : "Stop considering attributes",
+            "situation" : "Determining best attribute",
+            "state_descriptor_id" : "determine-best-attribute"
+        },
+        {
             "id"    : "add-node",
             "action" : "ADD NODE",
             "situation" : "Best attribute determined",
-            "state_descriptor_id" : "best-attribute"
+            "state_descriptor_id" : "best-attribute-determined"
          },
         {
             "id"    : "add-best-guess-leaf",
             "action" : "ADD BEST GUESS LEAF",
             "situation" : "Best attribute determined",
-            "state_descriptor_id" : "best-attribute"
+            "state_descriptor_id" : "best-attribute-determined"
         } 
     ],
     "state_descriptors":
     [
         {
-            "id" : "best-attribute",
+            "id" : "best-attribute-determined",
             "considerations" : {
                 "best_attribute" : "string",
                 "highest_gain" : "double",
                 "possible_attributes" : "int"
+            }
+        },
+        {
+            "id"    : "determine-best-attribute",
+            "considerations" : {
+                "attributes_left" : "int"
+            }
+        },
+        {
+            "id" : "comparing-attributes",
+            "considerations" : {
+                "current_best_attribute" : "string",
+                "competing_attribute" : "string",
+                "current_gain" : "double",
+                "competing_gain" : "double"
             }
         }
     ]
