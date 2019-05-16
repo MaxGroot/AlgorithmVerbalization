@@ -30,7 +30,10 @@ namespace DecisionTrees
                 {
                     ret = new StateRecording(inference_id, inference.descriptor);
 
-                    this.state_record[inference.descriptor].Add(ret);
+                    if (inference.descriptor != null)
+                    {
+                        this.state_record[inference.descriptor].Add(ret);
+                    }
                     this.all_actions_in_order.Add(inference.action);
 
                     break;

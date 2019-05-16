@@ -19,7 +19,7 @@ namespace DecisionTrees
             foreach(InferenceType inferencetype in vocabulary.inferences)
             {
                 StateDescriptor descriptor = vocabulary.state_descriptors.Find(d => d.id == inferencetype.state_descriptor_id);
-                if (descriptor == null)
+                if (descriptor == null  && inferencetype.state_descriptor_id != null)
                 {
                     throw new Exception($"Inference {inferencetype.id} requires state descriptor {inferencetype.state_descriptor_id} but no such descriptor was found.");
                 }

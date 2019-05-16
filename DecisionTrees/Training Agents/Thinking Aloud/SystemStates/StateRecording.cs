@@ -45,6 +45,11 @@ namespace DecisionTrees
 
         public void finish()
         {
+            if (this.descriptor == null)
+            {
+                this.finished = true;
+                return;
+            }
             foreach(string variableName in descriptor.considerations.Keys.ToList())
             {
                 if (! state.ContainsKey(variableName))
@@ -57,6 +62,10 @@ namespace DecisionTrees
 
         public string toLine(string seperator)
         {
+            if (!this.finished)
+            {
+                throw new Exception($"The program attempts to save an improperly configured StateRecording with action {action}");
+            }
             string ret = $"{this.action}{seperator}";
             foreach(string variableName in this.state.Keys.ToList())
             {
