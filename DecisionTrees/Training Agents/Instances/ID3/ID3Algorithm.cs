@@ -43,6 +43,7 @@ namespace DecisionTrees
             // Start the iteration process on the entire set.
             runner.THINK("start").finish();
             tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
+            runner.THINK("return-prediction-model").finish();
             return tree;
         }
 
@@ -69,7 +70,7 @@ namespace DecisionTrees
                     runner.THINK("keep-old-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
                 }
             }
-            runner.THINK("end-loop").set("attributes_left", 0).finish();
+            runner.THINK("end-attribute-loop").set("attributes_left", 0).finish();
 
             if (highest_gain == 0)
             {
@@ -90,10 +91,12 @@ namespace DecisionTrees
             
             // Parent value splitter is to give a node an idea what it's parent splitted on. For decision rules this is needed information.
             Node new_node = tree.addNode(best_attr, parent_value_splitter, parent_node);
-            
+
             // Create subsets for each possible value of the attribute we created a node for. 
+            int values_left = this.possible_attribute_values[best_attr].Count;
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
+                runner.THINK("subset-on-value").set("values_left", values_left).finish();
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
                 if (subset.Count == 0)
                 {
@@ -113,15 +116,14 @@ namespace DecisionTrees
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
                     runner.THINK("iterate-further").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
-                    this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
+                    tree = this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
 
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                 }
-                if (!(value_splitter == this.possible_attribute_values[best_attr].Last()))
-                {
-
-                }
+                values_left -= 1;
             }
+            runner.THINK("end-value-loop").set("values_left", values_left).finish();
+            runner.THINK("return-tree-to-self").finish();
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
             return tree;
         }

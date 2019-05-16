@@ -32,7 +32,7 @@
             "state_descriptor_id" : "comparing-attributes"
         },
         {
-            "id"        : "end-loop",
+            "id"        : "end-attribute-loop",
             "action"    : "Stop considering attributes",
             "situation" : "Determining best attribute",
             "state_descriptor_id" : "determine-best-attribute"
@@ -72,6 +72,24 @@
             "action" : "Iterate further",
             "situation" : "Considering subset",
             "state_descriptor_id" : "considering-subset"
+        },
+        {
+            "id" : "end-value-loop",
+            "action": "Stop considering values for attribute",
+            "situation" : "Considering attribute values",
+            "state_descriptor_id" : "considering-attribute-values"
+        },
+        {
+            "id" : "return-tree-to-self",
+            "action" : "Return tree to previous iteration",
+            "situation" : "Ready to return",
+            "state_descriptor_id" : null
+        },
+        {
+            "id" : "return-prediction-model",
+            "action" : "Deliver prediction model",
+            "situation" : "Ready to return",
+            "state_descriptor_id" : null
         }
     ],
     "state_descriptors":
