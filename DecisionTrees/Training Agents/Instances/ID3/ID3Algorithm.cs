@@ -77,9 +77,10 @@ namespace DecisionTrees
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
-                runner.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0).set("possible_attributes", attributes_copy.Count).finish();
+                runner.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0d).set("possible_attributes", attributes_copy.Count).finish();
                 string classifier_value = SetHelper.mostCommonClassifier(sets_todo, target_attribute);
-                tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
+                Leaf leaf = tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
+                tree.data_locations[leaf] = sets_todo;
                 return tree;
             }
 
