@@ -8,17 +8,24 @@ namespace DecisionTrees
 {
     class C45Pruner
     {
+        // Since calculating upper bounds is a computationally expensive process, we store here the variables that we have done that calculation
+        // of before. 
         private Dictionary<string, double> calculated_upperBounds = new Dictionary<string, double>();
+
+        // This keeps track of nodes that have been removed, so they can later be snapshotted. [TODO: Make snapshotting work again?)
         private Dictionary<string, Node> pruned_nodes = new Dictionary<string, Node>();
 
-        // 25 * 2
+        // 25 * 2, just like Quinan did it. 
         private int confidence = 50;
         private Agent runner;
         public DecisionTree prune(DecisionTree tree, string target_attribute, Agent runner)
         {
             this.runner = runner;
 
+            // Find all nodes that have a leaf and are therefore up for pruning.
             List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
+
+            // Sort them bottom-up.
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
 
             // Start post-pruning with this queue.
@@ -27,6 +34,7 @@ namespace DecisionTrees
             Console.WriteLine("Saving snapshots.");
             //TODO: Save snapshots again?
 
+            // Return the pruned tree.
             return pruned_tree;
 
         }
@@ -42,7 +50,6 @@ namespace DecisionTrees
             List<DataInstance> node_set = new List<DataInstance>();
 
             // Calculate error estimate of the leafs
-        
             double leaf_errors = 0;
             foreach(Leaf child in node.getLeafChildren())
             {
@@ -67,7 +74,6 @@ namespace DecisionTrees
             if (nodeEstimatedError < leaf_errors)
             {
                 // We need to prune!
-
                 this.prepareSnapshot(node);
                 
                 tree = this.replaceNodeByNewLeaf(tree, node);
@@ -79,7 +85,6 @@ namespace DecisionTrees
                 tree = this.pruneIterate(tree, queue, target_attribute);
             }
             return tree;
-            
         }
 
         private List<Node> nodes_with_leafs(List<Leaf> leafs)
@@ -88,6 +93,7 @@ namespace DecisionTrees
             Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
             foreach (Leaf leaf in leafs)
             {
+                // We need to check for unique nodes, therefore we work with a dictionary to prevent a node occuring multiple times.
                 if (!node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
                 {
                     // This node has not yet been added, so add it now.
@@ -134,6 +140,8 @@ namespace DecisionTrees
         private double calcErrorRate(int successes, int sampleSize)
         {
             string calculationKey = $"{successes},{sampleSize}";
+
+            // Check if we have not already calculated this combination, since it's such an expensive one to make. 
             if (! calculated_upperBounds.ContainsKey(calculationKey))
             {
                 double errorRate = Calculator.upperBoundGood(successes, sampleSize, this.confidence);
@@ -151,7 +159,7 @@ namespace DecisionTrees
             List<Node> queue = new List<Node>();
             queue.Add(removeNode);
 
-            // Get all instances that I should cover.
+            // Get all instances that should be covered.
             while(queue.Count > 0)
             {
                 Node node = queue[0];

@@ -8,16 +8,21 @@ namespace DecisionTrees
 {
     class C45Algorithm : Algorithm
     {
+        // Possible values for nominal attributes
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
 
+        // Gain ratios for attributes (TODO: This should be calculated per iteration!)
         private Dictionary<string, double> attribute_gains = new Dictionary<string, double>();
 
+        // Tresholds for continouos variables (TODO: This should be calculated per iteration!)
         private Dictionary<string, double> continuous_thresholds = new Dictionary<string, double>();
 
+        // All attributes possible.
         private List<string> all_attribute_keys;
         
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
+            // Before we begin, calculate possible values for nominal attributes
             foreach (string attr in attributes.Keys.ToList())
             {
                 if (attributes[attr] == "nominal")
@@ -28,21 +33,27 @@ namespace DecisionTrees
                     possible_attribute_values[attr] = null;
                 }
             }
-            all_attribute_keys = attributes.Keys.ToList();
-            this.calculate_attribute_gains(examples, target_attribute, attributes, runner);
+            this.all_attribute_keys = attributes.Keys.ToList();
 
+            // Calculate attribute gain ratios. [TODO: This should be done per iteration!]
+            this.calculate_attribute_gain_ratios(examples, target_attribute, attributes, runner);
+
+            // Generate C4.5 decision tree.
             DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, runner, null, null);
 
+            // Snapshot full tree.
             runner.SNAPSHOT("pre-pruning", full_tree);
             Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
 
+            // Return pruned tree.
             C45Pruner pruner = new C45Pruner();
-
             return pruner.prune(full_tree, target_attribute, runner);
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
         {
+            // TODO: Calculate tresholds and gain ratios again here.
+
 
             // Select the best attribute to split on
             double highest_gain_ratio = -1;
@@ -51,6 +62,7 @@ namespace DecisionTrees
             double threshold = 0;
             foreach (string attribute in attributes.Keys.ToList())
             {
+                // TODO: Adjust to gain ratio per iteration!
                 double my_gain_ratio = this.attribute_gains[attribute];
                 if (my_gain_ratio > highest_gain_ratio)
                 {
@@ -59,12 +71,13 @@ namespace DecisionTrees
                     split_on_continuous = (attributes[attribute] == "continuous");
                     if (split_on_continuous)
                     {
+                        // TODO: Adjust to treshold per iteration!
                         threshold = continuous_thresholds[attribute];
                     }
                 }
             }
 
-            // This attribute can now not be used anymore!
+            // This attribute can now not be used anymore. [TODO: Only if we split on nominal!] 
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
             attributes_for_further_iteration.Remove(best_split_attribute);
 
@@ -84,6 +97,7 @@ namespace DecisionTrees
                 subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
             }
             
+            // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
             foreach(string subset_splitter in subsets.Keys)
             {
                 List<DataInstance> subset = subsets[subset_splitter];
@@ -98,9 +112,10 @@ namespace DecisionTrees
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
                     string classifier_value = subset.First().getProperty(target_attribute);
-
                     double certainty = 0;
-                    foreach(DataInstance instance in subset)
+
+                    // Calculate the certainty of this leaf. It's the average weight of the dataset. 
+                    foreach (DataInstance instance in subset)
                     {
                         certainty += instance.getWeight();
                     }
@@ -114,9 +129,10 @@ namespace DecisionTrees
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
                     if (attributes_for_further_iteration.Count == 0)
                     {
+                        // We are out of attributes to split on! We need to identify the most common classifier. 
                         string most_common_classifier = SetHelper.mostCommonClassifier(subset, target_attribute);
 
-                        // Adjust for the uncertainty that comes with this prediction. 
+                        // Adjust for the uncertainty that comes with this prediction.  We combine the certainty of classifier (percentage) with the certainty of the instances belonging here (weight).
                         double percentage_with_this_classifier = (double) subset.Where(A => A.getProperty(target_attribute) == most_common_classifier).ToList().Count / (double) subset.Count;
                         double certainty = 0;
                         foreach (DataInstance instance in subset)
@@ -124,26 +140,29 @@ namespace DecisionTrees
                             certainty += instance.getWeight();
                         }
                         certainty /= (double)subset.Count;
-                        
-                        Leaf leaf = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty * percentage_with_this_classifier);
+                        certainty = certainty * percentage_with_this_classifier;
+                        Leaf leaf = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty);
                         tree.data_locations[leaf] = subset;
                     }
                     else
                     {
-                        this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
+                        // We still have attributes left, we can continue further!
+                        tree = this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
                     }
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. 
                     // Therefore we can let the foreach continue further!
                 }
             }
-            
+            // The set that we have received has been dealt with completely. We can now move up!
             return tree;
         }
 
-        private void calculate_attribute_gains(List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner)
+        private void calculate_attribute_gain_ratios(List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             foreach (string attr in attributes.Keys.ToList())
             {
+                // A nominal attribute we just need the ratio of, for a continuous attribute we determine best threshold, and then
+                // the gain ratio of splitting on that treshold. 
                 if (attributes[attr] == "nominal")
                 {
                     double my_ratio = Calculator.gainRatio(set, attr, target_attribute, possible_attribute_values[attr]);
