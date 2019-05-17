@@ -13,20 +13,6 @@ namespace DecisionTrees
         private List<string> all_attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
         private Agent runner;
-
-        private EventDescriptor calculate_attribute_gain;
-        private EventDescriptor determine_best_attribute;
-        private EventDescriptor split_on_best_attribute;
-
-        public ID3Algorithm()
-        {
-            // Make System State Descriptors
-            calculate_attribute_gain = new EventDescriptor("calculate-attribute-gain", "", new List<string>() { "my_gain", "my_attr" }, new List<EventDescriptor>() { });
-            determine_best_attribute = new EventDescriptor("determine-best-attribute", "", new List<string>() { "highest_gain", "best_attr" }, new List<EventDescriptor>() { });
-            split_on_best_attribute = new EventDescriptor("split-on-best-attribute", "", new List<string>() { "set", "attributes_allowed", "parent", "value_splitter" }, new List<EventDescriptor> { determine_best_attribute });
-
-        }
-
     public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             this.examples = examples;

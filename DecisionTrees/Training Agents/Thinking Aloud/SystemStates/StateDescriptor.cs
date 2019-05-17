@@ -8,7 +8,7 @@ namespace DecisionTrees
 {
     class StateDescriptor
     {
-        public string id;
-        public Dictionary<string, string> considerations;
+        public string id = "UNSET";
+        public Dictionary<string, string> considerations = new Dictionary<string, string>();
     }
 }

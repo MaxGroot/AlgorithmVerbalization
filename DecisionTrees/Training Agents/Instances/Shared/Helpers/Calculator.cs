@@ -205,7 +205,7 @@ namespace DecisionTrees
                     return upperBound;
                 }catch(FormatException e)
                 {
-                    throw new Exception($"Could not convert {responseString} to a double..");
+                    throw new Exception($"Could not convert {responseString} to a double: {e}..");
                 }
             }else
             {

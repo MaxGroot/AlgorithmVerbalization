@@ -41,7 +41,7 @@ namespace DecisionTrees
                 }
                 catch(IOException e)
                 {
-                    Console.WriteLine($"Could not save file {filename}, in use. Try again? Press enter for yes, anything else for no.");
+                    Console.WriteLine($"Could not save file {filename}, in use: {e}. Try again? Press enter for yes, anything else for no.");
                     string input = Console.ReadLine();
                     if (input != "")
                     {

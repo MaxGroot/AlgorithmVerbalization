@@ -10,7 +10,6 @@ namespace DecisionTrees
     {
        private InferenceManager inferences;
        private SnapShot snapShot;
-       private SystemState lastState = null;
        private Algorithm algorithm;
 
         public Agent(Algorithm algorithm, InferenceManager inferences, SnapShot snapShot)

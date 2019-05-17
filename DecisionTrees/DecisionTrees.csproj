@@ -64,12 +64,10 @@
     <Compile Include="Training Agents\Thinking Aloud\InferenceManager.cs" />
     <Compile Include="Training Agents\Thinking Aloud\SystemStates\StateDescriptor.cs" />
     <Compile Include="Training Agents\Thinking Aloud\SystemStates\StateRecording.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Obsolete\ThoughtsManager.cs" />
     <Compile Include="Training Agents\Algorithm.cs" />
     <Compile Include="Training Agents\Instances\Shared\Helpers\Calculator.cs" />
     <Compile Include="Training Agents\Instances\ID3\ID3Algorithm.cs" />
     <Compile Include="Training Agents\Agent.cs" />
-    <Compile Include="Training Agents\Logic\Decision.cs" />
     <Compile Include="Decision Trees\Leaf.cs" />
     <Compile Include="Decision Trees\DecisionTree.cs" />
     <Compile Include="Decision Trees\Node.cs" />
@@ -77,9 +75,6 @@
     <Compile Include="Observations\ObservationSet.cs" />
     <Compile Include="Observations\DataInstance.cs" />
     <Compile Include="Output\Model\ModelManager.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Obsolete\Outputs\Output.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Obsolete\SystemState.cs" />
-    <Compile Include="Training Agents\Thinking Aloud\Obsolete\EventDescriptor.cs" />
     <Compile Include="Output\TextWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

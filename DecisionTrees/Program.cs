@@ -45,7 +45,6 @@ namespace DecisionTrees
             string model_extension = "txt";
             string rules_extension = "rules.txt";
             string drawing_extension = "GRAPH";
-            string thoughts_filename = "thoughts.csv";
 
             DataController import = new DataController();
             ObservationSet observations = import.importExamples(input_location);
@@ -141,10 +140,8 @@ namespace DecisionTrees
             
             List<DataInstance> classified_instances = new List<DataInstance>();
             int correct_classifications = 0;
-            string line = "";
             foreach(DataInstance instance in observations.instances)
             {
-                line = "";
                 string prediction = model.classify(instance);
                 if (verification_mode)
                 {
