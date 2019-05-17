@@ -14,7 +14,7 @@ namespace DecisionTrees
         static void Main(string[] args)
         {
             Console.WriteLine("Good Day! Program has started.");
-
+           
             // Create our file handler
             TextWriter writer = new TextWriter();
             string mode = writer.askFromConfig("What mode do you want to do?", "GENERAL","mode");
@@ -78,11 +78,10 @@ namespace DecisionTrees
             Agent agent = new Agent(algorithm, inferences, snapShot);
             Console.WriteLine("ADDED. Press a key to start training process \n");
             Console.ReadKey(true);
-
-            stopwatch.Start();
-
+            
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
+            Console.WriteLine("");
             if (catcherror)
             {
                 try
@@ -100,6 +99,8 @@ namespace DecisionTrees
             {
                 agent.TRAIN(observations);
             }
+
+            Console.WriteLine("");
             long training_time = stopwatch.ElapsedMilliseconds;
             long snapshot_time = training_time - snapShot.secondsBySnapShot;
 

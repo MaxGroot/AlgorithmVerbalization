@@ -43,6 +43,9 @@ namespace DecisionTrees
             {
                 throw new Exception($"Vocabulary did not contain {inference_id}!");
             }
+
+                Console.Write("\r{0} inferences. ", all_actions_in_order.Count);
+            
             return ret;
         }
 
