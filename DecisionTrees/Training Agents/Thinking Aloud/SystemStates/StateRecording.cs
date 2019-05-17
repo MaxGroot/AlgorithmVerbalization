@@ -32,7 +32,23 @@ namespace DecisionTrees
             this.state[name] = value;
             return this;
         }
-
+        public StateRecording setState(Dictionary<string, object> state)
+        {
+            foreach(string key in state.Keys.ToList())
+            {
+                object value = state[key]; 
+                if (!descriptor.considerations.ContainsKey(key))
+                {
+                    throw new Exception($"Cannot set {key} for {action}, as descriptor {descriptor.id} has no such key");
+                }
+                if (!verifyType(descriptor.considerations[key], value))
+                {
+                    throw new Exception($"Cannot set {value} for variable {key} of {action}, that variable has {descriptor.considerations[key]} as a type");
+                }
+            }
+            this.state = state;
+            return this;
+        }
         public object getVariable(string name)
         {
             if (! state.ContainsKey(name))
@@ -84,6 +100,33 @@ namespace DecisionTrees
                 case "int":     return check is int;
                 default: throw new Exception($"{type} not supported as a variable type for state variables.");
             }
+        }
+
+        public static Dictionary<string, object> generateState(params object[] statevariables)
+        {
+            Dictionary<string, object> state = new Dictionary<string, object>();
+
+            string previous_key = "UNSET";
+            for(int i =0; i<statevariables.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    // This is a key
+                   previous_key = (string)statevariables[i]; 
+                }
+                else
+                {
+                    // This is a value
+                    if (previous_key == "UNSET")
+                    {
+                        throw new Exception("Value supplied without supplying a key first.");
+                    }
+                    state[previous_key] = statevariables[i];
+                    previous_key = "UNSET";
+                }
+            }
+
+            return state;
         }
     }
 }

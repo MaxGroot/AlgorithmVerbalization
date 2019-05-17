@@ -94,30 +94,32 @@ namespace DecisionTrees
 
             // Create subsets for each possible value of the attribute we created a node for. 
             int values_left = this.possible_attribute_values[best_attr].Count;
+
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
                 runner.THINK("subset-on-value").set("values_left", values_left).finish();
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
+                Dictionary<string, object> considering_state = StateRecording.generateState("split_attribute", best_attr, "split_value", value_splitter);
+
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
-                    runner.THINK("ignore-value").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
+                    runner.THINK("ignore-value").setState(considering_state).finish();
                     continue;
                 }
                 if (SetHelper.hasUniformClassifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
-                    runner.THINK("add-leaf").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
+                    runner.THINK("add-leaf").setState(considering_state).finish();
                     string classifier_value = subset.First().getProperty(target_attribute);
                     Leaf leaf = tree.addLeaf(value_splitter, classifier_value, new_node);
                     tree.data_locations[leaf] = subset;
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
-                    runner.THINK("iterate-further").set("split_attribute", best_attr).set("split_value", value_splitter).finish();
+                    runner.THINK("iterate-further").setState(considering_state).finish();
                     tree = this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
-
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                 }
                 values_left -= 1;
