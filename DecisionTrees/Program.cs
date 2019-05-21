@@ -41,6 +41,8 @@ namespace DecisionTrees
             string snapshot_location = writer.askFromConfig("Enter the directory to output snapshots to. ", "EXPORT", "snapshot-location");
             string thoughts_location = writer.askFromConfig("Enter the directory to output inferences to. ", "EXPORT", "inference-location");
             string vocabulary_location = writer.askFromConfig("Enter the file path to import the vocabulary form ", "VOCABULARY", "location");
+            string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
+            bool catcherror = (catchinput == "TRUE");
 
             string model_extension = "txt";
             string rules_extension = "rules.txt";
@@ -52,15 +54,11 @@ namespace DecisionTrees
             VocabularyImporter vocab = new VocabularyImporter();
             vocab.import(vocabulary_location);
 
-            string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
-            bool catcherror = (catchinput == "TRUE");
-
             InferenceManager inferences = new InferenceManager(vocab.vocabulary);
 
             Stopwatch stopwatch = new Stopwatch();
             SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
           
-            Console.WriteLine("ADD UTILITY KNOWLEDGE");
 
             string algorithmChoice = writer.askFromConfig("What algorithm should be used? [ID3, C4.5]", "GENERAL", "algorithm");
             Algorithm algorithm = null;
@@ -76,12 +74,13 @@ namespace DecisionTrees
                     throw new Exception($"Unknown algorithm given: {algorithm}");
             }
             Agent agent = new Agent(algorithm, inferences, snapShot);
-            Console.WriteLine("ADDED. Press a key to start training process \n");
+            Console.WriteLine("READY. Press a key to start training process \n");
             Console.ReadKey(true);
             
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
             Console.WriteLine("");
+            stopwatch.Start();
             if (catcherror)
             {
                 try
@@ -91,7 +90,8 @@ namespace DecisionTrees
                 catch (Exception e)
                 {
                     Console.WriteLine("Encountered an error! Writing output and model anyways.");
-                    // writer.filesave_string(thoughts_filename, thoughts.output());
+                    writer.set_location(thoughts_location);
+                    inferences.write(writer);
                     throw (e);
                 }
             }
