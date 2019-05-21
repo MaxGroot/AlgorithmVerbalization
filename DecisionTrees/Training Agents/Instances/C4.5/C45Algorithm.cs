@@ -10,13 +10,7 @@ namespace DecisionTrees
     {
         // Possible values for nominal attributes
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
-
-        // Gain ratios for attributes (TODO: This should be calculated per iteration!)
-        private Dictionary<string, double> attribute_gains = new Dictionary<string, double>();
-
-        // Tresholds for continouos variables (TODO: This should be calculated per iteration!)
-        private Dictionary<string, double> continuous_thresholds = new Dictionary<string, double>();
-
+        
         // All attributes possible.
         private List<string> all_attribute_keys;
         
@@ -34,10 +28,7 @@ namespace DecisionTrees
                 }
             }
             this.all_attribute_keys = attributes.Keys.ToList();
-
-            // Calculate attribute gain ratios. [TODO: This should be done per iteration!]
-            this.calculate_attribute_gain_ratios(examples, target_attribute, attributes, runner);
-
+            
             // Generate C4.5 decision tree.
             DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, runner, null, null);
 
@@ -52,8 +43,9 @@ namespace DecisionTrees
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
         {
-            // TODO: Calculate tresholds and gain ratios again here.
-
+            Dictionary<string, Dictionary<string, double>> gains_and_thresholds = calculate_attribute_gain_ratios(set, target_attribute, attributes);
+            Dictionary<string, double> gains = gains_and_thresholds["gains"];
+            Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
 
             // Select the best attribute to split on
             double highest_gain_ratio = -1;
@@ -62,8 +54,7 @@ namespace DecisionTrees
             double threshold = 0;
             foreach (string attribute in attributes.Keys.ToList())
             {
-                // TODO: Adjust to gain ratio per iteration!
-                double my_gain_ratio = this.attribute_gains[attribute];
+                double my_gain_ratio = gains[attribute];
                 if (my_gain_ratio > highest_gain_ratio)
                 {
                     highest_gain_ratio = my_gain_ratio;
@@ -71,16 +62,17 @@ namespace DecisionTrees
                     split_on_continuous = (attributes[attribute] == "continuous");
                     if (split_on_continuous)
                     {
-                        // TODO: Adjust to treshold per iteration!
-                        threshold = continuous_thresholds[attribute];
+                        threshold = thresholds[attribute];
                     }
                 }
             }
 
             // This attribute can now not be used anymore. [TODO: Only if we split on nominal!] 
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
-            attributes_for_further_iteration.Remove(best_split_attribute);
-
+            if (!split_on_continuous)
+            {
+                attributes_for_further_iteration.Remove(best_split_attribute);
+            }
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
             Node newnode = null;
 
@@ -157,8 +149,11 @@ namespace DecisionTrees
             return tree;
         }
 
-        private void calculate_attribute_gain_ratios(List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner)
+        private Dictionary<string, Dictionary<string, double>> calculate_attribute_gain_ratios(List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes)
         {
+            Dictionary<string, double> attribute_gains = new Dictionary<string, double>();
+            Dictionary<string, double> continuous_thresholds = new Dictionary<string, double>();
+
             foreach (string attr in attributes.Keys.ToList())
             {
                 // A nominal attribute we just need the ratio of, for a continuous attribute we determine best threshold, and then
@@ -166,16 +161,19 @@ namespace DecisionTrees
                 if (attributes[attr] == "nominal")
                 {
                     double my_ratio = Calculator.gainRatio(set, attr, target_attribute, possible_attribute_values[attr]);
-                    this.attribute_gains[attr] = my_ratio;
+                    attribute_gains[attr] = my_ratio;
                 }
 
                 if (attributes[attr] == "continuous")
                 {
                     double[] split_and_ratio = Calculator.best_split_and_ratio_for_continuous(set, attr, target_attribute);
-                    this.attribute_gains[attr] = split_and_ratio[1];
-                    this.continuous_thresholds[attr] = split_and_ratio[0];
+                    attribute_gains[attr] = split_and_ratio[1];
+                    continuous_thresholds[attr] = split_and_ratio[0];
                 }
             }
+
+            return new Dictionary<string, Dictionary<string, double>> { { "gains", attribute_gains } , { "thresholds", continuous_thresholds} };
+            
         }
     }
 }
