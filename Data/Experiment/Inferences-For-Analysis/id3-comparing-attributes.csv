@@ -1,0 +1,12 @@
+current_best_attribute;competing_attribute;current_gain;competing_gain;action
+nominal;nominal;continuous;continuous;classifier
+UNDETERMINED;Outlook;0;0.24674982;set-new-best-attribute
+Outlook;Temperature;0.24674982;0.029222566;keep-old-attribute
+Outlook;Humidity;0.24674982;0.151835501;keep-old-attribute
+Outlook;Wind;0.24674982;0.04812703;keep-old-attribute
+UNDETERMINED;Temperature;0;0.570950594;set-new-best-attribute
+Temperature;Humidity;0.570950594;0.970950594;set-new-best-attribute
+Humidity;Wind;0.970950594;0.019973094;keep-old-attribute
+UNDETERMINED;Temperature;0;0.019973094;set-new-best-attribute
+Temperature;Humidity;0.019973094;0.019973094;keep-old-attribute
+Temperature;Wind;0.019973094;0.970950594;set-new-best-attribute

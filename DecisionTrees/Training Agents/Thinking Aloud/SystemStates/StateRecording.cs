@@ -82,11 +82,12 @@ namespace DecisionTrees
             {
                 throw new Exception($"The program attempts to save an improperly configured StateRecording with action {action}");
             }
-            string ret = $"{this.action}{seperator}";
+            string ret = "";
             foreach(string variableName in this.state.Keys.ToList())
             {
                 ret += $"{this.state[variableName]}{seperator}";
             }
+            ret += $"{this.action}{seperator}";
             return ret;
         }
 

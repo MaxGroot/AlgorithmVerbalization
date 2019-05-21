@@ -55,20 +55,26 @@ namespace DecisionTrees
             {
                 writer.filesave_string(descriptor.id + ".csv", csv_individual_descriptor(descriptor));
             }
-
-            writer.filesave_lines("all_actions.txt", all_actions_in_order);
+            List<string> process_log = new List<string>();
+            process_log.Add("case;event;");
+            string process_case = "Case 0";
+            foreach(string action in all_actions_in_order)
+            {
+                process_log.Add($"{process_case};{action}");
+            }
+            writer.filesave_lines("process_log.csv", process_log);
         }
 
         private string csv_individual_descriptor(StateDescriptor descriptor)
         {
             string seperator = ";";
             var csv = new StringBuilder();
-            string firstline = "action";
+            string firstline = "";
             foreach (string variableName in descriptor.considerations.Keys.ToList())
             {
-                firstline += $"{seperator}{variableName}";
+                firstline += $"{variableName}{seperator}";
             }
-            firstline += seperator;
+            firstline += "action" + seperator;
             csv.AppendLine(firstline);
 
             foreach (StateRecording recording in this.state_record[descriptor])
