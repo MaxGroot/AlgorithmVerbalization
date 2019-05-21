@@ -12,13 +12,13 @@ namespace DecisionTrees
         private string target_attribute;
         private List<string> all_attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
-        private Agent runner;
-    public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
+        private Agent agent;
+    public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent)
         {
             this.examples = examples;
             this.target_attribute = target_attribute;
             this.all_attributes = attributes.Keys.ToList();
-            this.runner = runner;
+            this.agent = agent;
             
 
             // First we need to know for each attribute which possible values it can hold.
@@ -27,43 +27,43 @@ namespace DecisionTrees
             DecisionTree tree = new DecisionTree(target_attribute);
 
             // Start the iteration process on the entire set.
-            runner.THINK("start").finish();
-            tree = this.iterate(tree, this.examples, 1, attributes.Keys.ToList(), null, null);
-            runner.THINK("return-prediction-model").finish();
+            agent.THINK("start").finish();
+            tree = this.iterate(tree, this.examples, attributes.Keys.ToList(), null, null);
+            agent.THINK("return-prediction-model").finish();
             return tree;
         }
 
-        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, int level, List<string> considerable_attributes, Node parent_node, string parent_value_splitter)
+        public DecisionTree iterate(DecisionTree tree, List<DataInstance> sets_todo, List<string> considerable_attributes, Node parent_node, string parent_value_splitter)
         {
             
-            runner.THINK("iterate").finish();
+            agent.THINK("iterate").finish();
             List <string> attributes_copy = new List<string>(considerable_attributes.ToArray());
             // Find best possible way to split these sets. For each attribute we will calculate the gain, and select the highest.
             string best_attr = "UNDETERMINED";
             double highest_gain = 0;
             foreach(string attr in attributes_copy)
             {
-                runner.THINK("consider-attribute").set("attributes_left", attributes_copy.Count).finish();
+                agent.THINK("consider-attribute").set("attributes_left", attributes_copy.Count).finish();
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
                 if (my_gain > highest_gain)
                 {
-                    runner.THINK("set-new-best-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
+                    agent.THINK("set-new-best-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
                     best_attr = attr;
                     highest_gain = my_gain;
                 }
                 else
                 {
-                    runner.THINK("keep-old-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
+                    agent.THINK("keep-old-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
                 }
             }
-            runner.THINK("end-attribute-loop").set("attributes_left", 0).finish();
+            agent.THINK("end-attribute-loop").set("attributes_left", 0).finish();
 
             if (highest_gain == 0)
             {
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
-                runner.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0d).set("possible_attributes", attributes_copy.Count).finish();
+                agent.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0d).set("possible_attributes", attributes_copy.Count).finish();
                 string classifier_value = SetHelper.mostCommonClassifier(sets_todo, target_attribute);
                 Leaf leaf = tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
                 tree.data_locations[leaf] = sets_todo;
@@ -71,7 +71,7 @@ namespace DecisionTrees
             }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
-            runner.THINK("add-node").set("best_attribute", best_attr).set("highest_gain", highest_gain).set("possible_attributes", attributes_copy.Count).finish();
+            agent.THINK("add-node").set("best_attribute", best_attr).set("highest_gain", highest_gain).set("possible_attributes", attributes_copy.Count).finish();
 
             // Remove this attribute as a splitter for the dataset.
             attributes_copy.RemoveAt(considerable_attributes.IndexOf(best_attr));
@@ -84,35 +84,35 @@ namespace DecisionTrees
 
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
-                runner.THINK("subset-on-value").set("values_left", values_left).finish();
+                agent.THINK("subset-on-value").set("values_left", values_left).finish();
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
                 Dictionary<string, object> considering_state = StateRecording.generateState("split_attribute", best_attr, "split_value", value_splitter);
 
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
-                    runner.THINK("ignore-value").setState(considering_state).finish();
+                    agent.THINK("ignore-value").setState(considering_state).finish();
                     continue;
                 }
                 if (SetHelper.hasUniformClassifier(subset, target_attribute))
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
-                    runner.THINK("add-leaf").setState(considering_state).finish();
+                    agent.THINK("add-leaf").setState(considering_state).finish();
                     string classifier_value = subset.First().getProperty(target_attribute);
                     Leaf leaf = tree.addLeaf(value_splitter, classifier_value, new_node);
                     tree.data_locations[leaf] = subset;
                 } else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
-                    runner.THINK("iterate-further").setState(considering_state).finish();
-                    tree = this.iterate(tree, subset, level+1, attributes_copy, new_node, value_splitter);
+                    agent.THINK("iterate-further").setState(considering_state).finish();
+                    tree = this.iterate(tree, subset, attributes_copy, new_node, value_splitter);
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. We need to move up.
                 }
                 values_left -= 1;
             }
-            runner.THINK("end-value-loop").set("values_left", values_left).finish();
-            runner.THINK("return-tree-to-self").finish();
+            agent.THINK("end-value-loop").set("values_left", values_left).finish();
+            agent.THINK("return-tree-to-self").finish();
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
             return tree;
         }
