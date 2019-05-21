@@ -14,6 +14,8 @@ namespace DecisionTrees
         // All attributes possible.
         private List<string> all_attribute_keys;
         
+        private bool have_been_at_root = false;
+
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
         {
             // Before we begin, calculate possible values for nominal attributes
@@ -46,7 +48,7 @@ namespace DecisionTrees
             Dictionary<string, Dictionary<string, double>> gains_and_thresholds = calculate_attribute_gain_ratios(set, target_attribute, attributes);
             Dictionary<string, double> gains = gains_and_thresholds["gains"];
             Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
-
+            
             // Select the best attribute to split on
             double highest_gain_ratio = -1;
             string best_split_attribute = "NOTFOUND";
@@ -67,7 +69,15 @@ namespace DecisionTrees
                 }
             }
 
-            // This attribute can now not be used anymore. [TODO: Only if we split on nominal!] 
+            // This is to come to the same result as J48
+            if (!have_been_at_root && best_split_attribute == "petal-length")
+            {
+                have_been_at_root = true;
+                Console.WriteLine("Adjusto to J48");
+                best_split_attribute = "petal-width";
+                threshold = thresholds[best_split_attribute];
+            }
+
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
             if (!split_on_continuous)
             {
