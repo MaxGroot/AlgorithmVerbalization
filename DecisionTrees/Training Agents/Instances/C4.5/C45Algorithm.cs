@@ -9,8 +9,12 @@ namespace DecisionTrees
     class C45Algorithm : Algorithm
     {
         // Possible values for nominal attributes
-        private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
-        
+        private Dictionary<string, List<string>> possible_nominal_values = new Dictionary<string, List<string>>();
+
+        // Possible values for nominal attributes
+        private Dictionary<string, List<double>> possible_continuous_values = new Dictionary<string, List<double>>();
+
+
         // All attributes possible.
         private List<string> all_attribute_keys;
         
@@ -18,6 +22,9 @@ namespace DecisionTrees
         private bool have_been_at_root = false;
 
         private Agent agent;
+
+        bool keep_considering_all_values = false; 
+
         public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent)
         {
             // Before we begin, calculate possible values for nominal attributes
@@ -25,10 +32,23 @@ namespace DecisionTrees
             {
                 if (attributes[attr] == "nominal")
                 {
-                    possible_attribute_values[attr] = SetHelper.attributePossibilities(attr, examples);
+                    possible_nominal_values[attr] = SetHelper.attributePossibilities(attr, examples);
                 }else
                 {
-                    possible_attribute_values[attr] = null;
+                    possible_continuous_values[attr] = new List<double>();
+                    if (keep_considering_all_values)
+                    {
+                        // This algorithm can either remember all possible values that the entire training set has had for a 
+                        // continuous variable, or evaluate upon the present values on subsets. If the user opts for the former,
+                        // we must remember all possible values beforehand. 
+
+                        List<string> possible_values_as_strings = SetHelper.attributePossibilities(attr, examples);
+                        foreach (string val_as_string in possible_values_as_strings)
+                        {
+                            possible_continuous_values[attr].Add(double.Parse(val_as_string));
+                        }
+                        possible_continuous_values[attr].Sort();
+                    }
                 }
             }
             this.all_attribute_keys = attributes.Keys.ToList();
@@ -87,7 +107,7 @@ namespace DecisionTrees
                 }
             }
             runner.THINK("end-attribute-loop").set("attributes_left", 0).finish();
-
+            
             // This is to come to the same result as J48 [TODO: This has to go at some point]
             if (!have_been_at_root && best_split_attribute == "petal-length")
             {
@@ -116,7 +136,7 @@ namespace DecisionTrees
             else
             {
                 newnode = tree.addNode(best_split_attribute, last_split, parent);   
-                subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
+                subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_nominal_values[best_split_attribute]);
             }
             runner.THINK("add-node").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
             // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
@@ -204,13 +224,13 @@ namespace DecisionTrees
                 // the gain ratio of splitting on that treshold. 
                 if (attributes[attr] == "nominal")
                 {
-                    double my_ratio = Calculator.gainRatio(set, attr, target_attribute, possible_attribute_values[attr]);
+                    double my_ratio = Calculator.gainRatio(set, attr, target_attribute, possible_nominal_values[attr]);
                     attribute_gains[attr] = my_ratio;
                 }
 
                 if (attributes[attr] == "continuous")
                 {
-                    double[] split_and_ratio = Calculator.best_split_and_ratio_for_continuous(set, attr, target_attribute);
+                    double[] split_and_ratio = Calculator.best_split_and_ratio_for_continuous(set, attr, target_attribute, possible_continuous_values[attr]);
                     attribute_gains[attr] = split_and_ratio[1];
                     continuous_thresholds[attr] = split_and_ratio[0];
                 }

@@ -101,26 +101,36 @@ namespace DecisionTrees
             return (1 - missingFraction) * gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
         }
 
-        public static double[] best_split_and_ratio_for_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute)
+        public static double[] best_split_and_ratio_for_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute, List<double> supplied_values)
         {
             double total_set_entropy = entropy(S, target_attribute);
             
             // Sort by the wanted attribute
             List<DataInstance> s_sorted = S.OrderBy(o => o.getProperty(wanted_attribute)).ToList();
-            List<double> possible_values = new List<double>();
 
-            // Add posisble attribute values based on instances supplied.
-            foreach (DataInstance instance in s_sorted)
+            List<double> possible_values = null;
+            if (supplied_values.Count == 0)
             {
-                double my_value = instance.getPropertyAsDouble(wanted_attribute);
-                if (!possible_values.Contains(my_value))
+                possible_values = new List<double>();
+                // If the supplied list of possible values is empty, we have to fill it ourselves.
+                // The list becomes empty if the user opts to keep considering all values of an attribute, not just the possible values of subsets.
+                // Add posisble attribute values based on instances supplied.
+                foreach (DataInstance instance in s_sorted)
                 {
-                    possible_values.Add(my_value);
+                    double my_value = instance.getPropertyAsDouble(wanted_attribute);
+                    if (!possible_values.Contains(my_value))
+                    {
+                        possible_values.Add(my_value);
+                    }
                 }
+            }else
+            {
+                // If we a list of possible values supplied to us, we'll use that one.
+                // It's safe to just reference to that list since we won't make changes to it.
+                possible_values = supplied_values;
             }
 
             // Loop through possible splits and calculate their gain ratios
-
             double best_split = 0;
             double best_split_gain = -1;
             double best_split_gain_ratio = -1;
@@ -142,7 +152,7 @@ namespace DecisionTrees
                 double gain_on_this_split = total_set_entropy - (proportion_below_or_equal * entropy_below_or_equal) - (proportion_above * entropy_above);
                 double splitinfo_on_this_split = -(proportion_below_or_equal * Math.Log(proportion_below_or_equal, 2)) - (proportion_above * Math.Log(proportion_above, 2));
                 double gain_ratio_on_this_split = gain_on_this_split / splitinfo_on_this_split;
-                
+
                 // Finally all calculations are done! Lets find out if this one is the best one yet.
                 if (gain_on_this_split > best_split_gain)
                 {
@@ -159,7 +169,7 @@ namespace DecisionTrees
             // Adjust for missing data
             double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
             best_split_gain_ratio = (1 - missingFraction) * best_split_gain_ratio;
-            
+
             // We want to select by the best gain, not by the best gain ratio, just like J48 does it.
             return new double[] { best_split, best_split_gain };
         }
