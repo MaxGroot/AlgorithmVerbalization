@@ -17,10 +17,10 @@ namespace DecisionTrees
 
         // 25 * 2, just like Quinan did it. 
         private int confidence = 50;
-        private Agent runner;
-        public DecisionTree prune(DecisionTree tree, string target_attribute, Agent runner)
+        private Agent agent;
+        public DecisionTree prune(DecisionTree tree, string target_attribute, Agent agent)
         {
-            this.runner = runner;
+            this.agent = agent;
 
             // Find all nodes that have a leaf and are therefore up for pruning.
             List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
@@ -28,13 +28,13 @@ namespace DecisionTrees
             // Sort them bottom-up.
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
 
+            agent.THINK("prepare-for-pruning").finish();
+
             // Start post-pruning with this queue.
             DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
-            
-            Console.WriteLine("Saving snapshots.");
-            //TODO: Save snapshots again?
 
             // Return the pruned tree.
+            agent.THINK("return-prediction-model").finish();
             return pruned_tree;
 
         }
@@ -45,6 +45,7 @@ namespace DecisionTrees
             Node node = queue[0];
             queue.RemoveAt(0);
 
+            agent.THINK("consider-node-for-pruning").finish();
 
             // Lets consider this node.
             List<DataInstance> node_set = new List<DataInstance>();
@@ -71,12 +72,17 @@ namespace DecisionTrees
 
             // Compare
             // If a node has a lower estimated error than its leafs, it should be pruned. 
+            Dictionary<string, object> state = StateRecording.generateState("node_attribute", node.label, "node_error", nodeEstimatedError, "leaf_error", leaf_errors);
             if (nodeEstimatedError < leaf_errors)
             {
                 // We need to prune!
                 this.prepareSnapshot(node);
-                
+                agent.THINK("prune-node").setState(state).finish();
+
                 tree = this.replaceNodeByNewLeaf(tree, node);
+            }else
+            {
+                agent.THINK("keep-node").setState(state).finish();
             }
 
             // Iterate further if necessary. 

@@ -14,9 +14,11 @@ namespace DecisionTrees
         // All attributes possible.
         private List<string> all_attribute_keys;
         
+        // TODO: Remove this variable as to not depend on J48 likeliness
         private bool have_been_at_root = false;
 
-        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent runner)
+        private Agent agent;
+        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent)
         {
             // Before we begin, calculate possible values for nominal attributes
             foreach (string attr in attributes.Keys.ToList())
@@ -30,21 +32,29 @@ namespace DecisionTrees
                 }
             }
             this.all_attribute_keys = attributes.Keys.ToList();
+            this.agent = agent;
             
             // Generate C4.5 decision tree.
-            DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, runner, null, null);
+            agent.THINK("start").finish();
+            DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, agent, null, null);
 
             // Snapshot full tree.
-            runner.SNAPSHOT("pre-pruning", full_tree);
-            Console.WriteLine("Initial tree constructed. Starting post-pruning. Creating queue of distinct nodes.");
+            agent.SNAPSHOT("pre-pruning", full_tree);
 
             // Return pruned tree.
             C45Pruner pruner = new C45Pruner();
-            return pruner.prune(full_tree, target_attribute, runner);
+
+            DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, agent);
+            agent.THINK("return-prediction-model").finish();
+
+            return pruned_tree;
         }
 
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Agent runner, Node parent, string last_split)
         {
+            this.agent.THINK("iterate").finish();
+
+            // Re-evaluate gains and thresholds
             Dictionary<string, Dictionary<string, double>> gains_and_thresholds = calculate_attribute_gain_ratios(set, target_attribute, attributes);
             Dictionary<string, double> gains = gains_and_thresholds["gains"];
             Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
@@ -56,9 +66,14 @@ namespace DecisionTrees
             double threshold = 0;
             foreach (string attribute in attributes.Keys.ToList())
             {
+                runner.THINK("consider-attribute").set("attributes_left", attributes.Count).finish();
                 double my_gain_ratio = gains[attribute];
+
+                Dictionary<string, object> comparingState = StateRecording.generateState("current_best_attribute", best_split_attribute, "competing_attribute", attribute, "current_gain", highest_gain_ratio, "competing_gain", my_gain_ratio);
+
                 if (my_gain_ratio > highest_gain_ratio)
                 {
+                    runner.THINK("set-new-best-attribute").setState(comparingState).finish();
                     highest_gain_ratio = my_gain_ratio;
                     best_split_attribute = attribute;
                     split_on_continuous = (attributes[attribute] == "continuous");
@@ -66,14 +81,18 @@ namespace DecisionTrees
                     {
                         threshold = thresholds[attribute];
                     }
+                }else
+                {
+                    runner.THINK("keep-old-attribute").setState(comparingState).finish();
                 }
             }
+            runner.THINK("end-attribute-loop").set("attributes_left", 0).finish();
 
-            // This is to come to the same result as J48
+            // This is to come to the same result as J48 [TODO: This has to go at some point]
             if (!have_been_at_root && best_split_attribute == "petal-length")
             {
                 have_been_at_root = true;
-                Console.WriteLine("Adjusto to J48");
+                Console.WriteLine("Adjust to J48");
                 best_split_attribute = "petal-width";
                 threshold = thresholds[best_split_attribute];
             }
@@ -83,6 +102,7 @@ namespace DecisionTrees
             {
                 attributes_for_further_iteration.Remove(best_split_attribute);
             }
+            
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
             Node newnode = null;
 
@@ -98,15 +118,19 @@ namespace DecisionTrees
                 newnode = tree.addNode(best_split_attribute, last_split, parent);   
                 subsets = SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_attribute_values[best_split_attribute]);
             }
-            
+            runner.THINK("add-node").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
             // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
+
+            int values_left = subsets.Keys.Count;
             foreach(string subset_splitter in subsets.Keys)
             {
                 List<DataInstance> subset = subsets[subset_splitter];
-
+                agent.THINK("subset-on-value").set("values_left", values_left).finish();
+                Dictionary<string, object> state = StateRecording.generateState("split_attribute", best_split_attribute, "split_value", subset_splitter);
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
+                    agent.THINK("ignore-value").setState(state).finish();
                     continue;
                 }
                 if (SetHelper.hasUniformClassifier(subset, target_attribute))
@@ -122,7 +146,8 @@ namespace DecisionTrees
                         certainty += instance.getWeight();
                     }
                     certainty /= (double)subset.Count;
-                    
+
+                    agent.THINK("add-leaf").setState(state).finish();
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                     tree.data_locations[leaf] = subset;
                 }
@@ -143,19 +168,26 @@ namespace DecisionTrees
                         }
                         certainty /= (double)subset.Count;
                         certainty = certainty * percentage_with_this_classifier;
+                        runner.THINK("add-best-guess-leaf").setState(state).finish();
                         Leaf leaf = tree.addUncertainLeaf(subset_splitter, most_common_classifier, newnode, certainty);
                         tree.data_locations[leaf] = subset;
                     }
                     else
                     {
                         // We still have attributes left, we can continue further!
+                        runner.THINK("iterate-further").setState(state).finish();
                         tree = this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, runner, newnode, subset_splitter);
                     }
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. 
                     // Therefore we can let the foreach continue further!
                 }
+
+                values_left--;
             }
             // The set that we have received has been dealt with completely. We can now move up!
+            agent.THINK("end-value-loop").set("values_left", 0).finish();
+            agent.THINK("return-tree-to-self").finish();
+            
             return tree;
         }
 
