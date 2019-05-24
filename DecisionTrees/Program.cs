@@ -74,12 +74,22 @@ namespace DecisionTrees
 
             string algorithmChoice = writer.askFromConfig("What algorithm should be used? [ID3, C4.5]", "GENERAL", "algorithm");
             Algorithm algorithm = null;
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
             switch (algorithmChoice)
             {
                 case "ID3":
                     algorithm = new ID3Algorithm();
                     break;
                 case "C4.5":
+                    string confidence_input = writer.askFromConfig("What confidence level should be used", "C4.5", "confidence");
+                    string keep_values_input = writer.askFromConfig("Should all values keep getting considered even when not in subset?", "C4.5", "keep_considering_values");
+                    string minimum_number_of_objects_input = writer.askFromConfig("How many objects should a leaf at least contain?", "C4.5", "minimum_number_of_objects");
+
+                    parameters["confidence"] = int.Parse(confidence_input);
+                    parameters["keep_values_input"] = bool.Parse(keep_values_input);
+                    parameters["minimum_number_of_objects"] = int.Parse(minimum_number_of_objects_input);
+
                     algorithm = new C45Algorithm();
                     break;
                 default:
@@ -98,7 +108,7 @@ namespace DecisionTrees
             {
                 try
                 {
-                    agent.TRAIN(observations);
+                    agent.TRAIN(observations, parameters);
                 }
                 catch (Exception e)
                 {
@@ -110,7 +120,7 @@ namespace DecisionTrees
             }
             else
             {
-                agent.TRAIN(observations);
+                agent.TRAIN(observations, parameters);
             }
 
             Console.WriteLine("");

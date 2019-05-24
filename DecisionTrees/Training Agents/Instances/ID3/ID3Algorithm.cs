@@ -13,7 +13,7 @@ namespace DecisionTrees
         private List<string> all_attributes;
         private Dictionary<string, List<string>> possible_attribute_values = new Dictionary<string, List<string>>();
         private Agent agent;
-    public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent)
+    public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent, Dictionary<string, object> parameters)
         {
             this.examples = examples;
             this.target_attribute = target_attribute;

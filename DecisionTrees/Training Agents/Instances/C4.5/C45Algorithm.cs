@@ -25,11 +25,11 @@ namespace DecisionTrees
 
         private string target_attribute;
 
-        bool keep_considering_all_values = false;
+        bool keep_considering_all_values;
 
         private int minimum_leaf_size;
 
-        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent)
+        public DecisionTree train(List<DataInstance> examples, string target_attribute, Dictionary<string, string> attributes, Agent agent, Dictionary<string, object> parameters)
         {
             // Before we begin, calculate possible values for nominal attributes
             foreach (string attr in attributes.Keys.ToList())
@@ -60,7 +60,9 @@ namespace DecisionTrees
             this.all_attribute_keys = attributes.Keys.ToList();
             this.agent = agent;
             this.target_attribute = target_attribute;
-            minimum_leaf_size = 2;
+
+            minimum_leaf_size = (int) parameters["minimum_number_of_objects"];
+            keep_considering_all_values = (bool) parameters["keep_values_input"];
 
             // Generate C4.5 decision tree.
             agent.THINK("start").finish();
@@ -72,7 +74,7 @@ namespace DecisionTrees
             // Return pruned tree.
             C45Pruner pruner = new C45Pruner();
 
-            DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, agent);
+            DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, (int) parameters["confidence"], agent);
             agent.THINK("return-prediction-model").finish();
 
             return pruned_tree;

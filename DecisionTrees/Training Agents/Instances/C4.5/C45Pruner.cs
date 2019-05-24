@@ -15,10 +15,11 @@ namespace DecisionTrees
         // This keeps track of nodes that have been removed, so they can later be snapshotted. [TODO: Make snapshotting work again?)
         private Dictionary<string, Node> pruned_nodes = new Dictionary<string, Node>();
 
-        // 25 * 2, just like Quinan did it. 
-        private int confidence = 50;
+        // Confidence level
+        private int confidence;
+        
         private Agent agent;
-        public DecisionTree prune(DecisionTree tree, string target_attribute, Agent agent)
+        public DecisionTree prune(DecisionTree tree, string target_attribute, int confidence, Agent agent)
         {
             this.agent = agent;
 
@@ -27,6 +28,8 @@ namespace DecisionTrees
 
             // Sort them bottom-up.
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
+
+            this.confidence = confidence * 2;
 
             agent.THINK("prepare-for-pruning").finish();
             // Start post-pruning with this queue.

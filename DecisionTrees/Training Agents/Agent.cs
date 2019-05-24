@@ -19,9 +19,21 @@ namespace DecisionTrees
             this.snapShot = snapShot;
         }
 
-        public DecisionTree TRAIN(ObservationSet set)
+        public DecisionTree TRAIN(ObservationSet set, Dictionary<string, object> parameters)
         {
-            DecisionTree tree = this.algorithm.train(set.instances, set.target_attribute, set.attributes, this);
+            string parameter_string = "TRAIN(";
+            foreach(string key in parameters.Keys.ToList())
+            {
+                parameter_string += $"{key}={parameters[key]}";
+                if (key != parameters.Keys.Last())
+                {
+                    parameter_string += ",";
+                }
+            }
+            parameter_string += ")";
+            Console.WriteLine(parameter_string);
+
+            DecisionTree tree = this.algorithm.train(set.instances, set.target_attribute, set.attributes, this, parameters);
             this.SNAPSHOT("final", tree);
             return tree;
         }
