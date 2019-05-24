@@ -48,6 +48,9 @@ namespace DecisionTrees
             string rules_extension = "rules.txt";
             string drawing_extension = "GRAPH";
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             DataController import = new DataController();
             ObservationSet observations = import.importExamples(input_location);
 
@@ -56,7 +59,6 @@ namespace DecisionTrees
 
             InferenceManager inferences = new InferenceManager(vocab.vocabulary);
 
-            Stopwatch stopwatch = new Stopwatch();
             SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
           
 
@@ -71,15 +73,16 @@ namespace DecisionTrees
                     algorithm = new C45Algorithm();
                     break;
                 default:
-                    throw new Exception($"Unknown algorithm given: {algorithm}");
+                    throw new Exception($"Unknown algorithm given: {algorithmChoice}");
             }
             Agent agent = new Agent(algorithm, inferences, snapShot);
-            Console.WriteLine("READY. Press a key to start training process \n");
+            Console.WriteLine($"READY ({stopwatch.ElapsedMilliseconds} ms setup time). Press a key to start training process \n");
             Console.ReadKey(true);
             
             // Train the algorithm based on the Training set
             Console.WriteLine("Starting Training process (TRAIN).");
             Console.WriteLine("");
+            stopwatch.Reset();
             stopwatch.Start();
             if (catcherror)
             {
