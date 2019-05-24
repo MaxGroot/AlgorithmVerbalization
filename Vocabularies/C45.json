@@ -3,19 +3,19 @@
     [
         {
             "id"    : "start",
-            "action" : "Start Training Process",
+            "action" : "Start",
             "situation": "Program loaded",
             "state_descriptor_id": null
         },
         {
             "id"    : "iterate",
-            "action" : "Iterate on set",
+            "action" : "Iterate",
             "situation" : "Ready for iteration",
             "state_descriptor_id" : null
         },
         {
             "id"    : "consider-attribute",
-            "action" : "Consider attribute for split",
+            "action" : "Consider attribute",
             "situation" : "Determining best attribute",
             "state_descriptor_id": "determine-best-attribute"
         },
@@ -27,19 +27,19 @@
         },
         {
             "id"        : "keep-old-attribute",
-            "action"    : "Do not set new best attribute",
+            "action"    : "Do not change best attribute",
             "situation" : "Comparing attributes",
             "state_descriptor_id" : "comparing-attributes"
         },
         {
             "id"        : "end-attribute-loop",
-            "action"    : "Stop considering attributes",
+            "action"    : "End attribute selection loop",
             "situation" : "Determining best attribute",
             "state_descriptor_id" : "determine-best-attribute"
         },
         {
             "id"    : "add-node",
-            "action" : "ADD NODE",
+            "action" : "Add node",
             "situation" : "Best attribute determined",
             "state_descriptor_id" : "best-attribute-determined"
          },
@@ -51,7 +51,7 @@
         },
         {
             "id" : "add-leaf",
-            "action" : "ADD LEAF",
+            "action" : "Add leaf",
             "situation" : "Considering subset",
             "state_descriptor_id" : "considering-subset"
         },
@@ -62,8 +62,8 @@
             "state_descriptor_id" : "considering-subset"
         },
         {
-            "id"    : "add-best-guess-leaf",
-            "action" : "ADD BEST GUESS LEAF",
+            "id"    : "add-estimation-leaf",
+            "action" : "Add estimation leaf",
             "situation" : "Considering subset",
             "state_descriptor_id" : "considering-subset"
         },
@@ -75,7 +75,7 @@
         },
         {
             "id" : "end-value-loop",
-            "action": "Stop considering values for attribute",
+            "action": "End subsetting loop",
             "situation" : "Considering attribute values",
             "state_descriptor_id" : "considering-attribute-values"
         },
@@ -87,7 +87,7 @@
         },
         {  
             "id" : "prepare-for-pruning",
-            "action" : "Prepare tree for pruning",
+            "action" : "Prepare for pruning",
             "situation" : "Node has been handled",
             "state_descriptor_id" : null
         },
@@ -105,13 +105,13 @@
         },
         {
             "id" : "keep-node",
-            "action" : "Do not prune node",
+            "action" : "Keep node",
             "situation" : "Consider node for pruning",
             "state_descriptor_id" : "consider-node-for-prune"
         },
         {
             "id" : "return-prediction-model",
-            "action" : "Deliver prediction model",
+            "action" : "Return prediction model",
             "situation" : "ready-for-prune-iteration",
             "state_descriptor_id" : null
         }

@@ -186,8 +186,10 @@ namespace DecisionTrees
             }
             // The set that we have received has been dealt with completely. We can now move up!
             agent.THINK("end-value-loop").set("values_left", 0).finish();
-            agent.THINK("return-tree-to-self").finish();
-            
+            if (parent != null)
+            {
+                agent.THINK("return-tree-to-self").finish();
+            }
             return tree;
         }
 

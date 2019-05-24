@@ -33,8 +33,7 @@ namespace DecisionTrees
             // Start post-pruning with this queue.
             DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
 
-            // Return the pruned tree.
-            agent.THINK("return-prediction-model").finish();
+            // Return the pruned tree
             return pruned_tree;
 
         }
