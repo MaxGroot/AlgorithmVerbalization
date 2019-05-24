@@ -76,7 +76,7 @@ namespace DecisionTrees
             this.finished = true;
         }
 
-        public string toLine(string seperator)
+        public string toLine(char seperator)
         {
             if (!this.finished)
             {

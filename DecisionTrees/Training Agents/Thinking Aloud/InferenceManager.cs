@@ -12,9 +12,13 @@ namespace DecisionTrees
         public Dictionary<StateDescriptor, List<StateRecording>> state_record = new Dictionary<StateDescriptor, List<StateRecording>>();
         public List<String> all_actions_in_order = new List<String>();
 
-        public InferenceManager(Vocabulary vocabulary)
-        {
+        char seperator;
+
+        public InferenceManager(Vocabulary vocabulary, char csv_seperator)
+        {            
             this.vocabulary = vocabulary;
+            this.seperator = csv_seperator;
+
             foreach(StateDescriptor descriptor in this.vocabulary.state_descriptors)
             {
                 state_record[descriptor] = new List<StateRecording>();
@@ -67,7 +71,6 @@ namespace DecisionTrees
 
         private string csv_individual_descriptor(StateDescriptor descriptor)
         {
-            string seperator = ";";
             var csv = new StringBuilder();
             string firstline = "";
             foreach (string variableName in descriptor.considerations.Keys.ToList())

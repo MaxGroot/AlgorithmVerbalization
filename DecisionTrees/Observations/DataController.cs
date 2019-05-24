@@ -11,11 +11,18 @@ namespace DecisionTrees
     {
 
         private List<DataInstance> instances = new List<DataInstance> ();
-        
         private Dictionary<String , String> attributes = new Dictionary<String, String>();
         private List<String> column_positions = new List<String>();
 
         private string target = "";
+
+        char seperator, dec;
+
+        public DataController(char seperator, char dec)
+        {
+            this.seperator = seperator;
+            this.dec = dec;
+        }
 
         public List<DataInstance> exampleSet()
         {
@@ -56,14 +63,13 @@ namespace DecisionTrees
         {
             var reader = new StreamReader(filepath);
             int row = 0;
-            char sep = ';';
             int classifier_column = -1;
             // Loop through CSV lines. 
             while (!reader.EndOfStream)
             {
                 row++;
                 string line = reader.ReadLine();
-                var values = line.Split(sep);
+                var values = line.Split(this.seperator);
 
                 if (row > 2)
                 {
@@ -91,7 +97,13 @@ namespace DecisionTrees
                                 addition.setProperty(key, null);
                             } else
                             {
-                                addition.setProperty(key, value);
+                                string value_to_set = value;
+                                if (key != this.target && this.attributes[key] == "continuous")
+                                {
+                                    value_to_set = value.Replace(',', this.dec);
+                                    value_to_set = value.Replace('.', this.dec);
+                                }
+                                addition.setProperty(key, value_to_set);
                             }
                         }
                         column++;
@@ -128,6 +140,10 @@ namespace DecisionTrees
                                 classifier_column = column;
                             }else
                             {
+                                if (value != "nominal" && value != "continuous")
+                                {
+                                    throw new Exception($"Unknown attribute type {value}.");
+                                }
                                 this.attributes[this.column_positions[column]] = value; 
                             }
 
@@ -143,7 +159,6 @@ namespace DecisionTrees
 
         private string exportCSV_string(ObservationSet export)
         {
-            string seperator = ";";
             var csv = new StringBuilder();
             
             // Generate the first line

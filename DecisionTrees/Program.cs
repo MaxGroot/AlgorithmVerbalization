@@ -19,13 +19,20 @@ namespace DecisionTrees
             TextWriter writer = new TextWriter();
             string mode = writer.askFromConfig("What mode do you want to do?", "GENERAL","mode");
 
-            switch(mode)
+            // Parsing settings
+            string csv_seperator_input = writer.askFromConfig("Which character should be used to seperate columns in CSVs?", "PARSING", "csv-seperator");
+            string dec_character = writer.askFromConfig("Which character should be used as the decimal seperator?", "PARSING", "decimal-character");
+
+            char csv_seperator = (csv_seperator_input == ";" || csv_seperator_input == ",") ? csv_seperator_input[0] : throw new Exception("Invalid csv seperator");
+            char dec_seperator = (dec_character == "." || dec_character == ",") ? dec_character[0] : throw new Exception("Invalid decimal seperator");
+
+            switch (mode)
             {
                 case "training":
-                    train(writer);
+                    train(writer, csv_seperator, dec_seperator);
                     break;
                 case "classification":
-                    classify(writer);
+                    classify(writer, csv_seperator, dec_seperator);
                     break;
                 default:
                     throw new Exception($"Unknown mode entered: {mode}");
@@ -34,16 +41,19 @@ namespace DecisionTrees
             Console.ReadKey(true);
 
         }
-        static void train(TextWriter writer)
+        static void train(TextWriter writer, char csv_seperator, char dec_seperator)
         {
-            // Ask the important questions.
+            // Ask file location questions
             string input_location = writer.askFromConfig("Enter the file path to import data from. ", "GENERAL", "input-location");
             string snapshot_location = writer.askFromConfig("Enter the directory to output snapshots to. ", "EXPORT", "snapshot-location");
             string thoughts_location = writer.askFromConfig("Enter the directory to output inferences to. ", "EXPORT", "inference-location");
             string vocabulary_location = writer.askFromConfig("Enter the file path to import the vocabulary form ", "VOCABULARY", "location");
+
+            // General settings
             string catchinput = writer.askFromConfig("Catch error and output?", "GENERAL", "output-on-error");
             bool catcherror = (catchinput == "TRUE");
 
+            
             string model_extension = "txt";
             string rules_extension = "rules.txt";
             string drawing_extension = "GRAPH";
@@ -51,13 +61,13 @@ namespace DecisionTrees
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            DataController import = new DataController();
+            DataController import = new DataController(csv_seperator, dec_seperator);
             ObservationSet observations = import.importExamples(input_location);
 
             VocabularyImporter vocab = new VocabularyImporter();
             vocab.import(vocabulary_location);
 
-            InferenceManager inferences = new InferenceManager(vocab.vocabulary);
+            InferenceManager inferences = new InferenceManager(vocab.vocabulary, csv_seperator);
 
             SnapShot snapShot = new SnapShot(writer, stopwatch, snapshot_location, model_extension, rules_extension, drawing_extension);
           
@@ -116,10 +126,10 @@ namespace DecisionTrees
             Console.WriteLine($"Training time: {training_time}ms including snapshotting, {snapshot_time}ms excluding. Thoughts processing time: {thought_time - training_time}ms.");
         }
 
-        static void classify(TextWriter writer)
+        static void classify(TextWriter writer, char csv_seperator, char dec_seperator)
         {
             ModelLoader loader = new ModelLoader();
-            DataController datacontroller = new DataController();
+            DataController datacontroller = new DataController(csv_seperator, dec_seperator);
 
 
             // Check if the data is already classified, and thus we are in verification mode and will check how our model holds up.
