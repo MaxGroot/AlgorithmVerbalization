@@ -56,7 +56,7 @@ namespace DecisionTrees
                 writer.filesave_string(descriptor.id + ".csv", csv_individual_descriptor(descriptor));
             }
             List<string> process_log = new List<string>();
-            process_log.Add("case;event;");
+            process_log.Add("case;event");
             string process_case = "Case 0";
             foreach(string action in all_actions_in_order)
             {

@@ -63,6 +63,13 @@ namespace DecisionTrees
                 // This set cannot be split further.
                 // We have tried all attributes so we can't go further. The tree ends here my friend.
                 // This happens when instances have all attributes the same except for the classifier.
+
+                throw new Exception("This dataset contains instances with exactly the same attribute values but different classifiers, which this algorithm does not support.");
+
+                // I previously made an implementation of the algorithm that adds a 'Best Guess leaf' to address this problem,
+                // but this is not described as such in the algorithm description and has therefore been left out for the experimentation.
+
+
                 agent.THINK("add-best-guess-leaf").set("best_attribute", best_attr).set("highest_gain", 0d).set("possible_attributes", attributes_copy.Count).finish();
                 string classifier_value = SetHelper.mostCommonClassifier(sets_todo, target_attribute);
                 Leaf leaf = tree.addBestGuessLeaf(parent_value_splitter, classifier_value, parent_node);
@@ -112,7 +119,10 @@ namespace DecisionTrees
                 values_left -= 1;
             }
             agent.THINK("end-value-loop").set("values_left", values_left).finish();
-            agent.THINK("return-tree-to-self").finish();
+            if (parent_node != null)
+            {
+                agent.THINK("return-tree-to-self").finish();
+            }
             // We have succesfully split all examples on this attribute. Return the tree in its current state. 
             return tree;
         }

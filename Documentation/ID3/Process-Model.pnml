@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pnml>
+  <net type="http://www.yasper.org/specs/epnml-1.1" id="do1">
+    <name>
+      <text>ID3</text>
+    </name>
+    <toolspecific tool="Yasper" version="1.2.4020.34351">
+      <roles xmlns="http://www.yasper.org/specs/epnml-1.1/toolspec" />
+    </toolspecific>
+    <place id="pl17">
+      <name>
+        <text>Program loaded</text>
+      </name>
+      <graphics>
+        <position x="729" y="825" />
+        <dimension x="20" y="20" />
+      </graphics>
+      <initialMarking>
+        <text>1</text>
+      </initialMarking>
+    </place>
+    <place id="pl20">
+      <name>
+        <text>Ready for iteration</text>
+      </name>
+      <graphics>
+        <position x="924" y="825" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl21">
+      <name>
+        <text>Determining best attribute</text>
+      </name>
+      <graphics>
+        <position x="921" y="595" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl23">
+      <name>
+        <text>Best attribute determined</text>
+      </name>
+      <graphics>
+        <position x="825" y="330" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl26">
+      <name>
+        <text>Comparing</text>
+      </name>
+      <graphics>
+        <position x="1219" y="496" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl3">
+      <name>
+        <text>Considering attribute value</text>
+      </name>
+      <graphics>
+        <position x="1421" y="430" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl4">
+      <name>
+        <text>Considering subset</text>
+      </name>
+      <graphics>
+        <position x="1881" y="825" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl9">
+      <name>
+        <text>Finished</text>
+      </name>
+      <graphics>
+        <position x="1649" y="990" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl1">
+      <name>
+        <text>Node classified</text>
+      </name>
+      <graphics>
+        <position x="1419" y="692" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <transition id="tr22">
+      <name>
+        <text>Start</text>
+      </name>
+      <graphics>
+        <position x="824" y="825" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr25">
+      <name>
+        <text>Iterate</text>
+      </name>
+      <graphics>
+        <position x="923" y="762" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr26">
+      <name>
+        <text>Consider attribute</text>
+      </name>
+      <graphics>
+        <position x="1221" y="593" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr27">
+      <name>
+        <text>End attribute selection loop</text>
+      </name>
+      <graphics>
+        <position x="826" y="594" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr29">
+      <name>
+        <text>Do not change best attribute</text>
+      </name>
+      <graphics>
+        <position x="1154" y="530" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr30">
+      <name>
+        <text>Set new best attribute</text>
+      </name>
+      <graphics>
+        <position x="1156" y="429" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr3">
+      <name>
+        <text>Add node</text>
+      </name>
+      <graphics>
+        <position x="1121" y="331" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr7">
+      <name>
+        <text>Create subset with this value</text>
+      </name>
+      <graphics>
+        <position x="1880" y="496" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr9">
+      <name>
+        <text>Ignore value</text>
+      </name>
+      <graphics>
+        <position x="1654" y="626" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr10">
+      <name>
+        <text>Add leaf</text>
+      </name>
+      <graphics>
+        <position x="1716" y="430" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr4">
+      <name>
+        <text>Iterate further</text>
+      </name>
+      <graphics>
+        <position x="1220" y="826" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr14">
+      <name>
+        <text>Deliver prediction model</text>
+      </name>
+      <graphics>
+        <position x="1421" y="988" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr2">
+      <name>
+        <text>Return tree to previous iteration</text>
+      </name>
+      <graphics>
+        <position x="1419" y="563" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <transition id="tr5">
+      <name>
+        <text>End subsetting loop</text>
+      </name>
+      <graphics>
+        <position x="1584" y="691" />
+        <dimension x="32" y="32" />
+      </graphics>
+    </transition>
+    <arc id="a28" source="pl17" target="tr22" />
+    <arc id="a29" source="tr25" target="pl21" />
+    <arc id="a31" source="pl21" target="tr27" />
+    <arc id="a32" source="pl21" target="tr26" />
+    <arc id="a33" source="pl26" target="tr30" />
+    <arc id="a34" source="pl26" target="tr29" />
+    <arc id="a35" source="tr30" target="pl21">
+      <graphics>
+        <position x="921" y="430" />
+      </graphics>
+    </arc>
+    <arc id="a36" source="tr29" target="pl21" />
+    <arc id="a37" source="pl20" target="tr25" />
+    <arc id="a38" source="tr27" target="pl23" />
+    <arc id="a39" source="pl3" target="tr7">
+      <graphics>
+        <position x="1549" y="330" />
+        <position x="1881" y="328" />
+      </graphics>
+    </arc>
+    <arc id="a40" source="tr7" target="pl4" />
+    <arc id="a41" source="pl4" target="tr9" />
+    <arc id="a42" source="pl4" target="tr10" />
+    <arc id="a43" source="pl4" target="tr4" />
+    <arc id="a44" source="tr4" target="pl20" />
+    <arc id="a45" source="tr14" target="pl9" />
+    <arc id="a46" source="tr22" target="pl20" />
+    <arc id="a47" source="pl23" target="tr3" />
+    <arc id="a48" source="tr3" target="pl3">
+      <graphics>
+        <position x="1420" y="332" />
+      </graphics>
+    </arc>
+    <arc id="a49" source="pl1" target="tr2" />
+    <arc id="a50" source="tr2" target="pl3" />
+    <arc id="a51" source="pl1" target="tr14" />
+    <arc id="a52" source="pl3" target="tr5" />
+    <arc id="a53" source="tr5" target="pl1" />
+    <arc id="a54" source="tr26" target="pl26" />
+    <arc id="a55" source="tr10" target="pl3" />
+    <arc id="a56" source="tr9" target="pl3" />
+  </net>
+</pnml>

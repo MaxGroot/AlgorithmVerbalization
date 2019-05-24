@@ -1,0 +1,51 @@
+case;event
+Case 0;Start
+Case 0;Iterate
+Case 0;Consider attribute
+Case 0;Set new best attribute
+Case 0;Consider attribute
+Case 0;Do not change best attribute
+Case 0;Consider attribute
+Case 0;Do not change best attribute
+Case 0;Consider attribute
+Case 0;Do not change best attribute
+Case 0;End attribute selection loop
+Case 0;Add node
+Case 0;Create subset with this value
+Case 0;Iterate further
+Case 0;Iterate
+Case 0;Consider attribute
+Case 0;Set new best attribute
+Case 0;Consider attribute
+Case 0;Set new best attribute
+Case 0;Consider attribute
+Case 0;Do not change best attribute
+Case 0;End attribute selection loop
+Case 0;Add node
+Case 0;Create subset with this value
+Case 0;Add leaf
+Case 0;Create subset with this value
+Case 0;Add leaf
+Case 0;End subsetting loop
+Case 0;Return tree to previous iteration
+Case 0;Create subset with this value
+Case 0;Add leaf
+Case 0;Create subset with this value
+Case 0;Iterate further
+Case 0;Iterate
+Case 0;Consider attribute
+Case 0;Set new best attribute
+Case 0;Consider attribute
+Case 0;Do not change best attribute
+Case 0;Consider attribute
+Case 0;Set new best attribute
+Case 0;End attribute selection loop
+Case 0;Add node
+Case 0;Create subset with this value
+Case 0;Add leaf
+Case 0;Create subset with this value
+Case 0;Add leaf
+Case 0;End subsetting loop
+Case 0;Return tree to previous iteration
+Case 0;End subsetting loop
+Case 0;Deliver prediction model

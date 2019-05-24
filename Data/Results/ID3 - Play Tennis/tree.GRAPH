@@ -1,0 +1,32 @@
+digraph DecisionTree {
+// Nodes and leafs
+NN_AAA [shape=oval, label="Outlook 
+ [N_AAA]"];
+LL_AAE [shape=box, style="filled", fillcolor="#B7B7FF", label="Yes 
+ [4+0] / 14 (1) 
+ [L_AAE]"];
+NN_AAB [shape=oval, label="Humidity 
+ [N_AAB]"];
+LL_AAC [shape=box, style="filled", fillcolor="#C9C9FF", label="No 
+ [3+0] / 14 (1) 
+ [L_AAC]"];
+LL_AAD [shape=box, style="filled", fillcolor="#DBDBFF", label="Yes 
+ [2+0] / 14 (1) 
+ [L_AAD]"];
+NN_AAF [shape=oval, label="Wind 
+ [N_AAF]"];
+LL_AAG [shape=box, style="filled", fillcolor="#C9C9FF", label="Yes 
+ [3+0] / 14 (1) 
+ [L_AAG]"];
+LL_AAH [shape=box, style="filled", fillcolor="#DBDBFF", label="No 
+ [2+0] / 14 (1) 
+ [L_AAH]"];
+// Connections
+NN_AAA->NN_AAB [label="Sunny  "];
+NN_AAA->NN_AAF [label="Rain  "];
+NN_AAA->LL_AAE [label="Overcast  "];
+NN_AAB->LL_AAC [label="High  "];
+NN_AAB->LL_AAD [label="Normal  "];
+NN_AAF->LL_AAG [label="Weak  "];
+NN_AAF->LL_AAH [label="Strong  "];
+}
