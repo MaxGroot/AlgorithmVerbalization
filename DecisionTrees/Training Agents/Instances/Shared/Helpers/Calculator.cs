@@ -104,7 +104,7 @@ namespace DecisionTrees
         public static double[] best_split_and_ratio_for_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute)
         {
             double total_set_entropy = entropy(S, target_attribute);
-
+            
             // Sort by the wanted attribute
             List<DataInstance> s_sorted = S.OrderBy(o => o.getProperty(wanted_attribute)).ToList();
             List<double> possible_values = new List<double>();
@@ -142,7 +142,7 @@ namespace DecisionTrees
                 double gain_on_this_split = total_set_entropy - (proportion_below_or_equal * entropy_below_or_equal) - (proportion_above * entropy_above);
                 double splitinfo_on_this_split = -(proportion_below_or_equal * Math.Log(proportion_below_or_equal, 2)) - (proportion_above * Math.Log(proportion_above, 2));
                 double gain_ratio_on_this_split = gain_on_this_split / splitinfo_on_this_split;
-
+                
                 // Finally all calculations are done! Lets find out if this one is the best one yet.
                 if (gain_on_this_split > best_split_gain)
                 {
@@ -159,7 +159,9 @@ namespace DecisionTrees
             // Adjust for missing data
             double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
             best_split_gain_ratio = (1 - missingFraction) * best_split_gain_ratio;
-            return new double[] { best_split, best_split_gain_ratio};
+            
+            // We want to select by the best gain, not by the best gain ratio, just like J48 does it.
+            return new double[] { best_split, best_split_gain };
         }
      
         public static double upperBound(double f, double N, double z)
