@@ -43,6 +43,13 @@
             "situation" : "Best attribute determined",
             "state_descriptor_id" : "best-attribute-determined"
          },
+         {
+             "id"    : "do-not-split",
+             "action" : "Do not split",
+             "situation" : "Best attribute determined",
+             "state_descriptor_id" : "best-attribute-determined"
+          },
+
         {
             "id" : "subset-on-value",
             "action" : "Create subset with this value",

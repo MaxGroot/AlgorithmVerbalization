@@ -29,9 +29,12 @@ namespace DecisionTrees
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
 
             agent.THINK("prepare-for-pruning").finish();
-
             // Start post-pruning with this queue.
-            DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
+
+            // TODO: Bring back the pruning when pruning works again!!!!
+
+            // DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
+            DecisionTree pruned_tree = tree;
 
             // Return the pruned tree
             return pruned_tree;
