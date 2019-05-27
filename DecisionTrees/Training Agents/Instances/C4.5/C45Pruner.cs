@@ -54,12 +54,10 @@ namespace DecisionTrees
             // Calculate error estimate of the leafs
             double leaf_estimated_errors = 0;
             int leaf_actual_errors = 0;
-            Console.WriteLine($"Considering {node.identifier}");
             foreach (Leaf child in node.getLeafChildren())
             {
                 List<DataInstance> leaf_set = tree.data_locations[child];
                 node_set.AddRange(leaf_set);
-                Console.WriteLine($"Leaf {child.identifier} set of {leaf_set.Count} added.");
 
                 // Calculate estimated error.
                 int my_errors = SetHelper.subset_errors(leaf_set, target_attribute);
@@ -73,9 +71,6 @@ namespace DecisionTrees
             int node_errors = SetHelper.subset_errors(node_set, target_attribute);
             double nodeErrorRate = Calculator.confidenceIntervalExact(node_errors, node_set.Count, this.confidence);
             double nodeEstimatedError = nodeErrorRate * node_set.Count;
-
-            Console.WriteLine($"{node.identifier} - {node_errors} vs {leaf_actual_errors}");
-            Console.WriteLine($"{nodeEstimatedError} vs {leaf_estimated_errors}");
 
             // Compare
             // If a node has a lower estimated error than its leafs, it should be pruned. 
