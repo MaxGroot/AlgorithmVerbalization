@@ -52,29 +52,35 @@ namespace DecisionTrees
             List<DataInstance> node_set = new List<DataInstance>();
 
             // Calculate error estimate of the leafs
-            double leaf_errors = 0;
-            foreach(Leaf child in node.getLeafChildren())
+            double leaf_estimated_errors = 0;
+            int leaf_actual_errors = 0;
+            Console.WriteLine($"Considering {node.identifier}");
+            foreach (Leaf child in node.getLeafChildren())
             {
                 List<DataInstance> leaf_set = tree.data_locations[child];
                 node_set.AddRange(leaf_set);
- 
+                Console.WriteLine($"Leaf {child.identifier} set of {leaf_set.Count} added.");
 
                 // Calculate estimated error.
-                int errors = SetHelper.subset_errors(leaf_set, target_attribute);
-                double errorRate = Calculator.confidenceIntervalExact(errors, leaf_set.Count, this.confidence);
+                int my_errors = SetHelper.subset_errors(leaf_set, target_attribute);
+                leaf_actual_errors += my_errors;
+                double errorRate = Calculator.confidenceIntervalExact(my_errors, leaf_set.Count, this.confidence);
                 double estimatedError = errorRate * leaf_set.Count;
-                leaf_errors += estimatedError;
+                leaf_estimated_errors += estimatedError;
             }
-        
+
             // Calculate estimated error of node.
             int node_errors = SetHelper.subset_errors(node_set, target_attribute);
             double nodeErrorRate = Calculator.confidenceIntervalExact(node_errors, node_set.Count, this.confidence);
             double nodeEstimatedError = nodeErrorRate * node_set.Count;
 
+            Console.WriteLine($"{node.identifier} - {node_errors} vs {leaf_actual_errors}");
+            Console.WriteLine($"{nodeEstimatedError} vs {leaf_estimated_errors}");
+
             // Compare
             // If a node has a lower estimated error than its leafs, it should be pruned. 
-            Dictionary<string, object> state = StateRecording.generateState("node_attribute", node.label, "node_error", nodeEstimatedError, "leaf_error", leaf_errors);
-            if (nodeEstimatedError < leaf_errors)
+            Dictionary<string, object> state = StateRecording.generateState("node_attribute", node.label, "node_error", nodeEstimatedError, "leaf_error", leaf_estimated_errors);
+            if (nodeEstimatedError < leaf_estimated_errors)
             {
                 // We need to prune!
                 this.prepareSnapshot(node);
@@ -195,6 +201,20 @@ namespace DecisionTrees
                 }
             }
             pruned_nodes[node.identifier] = node;
+        }
+
+        private List<DataInstance> node_instances(Node node, DecisionTree tree)
+        {
+            List<DataInstance> set_to_return = new List<DataInstance>();
+            foreach(Leaf child in node.getLeafChildren())
+            {
+                set_to_return.AddRange(tree.data_locations[child]);
+            }
+            foreach(Node child in node.getNodeChildren())
+            {
+                set_to_return.AddRange(this.node_instances(child, tree));
+            }
+            return set_to_return;
         }
     }
 }
