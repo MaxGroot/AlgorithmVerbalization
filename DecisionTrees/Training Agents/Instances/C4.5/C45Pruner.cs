@@ -16,28 +16,24 @@ namespace DecisionTrees
         private Dictionary<string, Node> pruned_nodes = new Dictionary<string, Node>();
 
         // Confidence level
-        private int confidence;
+        private double confidence;
         
         private Agent agent;
-        public DecisionTree prune(DecisionTree tree, string target_attribute, int confidence, Agent agent)
+        public DecisionTree prune(DecisionTree tree, string target_attribute, double confidence, Agent agent)
         {
             this.agent = agent;
+            this.confidence = confidence;
 
             // Find all nodes that have a leaf and are therefore up for pruning.
             List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
 
             // Sort them bottom-up.
             List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
-
-            this.confidence = confidence * 2;
-
+            
             agent.THINK("prepare-for-pruning").finish();
             // Start post-pruning with this queue.
-
-            // TODO: Bring back the pruning when pruning works again!!!!
-
-            // DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
-            DecisionTree pruned_tree = tree;
+           
+            DecisionTree pruned_tree = pruneIterate(tree, queue, target_attribute);
 
             // Return the pruned tree
             return pruned_tree;
@@ -65,14 +61,14 @@ namespace DecisionTrees
 
                 // Calculate estimated error.
                 int errors = SetHelper.subset_errors(leaf_set, target_attribute);
-                double errorRate = this.calcErrorRate(errors, leaf_set.Count);
+                double errorRate = Calculator.confidenceIntervalExact(errors, leaf_set.Count, this.confidence);
                 double estimatedError = errorRate * leaf_set.Count;
                 leaf_errors += estimatedError;
             }
         
             // Calculate estimated error of node.
             int node_errors = SetHelper.subset_errors(node_set, target_attribute);
-            double nodeErrorRate = this.calcErrorRate(node_errors, node_set.Count);
+            double nodeErrorRate = Calculator.confidenceIntervalExact(node_errors, node_set.Count, this.confidence);
             double nodeEstimatedError = nodeErrorRate * node_set.Count;
 
             // Compare
@@ -146,21 +142,6 @@ namespace DecisionTrees
             }
 
             return queue;
-        }
-
-        private double calcErrorRate(int successes, int sampleSize)
-        {
-            string calculationKey = $"{successes},{sampleSize}";
-
-            // Check if we have not already calculated this combination, since it's such an expensive one to make. 
-            if (! calculated_upperBounds.ContainsKey(calculationKey))
-            {
-                double errorRate = Calculator.upperBoundGood(successes, sampleSize, this.confidence);
-                calculated_upperBounds[calculationKey] = errorRate;
-            }
-
-            return calculated_upperBounds[calculationKey];
-            
         }
 
         private DecisionTree replaceNodeByNewLeaf(DecisionTree tree, Node removeNode)

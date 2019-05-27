@@ -188,41 +188,24 @@ namespace DecisionTrees
             return (f + zSquaredOver2N + (z * sqrt)) / onePlusZsquaredOverN;
         }
 
-        public static double upperBoundGood(int successes, int sampleSize, int confidence)
+        public static double confidenceIntervalExact(int x, int n, double confidence)
         {
-            var values = new Dictionary<string, string>
+            double alpha = 1 - confidence;
+            double alpha2 = 0.5 * alpha;
+            double ub;
+            if (x == 0)
             {
-               { "func", $"BinomialHigh({successes},{sampleSize},{confidence})" },
-            };
-
-            var content = new FormUrlEncodedContent(values);
-            var response = client.PostAsync("https://www.medcalc.org/inc/getmedcalcvalue.php", content).Result;
-            if (response.IsSuccessStatusCode)
+                ub = 1 - Beta.InvCDF(n, 1, alpha2);
+                return ub;
+            }
+            if (x == n)
             {
-                var responseContent = response.Content;
+                return 1d;
+            }
 
-                // by calling .Result you are synchronously reading the result
-                string responseString = responseContent.ReadAsStringAsync().Result;
-                try
-                {
-                    double upperBound = Double.Parse(responseString);
-
-                    // God damnit my PC does decimals using , not .
-                    if (upperBound > 1)
-                    {
-                        responseString = responseString.Replace(".", ",");
-                        upperBound = Double.Parse(responseString);
-                    }
-                    
-                    return upperBound;
-                }catch(FormatException e)
-                {
-                    throw new Exception($"Could not convert {responseString} to a double: {e}..");
-                }
-            }else
-            {
-                throw new Exception("Http request not succesful.");
-            }         
+            ub = 1 - Beta.InvCDF(n - x, x + 1, alpha2);
+            return ub;
         }
+        
     }
 }

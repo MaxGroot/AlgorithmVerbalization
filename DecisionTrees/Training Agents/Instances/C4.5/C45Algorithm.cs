@@ -74,7 +74,9 @@ namespace DecisionTrees
             // Return pruned tree.
             C45Pruner pruner = new C45Pruner();
 
-            DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, (int) parameters["confidence"], agent);
+            int confidence_on_100_scale = (int) parameters["confidence"];
+            double confidence = (double) (((double) confidence_on_100_scale * 2d) / 100d);
+            DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, confidence, agent);
             agent.THINK("return-prediction-model").finish();
 
             return pruned_tree;
