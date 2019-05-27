@@ -54,7 +54,7 @@ namespace DecisionTrees
             // Calculate error estimate of the leafs
             double leaf_estimated_errors = 0;
             int leaf_actual_errors = 0;
-            foreach (Leaf child in node.getLeafChildren())
+            foreach (Leaf child in SetHelper.all_leaf_children(node))
             {
                 List<DataInstance> leaf_set = tree.data_locations[child];
                 node_set.AddRange(leaf_set);
@@ -66,7 +66,7 @@ namespace DecisionTrees
                 double estimatedError = errorRate * leaf_set.Count;
                 leaf_estimated_errors += estimatedError;
             }
-
+            
             // Calculate estimated error of node.
             int node_errors = SetHelper.subset_errors(node_set, target_attribute);
             double nodeErrorRate = Calculator.confidenceIntervalExact(node_errors, node_set.Count, this.confidence);
@@ -80,7 +80,7 @@ namespace DecisionTrees
                 // We need to prune!
                 this.prepareSnapshot(node);
                 agent.THINK("prune-node").setState(state).finish();
-
+                
                 tree = this.replaceNodeByNewLeaf(tree, node);
             }else
             {
@@ -188,7 +188,7 @@ namespace DecisionTrees
 
         private void prepareSnapshot(Node node)
         {
-            foreach(Node child in node.getNodeChildren())
+            foreach (Node child in node.getNodeChildren())
             {
                 if (pruned_nodes.ContainsKey(child.identifier))
                 {
@@ -196,20 +196,6 @@ namespace DecisionTrees
                 }
             }
             pruned_nodes[node.identifier] = node;
-        }
-
-        private List<DataInstance> node_instances(Node node, DecisionTree tree)
-        {
-            List<DataInstance> set_to_return = new List<DataInstance>();
-            foreach(Leaf child in node.getLeafChildren())
-            {
-                set_to_return.AddRange(tree.data_locations[child]);
-            }
-            foreach(Node child in node.getNodeChildren())
-            {
-                set_to_return.AddRange(this.node_instances(child, tree));
-            }
-            return set_to_return;
         }
     }
 }

@@ -179,5 +179,16 @@ namespace DecisionTrees
             }
             return ret;
         }
+
+        public static List<Leaf> all_leaf_children(Node node)
+        {
+            List<Leaf> list_to_return = new List<Leaf>();
+            list_to_return.AddRange(node.getLeafChildren());
+            foreach(Node child in node.getNodeChildren())
+            {
+                list_to_return.AddRange(all_leaf_children(child));
+            }
+            return list_to_return;
+        }
     }
 }
