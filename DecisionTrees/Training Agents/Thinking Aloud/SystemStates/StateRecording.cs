@@ -21,6 +21,10 @@ namespace DecisionTrees
 
         public StateRecording set(string name, object value)
         {
+            if (descriptor == null)
+            {
+                throw new Exception($"State information supplied to {action}, but that action has no descriptor!");
+            }
             if (! descriptor.considerations.ContainsKey(name))
             {
                 throw new Exception($"Cannot set {name} for {action}, as descriptor {descriptor.id} has no such key");
@@ -70,7 +74,7 @@ namespace DecisionTrees
             {
                 if (! state.ContainsKey(variableName))
                 {
-                    throw new Exception($"Cannot finish recording: {variableName} is missing.");
+                    throw new Exception($"Cannot finish recording {action}: {variableName} is missing.");
                 }
             }
             this.finished = true;
@@ -97,6 +101,7 @@ namespace DecisionTrees
             {
                 case "string":  return check is string;
                 case "double":  return check is double;
+                case "nullable_double": return (check == null || check.ToString() == "NULL" || check is double);
                 case "float":   return check is float;
                 case "int":     return check is int;
                 default: throw new Exception($"{type} not supported as a variable type for state variables.");
