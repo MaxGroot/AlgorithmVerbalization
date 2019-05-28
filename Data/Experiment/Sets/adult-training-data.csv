@@ -1,5 +1,5 @@
 age; workclass; fnlwgt; education; education-num; marital-status; occupation; relationship; race; sex; capital-gain; capital-loss; hours-per-week; native-country; classifier
-continuous; nominal; nominal; continuous;continuous; nominal; nominal; nominal; nominal;nominal;continuous;continuous;continuous;nominal;classifier
+continuous;nominal;continuous;nominal;continuous;nominal;nominal;nominal;nominal;nominal;continuous;continuous;continuous;nominal;classifier
 48; Private;96798; Masters;14; Divorced; Sales; Not-in-family; White; Male;0;0;35; United-States; <=50K
 27; Private;251905; Assoc-voc;11; Never-married; Exec-managerial; Own-child; White; Male;0;0;50; United-States; <=50K
 69; Private;106595; HS-grad;9; Widowed; Adm-clerical; Not-in-family; White; Female;1848;0;40; United-States; <=50K
