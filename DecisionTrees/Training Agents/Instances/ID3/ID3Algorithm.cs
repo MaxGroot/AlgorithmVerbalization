@@ -43,10 +43,10 @@ namespace DecisionTrees
             double highest_gain = 0;
             foreach(string attr in attributes_copy)
             {
-                agent.THINK("consider-attribute").set("attributes_left", attributes_copy.Count).finish();
+                agent.THINK("consider-attribute").finish();
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
 
-                Dictionary<string, object> state = StateRecording.generateState("current_best_attribute", best_attr, "competing_attribute", attr, "current_best_gain", highest_gain, "competing_gain", my_gain, "parent_node", (parent_node != null) ? parent_node.identifier : "NULL");
+                Dictionary<string, object> state = StateRecording.generateState("current_best_attribute", best_attr, "competing_attribute", attr, "current_best_gain", highest_gain, "competing_gain", my_gain, "parent_id", (parent_node != null) ? parent_node.identifier : "NULL", "parent_attribute", (parent_node != null) ? parent_node.label : "NULL", "previous_value_split", (parent_value_splitter != null) ? parent_value_splitter : "NULL");
                 if (my_gain > highest_gain)
                 {
                     agent.THINK("set-new-best-attribute").setState(state).finish();
@@ -58,7 +58,7 @@ namespace DecisionTrees
                     agent.THINK("keep-old-attribute").setState(state).finish();
                 }
             }
-            agent.THINK("end-attribute-loop").set("attributes_left", 0).finish();
+            agent.THINK("end-attribute-loop").finish();
 
             if (highest_gain == 0)
             {
@@ -80,7 +80,7 @@ namespace DecisionTrees
             }
 
             // The best attribute to split this set is now saved in best_attr. Create a node for that.
-            agent.THINK("add-node").set("best_attribute", best_attr).set("highest_gain", highest_gain).set("possible_attributes", attributes_copy.Count).finish();
+            agent.THINK("add-node").finish();
 
             // Remove this attribute as a splitter for the dataset.
             attributes_copy.RemoveAt(considerable_attributes.IndexOf(best_attr));
@@ -93,9 +93,9 @@ namespace DecisionTrees
 
             foreach (string value_splitter in this.possible_attribute_values[best_attr])
             {
-                agent.THINK("subset-on-value").set("values_left", values_left).finish();
+                agent.THINK("subset-on-value").finish();
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
-                Dictionary<string, object> considering_state = StateRecording.generateState("split_attribute", best_attr, "split_value", value_splitter, "current_node", new_node.identifier, "parent_node", (parent_node != null) ? parent_node.identifier : "NULL");
+                Dictionary<string, object> considering_state = StateRecording.generateState("node_attribute", best_attr, "value_split", value_splitter, "current_node_id", new_node.identifier, "parent_node_id", (parent_node != null) ? parent_node.identifier : "NULL", "parent_attribute", (parent_node != null) ? parent_node.label : "NULL", "previous_value_split", (parent_value_splitter != null) ? parent_value_splitter : "NULL");
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
@@ -119,7 +119,7 @@ namespace DecisionTrees
                 }
                 values_left -= 1;
             }
-            agent.THINK("end-value-loop").set("values_left", values_left).finish();
+            agent.THINK("end-value-loop").finish();
             if (parent_node != null)
             {
                 agent.THINK("return-tree-to-self").finish();

@@ -17,7 +17,7 @@
             "id"    : "consider-attribute",
             "action" : "Consider attribute",
             "situation" : "Determining best attribute",
-            "state_descriptor_id": "determine-best-attribute"
+            "state_descriptor_id": null
         },
         {
             "id"        : "set-new-best-attribute",
@@ -35,19 +35,19 @@
             "id"        : "end-attribute-loop",
             "action"    : "End attribute selection loop",
             "situation" : "Determining best attribute",
-            "state_descriptor_id" : "determine-best-attribute"
+            "state_descriptor_id" : null
         },
         {
             "id"    : "add-node",
             "action" : "Add node",
             "situation" : "Best attribute determined",
-            "state_descriptor_id" : "best-attribute-determined"
+            "state_descriptor_id" : null
          },
         {
             "id" : "subset-on-value",
             "action" : "Create subset with this value",
             "situation" : "Considering attribute values",
-            "state_descriptor_id" : "considering-attribute-values"
+            "state_descriptor_id" : null
         },
         {
             "id" : "add-leaf",
@@ -71,7 +71,7 @@
             "id" : "end-value-loop",
             "action": "End subsetting loop",
             "situation" : "Considering attribute values",
-            "state_descriptor_id" : "considering-attribute-values"
+            "state_descriptor_id" : null
         },
         {
             "id" : "return-tree-to-self",
@@ -89,42 +89,26 @@
     "state_descriptors":
     [
         {
-            "id" : "best-attribute-determined",
-            "considerations" : {
-                "best_attribute" : "string",
-                "highest_gain" : "double",
-                "possible_attributes" : "int"
-            }
-        },
-        {
-            "id"    : "determine-best-attribute",
-            "considerations" : {
-                "attributes_left" : "int"
-            }
-        },
-        {
             "id" : "comparing-attributes",
             "considerations" : {
                 "current_best_attribute" : "string",
                 "competing_attribute" : "string",
                 "current_best_gain" : "double",
                 "competing_gain" : "double",
-                "parent_node" : "string"
-            }
-        },
-        {
-            "id"    : "considering-attribute-values",
-            "considerations" : {
-                "values_left" : "int"
+                "parent_id" : "string",
+                "parent_attribute" : "string",
+                "previous_value_split" : "string"
             }
         },
         {
             "id" : "considering-subset",
             "considerations" : {
-                "split_attribute" : "string",
-                "split_value" : "string",
-                "current_node" : "string",
-                "parent_node" : "string"
+                "value_split" : "string",
+                "node_attribute" : "string",
+                "current_node_id" : "string",
+                "parent_node_id" : "string",
+                "parent_attribute" : "string",
+                "previous_value_split" : "string"
             }
         }
     ]
