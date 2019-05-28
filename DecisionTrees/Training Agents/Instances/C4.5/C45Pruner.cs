@@ -74,7 +74,11 @@ namespace DecisionTrees
 
             // Compare
             // If a node has a lower estimated error than its leafs, it should be pruned. 
-            Dictionary<string, object> state = StateRecording.generateState("node_attribute", node.label, "node_error", nodeEstimatedError, "leaf_error", leaf_estimated_errors);
+            Dictionary<string, object> state = StateRecording.generateState("estimated_prune_errors", nodeEstimatedError, "estimated_keep_errors", leaf_estimated_errors,
+                                                                            "node_attribute", node.label, "node_data_size", node_set.Count, "node_id", node.identifier, "node_value_splitter", (node.value_splitter != null) ? node.value_splitter : "NULL",
+                                                                            "node_threshold", (node is ContinuousNode) ? (double?)(node as ContinuousNode).threshold : null,
+                                                                            "parent_id", (node.getParent() != null) ? node.getParent().identifier : "NULL", "parent_attribute", (node.getParent() != null) ? node.getParent().label : "NULL", "parent_threshold", (node.getParent() != null && node.getParent() is ContinuousNode) ? (double?)((ContinuousNode) node.getParent()).threshold : null);
+
             if (nodeEstimatedError < leaf_estimated_errors)
             {
                 // We need to prune!

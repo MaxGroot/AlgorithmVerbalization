@@ -98,17 +98,19 @@ namespace DecisionTrees
             double threshold = 0;
             foreach (string attribute in attributes.Keys.ToList())
             {
-                agent.THINK("consider-attribute").set("attributes_left", attributes.Count).finish();
+                agent.THINK("consider-attribute").finish();
                 double my_gain_ratio = gains[attribute];
-
-                Dictionary<string, object> comparingState = StateRecording.generateState("current_best_attribute", best_split_attribute, "competing_attribute", attribute, "current_gain", highest_gain_ratio, "competing_gain", my_gain_ratio);
-
+                bool competing_is_continuous = (attributes[attribute] == "continuous");
+                Dictionary<string, object> comparingState = StateRecording.generateState("current_best_attribute", best_split_attribute, "competing_attribute", attribute, "current_best_gain", highest_gain_ratio, "competing_gain", my_gain_ratio,
+                                                                                        "current_best_threshold", (split_on_continuous) ? (double?)threshold : null, "competing_threshold", (competing_is_continuous) ? (double?)thresholds[attribute] : null,
+                                                                                        "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split !=null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
+             
                 if (my_gain_ratio > highest_gain_ratio)
                 {
                     agent.THINK("set-new-best-attribute").setState(comparingState).finish();
                     highest_gain_ratio = my_gain_ratio;
                     best_split_attribute = attribute;
-                    split_on_continuous = (attributes[attribute] == "continuous");
+                    split_on_continuous = competing_is_continuous;
                     if (split_on_continuous)
                     {
                         threshold = thresholds[attribute];
@@ -119,7 +121,7 @@ namespace DecisionTrees
                     agent.THINK("keep-old-attribute").setState(comparingState).finish();
                 }
             }
-            agent.THINK("end-attribute-loop").set("attributes_left", 0).finish();
+            agent.THINK("end-attribute-loop").finish();
 
             // This is to come to the same result as J48 [TODO: This has to go at some point]
             if (!have_been_at_root && best_split_attribute == "petal-length")
@@ -133,13 +135,23 @@ namespace DecisionTrees
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
             Dictionary<string, List<DataInstance>> subsets = (split_on_continuous) ? SetHelper.subsetOnAttributeContinuous(set, best_split_attribute, threshold) : SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_nominal_values[best_split_attribute]);
             bool subset_below_minimum_requirement = false;
-            foreach (List<DataInstance> subset in subsets.Values.ToList())
+            foreach (string value_splitter in subsets.Keys.ToList())
             {
+                List<DataInstance> subset = subsets[value_splitter];
                 // If at least one of these subsets has less instances than the minimum leaf size, than this split should NOT happen. 
-                if (subset_below_minimum_requirement == false && subset.Count < minimum_leaf_size && subset.Count != 0)
+                agent.THINK("consider-subset-size").finish();
+
+                Dictionary<string, object> considerReplacementState = StateRecording.generateState("minimum_objects", minimum_leaf_size, "subset_count", subset.Count, "chosen_attribute", best_split_attribute, "value_split", value_splitter, 
+                                                                                                    "suggested_threshold", (split_on_continuous) ? (double?) thresholds[best_split_attribute] : null,
+                                                                                                    "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
+                if (subset.Count < minimum_leaf_size && subset.Count != 0)
                 {
-                    agent.THINK("do-not-split").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
+                    agent.THINK("replace-node-suggestion-for-leaf").setState(considerReplacementState).finish();
                     subset_below_minimum_requirement = true;
+                    break;
+                }else
+                {
+                    agent.THINK("do-not-replace-node-suggestion-for-leaf").setState(considerReplacementState).finish();
                 }
             }
             if (subset_below_minimum_requirement)
@@ -151,8 +163,7 @@ namespace DecisionTrees
                 }
                 return tree;
             }
-
-            agent.THINK("add-node").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
+            agent.THINK("end-considering-node-replacement-loop").finish();
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
             Node newnode = null;
             if (split_on_continuous)
@@ -170,15 +181,21 @@ namespace DecisionTrees
             foreach (string subset_splitter in subsets.Keys)
             {
                 List<DataInstance> subset = subsets[subset_splitter];
-                agent.THINK("subset-on-value").set("values_left", values_left).finish();
-                Dictionary<string, object> state = StateRecording.generateState("split_attribute", best_split_attribute, "split_value", subset_splitter);
-                if (subset.Count == 0)
+                agent.THINK("subset-on-value").finish();
+                bool uniformClassifier = SetHelper.hasUniformClassifier(subset, target_attribute);
+                Dictionary<string, object> state = StateRecording.generateState("set_count", subset.Count, "set_has_uniform_classifier", uniformClassifier ? "TRUE" : "FALSE",  "chosen_attribute", best_split_attribute, "value_split", subset_splitter, "possible_attribute_count", attributes_for_further_iteration.Count,
+                                                                                "chosen_threshold", (split_on_continuous) ? (double?) thresholds[best_split_attribute] : null, "current_node_id", newnode.identifier,
+                                                                                "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
+
+                if (subset.Count < minimum_leaf_size && subset.Count != 0)
+
+                    if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
                     agent.THINK("ignore-value").setState(state).finish();
                     continue;
                 }
-                if (SetHelper.hasUniformClassifier(subset, target_attribute))
+                if (uniformClassifier)
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
                     // Each leaf represents one decision rule. 
@@ -217,7 +234,7 @@ namespace DecisionTrees
                 values_left--;
             }
             // The set that we have received has been dealt with completely. We can now move up!
-            agent.THINK("end-value-loop").set("values_left", 0).finish();
+            agent.THINK("end-value-loop").finish();
             if (parent != null)
             {
                 agent.THINK("return-tree-to-self").finish();
