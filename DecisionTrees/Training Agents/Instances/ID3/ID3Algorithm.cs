@@ -23,7 +23,7 @@ namespace DecisionTrees
 
             // First we need to know for each attribute which possible values it can hold.
             this.calculateAttributePossibilities();
-        
+            
             DecisionTree tree = new DecisionTree(target_attribute);
 
             // Start the iteration process on the entire set.
@@ -45,15 +45,17 @@ namespace DecisionTrees
             {
                 agent.THINK("consider-attribute").set("attributes_left", attributes_copy.Count).finish();
                 double my_gain = Calculator.gain(sets_todo, attr, this.target_attribute, this.possible_attribute_values[attr]);
+
+                Dictionary<string, object> state = StateRecording.generateState("current_best_attribute", best_attr, "competing_attribute", attr, "current_best_gain", highest_gain, "competing_gain", my_gain, "parent_node", (parent_node != null) ? parent_node.identifier : "NULL");
                 if (my_gain > highest_gain)
                 {
-                    agent.THINK("set-new-best-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
+                    agent.THINK("set-new-best-attribute").setState(state).finish();
                     best_attr = attr;
                     highest_gain = my_gain;
                 }
                 else
                 {
-                    agent.THINK("keep-old-attribute").set("current_best_attribute", best_attr).set("competing_attribute", attr).set("current_gain", highest_gain).set("competing_gain", my_gain).finish();
+                    agent.THINK("keep-old-attribute").setState(state).finish();
                 }
             }
             agent.THINK("end-attribute-loop").set("attributes_left", 0).finish();
@@ -93,8 +95,7 @@ namespace DecisionTrees
             {
                 agent.THINK("subset-on-value").set("values_left", values_left).finish();
                 List<DataInstance> subset = sets_todo.Where(A => A.getProperty(best_attr) == value_splitter).ToList();
-                Dictionary<string, object> considering_state = StateRecording.generateState("split_attribute", best_attr, "split_value", value_splitter);
-
+                Dictionary<string, object> considering_state = StateRecording.generateState("split_attribute", best_attr, "split_value", value_splitter, "current_node", new_node.identifier, "parent_node", (parent_node != null) ? parent_node.identifier : "NULL");
                 if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.

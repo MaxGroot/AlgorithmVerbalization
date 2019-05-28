@@ -1,10 +1,114 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <pnml>
   <net type="http://www.yasper.org/specs/epnml-1.1" id="do1">
     <name>
       <text>C4.5</text>
     </name>
-    <graphics />
+    <toolspecific tool="Yasper" version="1.2.4020.34351">
+      <roles xmlns="http://www.yasper.org/specs/epnml-1.1/toolspec" />
+    </toolspecific>
+    <place id="pl17">
+      <name>
+        <text>Program loaded</text>
+      </name>
+      <graphics>
+        <position x="109" y="509" />
+        <dimension x="20" y="20" />
+      </graphics>
+      <initialMarking>
+        <text>1</text>
+      </initialMarking>
+    </place>
+    <place id="pl20">
+      <name>
+        <text>Ready for iteration</text>
+      </name>
+      <graphics>
+        <position x="309" y="509" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl21">
+      <name>
+        <text>Determining best attribute</text>
+      </name>
+      <graphics>
+        <position x="311" y="277" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl23">
+      <name>
+        <text>Best attribute determined</text>
+      </name>
+      <graphics>
+        <position x="311" y="18" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl26">
+      <name>
+        <text>Comparing</text>
+      </name>
+      <graphics>
+        <position x="18" y="178" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl3">
+      <name>
+        <text>Considering attribute value</text>
+      </name>
+      <graphics>
+        <position x="907" y="115" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl4">
+      <name>
+        <text>Considering subset</text>
+      </name>
+      <graphics>
+        <position x="1367" y="510" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl9">
+      <name>
+        <text>Ready for prune iteration</text>
+      </name>
+      <graphics>
+        <position x="1135" y="675" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl1">
+      <name>
+        <text>Best attribute classified</text>
+      </name>
+      <graphics>
+        <position x="905" y="377" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl2">
+      <name>
+        <text>Considering pruning node</text>
+      </name>
+      <graphics>
+        <position x="907" y="875" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
+    <place id="pl5">
+      <name>
+        <text>Finished</text>
+      </name>
+      <graphics>
+        <position x="1336" y="676" />
+        <dimension x="20" y="20" />
+      </graphics>
+    </place>
     <transition id="tr22">
       <name>
         <text>Start</text>
@@ -185,181 +289,49 @@
         <dimension x="32" y="32" />
       </graphics>
     </transition>
-    <place id="pl17">
-      <name>
-        <text>Program loaded</text>
-      </name>
-      <graphics>
-        <position x="109" y="509" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>1</text>
-      </initialMarking>
-    </place>
-    <place id="pl20">
-      <name>
-        <text>Ready for iteration</text>
-      </name>
-      <graphics>
-        <position x="309" y="509" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl21">
-      <name>
-        <text>Determining best attribute</text>
-      </name>
-      <graphics>
-        <position x="311" y="277" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl23">
-      <name>
-        <text>Best attribute determined</text>
-      </name>
-      <graphics>
-        <position x="311" y="15" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl26">
-      <name>
-        <text>Comparing</text>
-      </name>
-      <graphics>
-        <position x="18" y="178" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl3">
-      <name>
-        <text>Considering attribute value</text>
-      </name>
-      <graphics>
-        <position x="907" y="115" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl4">
-      <name>
-        <text>Considering subset</text>
-      </name>
-      <graphics>
-        <position x="1367" y="510" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl9">
-      <name>
-        <text>Ready for prune iteration</text>
-      </name>
-      <graphics>
-        <position x="1135" y="675" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl1">
-      <name>
-        <text>Best attribute classified</text>
-      </name>
-      <graphics>
-        <position x="905" y="377" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl2">
-      <name>
-        <text>Considering pruning node</text>
-      </name>
-      <graphics>
-        <position x="907" y="875" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <place id="pl5">
-      <name>
-        <text>Finished</text>
-      </name>
-      <graphics>
-        <position x="1336" y="676" />
-        <dimension x="20" y="20" />
-      </graphics>
-      <initialMarking>
-        <text>0</text>
-      </initialMarking>
-    </place>
-    <arc id="a28" source="pl17" target="tr22" />
-    <arc id="a29" source="tr25" target="pl21" />
-    <arc id="a31" source="pl21" target="tr27" />
-    <arc id="a32" source="pl21" target="tr26" />
-    <arc id="a33" source="pl26" target="tr30" />
-    <arc id="a34" source="pl26" target="tr29" />
-    <arc id="a35" source="tr30" target="pl21" />
-    <arc id="a36" source="tr29" target="pl21" />
-    <arc id="a37" source="pl20" target="tr25" />
-    <arc id="a38" source="tr27" target="pl23" />
-    <arc id="a39" source="pl3" target="tr7" />
-    <arc id="a40" source="tr7" target="pl4" />
-    <arc id="a41" source="pl4" target="tr9" />
-    <arc id="a42" source="pl4" target="tr10" />
-    <arc id="a43" source="pl4" target="tr4" />
-    <arc id="a44" source="tr4" target="pl20" />
-    <arc id="a45" source="tr14" target="pl9" />
-    <arc id="a46" source="tr22" target="pl20" />
-    <arc id="a47" source="pl23" target="tr3" />
-    <arc id="a48" source="tr3" target="pl3">
+    <arc id="a1" source="pl17" target="tr22" />
+    <arc id="a2" source="tr25" target="pl21" />
+    <arc id="a3" source="pl21" target="tr27" />
+    <arc id="a4" source="pl21" target="tr26" />
+    <arc id="a5" source="pl26" target="tr30" />
+    <arc id="a6" source="pl26" target="tr29" />
+    <arc id="a7" source="tr30" target="pl21" />
+    <arc id="a8" source="tr29" target="pl21" />
+    <arc id="a9" source="pl20" target="tr25" />
+    <arc id="a10" source="tr27" target="pl23" />
+    <arc id="a11" source="pl3" target="tr7" />
+    <arc id="a12" source="tr7" target="pl4" />
+    <arc id="a13" source="pl4" target="tr9" />
+    <arc id="a14" source="pl4" target="tr10" />
+    <arc id="a15" source="pl4" target="tr4" />
+    <arc id="a16" source="tr4" target="pl20" />
+    <arc id="a17" source="tr14" target="pl9" />
+    <arc id="a18" source="tr22" target="pl20" />
+    <arc id="a19" source="pl23" target="tr3" />
+    <arc id="a20" source="tr3" target="pl3">
       <graphics>
         <position x="906" y="17" />
       </graphics>
     </arc>
-    <arc id="a49" source="pl1" target="tr2" />
-    <arc id="a50" source="tr2" target="pl3" />
-    <arc id="a51" source="pl1" target="tr14" />
-    <arc id="a52" source="tr26" target="pl26" />
-    <arc id="a53" source="tr10" target="pl3" />
-    <arc id="a54" source="tr9" target="pl3" />
-    <arc id="a55" source="tr1" target="pl2" />
-    <arc id="a56" source="pl2" target="tr6" />
-    <arc id="a64" source="pl2" target="tr8" />
-    <arc id="a65" source="tr8" target="pl9" />
-    <arc id="a66" source="tr6" target="pl9" />
-    <arc id="a67" source="pl9" target="tr11" />
-    <arc id="a68" source="tr11" target="pl5" />
-    <arc id="a69" source="pl4" target="tr12" />
-    <arc id="a70" source="tr12" target="pl3" />
-    <arc id="a71" source="pl9" target="tr1" />
-    <arc id="a72" source="pl3" target="tr15" />
-    <arc id="a73" source="tr15" target="pl1" />
-    <arc id="a77" source="pl23" target="tr5" />
-    <arc id="a78" source="tr5" target="pl1" />
+    <arc id="a21" source="pl1" target="tr2" />
+    <arc id="a22" source="tr2" target="pl3" />
+    <arc id="a23" source="pl1" target="tr14" />
+    <arc id="a24" source="tr26" target="pl26" />
+    <arc id="a25" source="tr10" target="pl3" />
+    <arc id="a26" source="tr9" target="pl3" />
+    <arc id="a27" source="tr1" target="pl2" />
+    <arc id="a30" source="pl2" target="tr6" />
+    <arc id="a57" source="pl2" target="tr8" />
+    <arc id="a58" source="tr8" target="pl9" />
+    <arc id="a59" source="tr6" target="pl9" />
+    <arc id="a60" source="pl9" target="tr11" />
+    <arc id="a61" source="tr11" target="pl5" />
+    <arc id="a62" source="pl4" target="tr12" />
+    <arc id="a63" source="tr12" target="pl3" />
+    <arc id="a74" source="pl9" target="tr1" />
+    <arc id="a75" source="pl3" target="tr15" />
+    <arc id="a76" source="tr15" target="pl1" />
+    <arc id="a79" source="pl23" target="tr5" />
+    <arc id="a80" source="tr5" target="pl1" />
   </net>
 </pnml>

@@ -136,11 +136,14 @@ namespace DecisionTrees
             foreach (List<DataInstance> subset in subsets.Values.ToList())
             {
                 // If at least one of these subsets has less instances than the minimum leaf size, than this split should NOT happen. 
-                subset_below_minimum_requirement = (subset.Count < minimum_leaf_size) ? true : subset_below_minimum_requirement;
+                if (subset_below_minimum_requirement == false && subset.Count < minimum_leaf_size && subset.Count != 0)
+                {
+                    agent.THINK("do-not-split").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
+                    subset_below_minimum_requirement = true;
+                }
             }
             if (subset_below_minimum_requirement)
             {
-                agent.THINK("do-not-split").set("best_attribute", best_split_attribute).set("highest_gain", highest_gain_ratio).set("possible_attributes", attributes_for_further_iteration.Count).finish();
                 tree = this.addEstimationLeaf(tree, set, parent, last_split);
                 if (parent != null)
                 {

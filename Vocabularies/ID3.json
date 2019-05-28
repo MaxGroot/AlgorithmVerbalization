@@ -107,8 +107,9 @@
             "considerations" : {
                 "current_best_attribute" : "string",
                 "competing_attribute" : "string",
-                "current_gain" : "double",
-                "competing_gain" : "double"
+                "current_best_gain" : "double",
+                "competing_gain" : "double",
+                "parent_node" : "string"
             }
         },
         {
@@ -121,7 +122,9 @@
             "id" : "considering-subset",
             "considerations" : {
                 "split_attribute" : "string",
-                "split_value" : "string"
+                "split_value" : "string",
+                "current_node" : "string",
+                "parent_node" : "string"
             }
         }
     ]
