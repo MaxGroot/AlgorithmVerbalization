@@ -80,14 +80,14 @@ namespace DecisionTrees
             this.finished = true;
         }
 
-        public string toLine(char seperator)
+        public string toLine(char seperator, List<string> keys_in_order)
         {
             if (!this.finished)
             {
                 throw new Exception($"The program attempts to save an improperly configured StateRecording with action {action}");
             }
             string ret = "";
-            foreach(string variableName in this.state.Keys.ToList())
+            foreach(string variableName in keys_in_order)
             {
                 ret += $"{this.state[variableName]}{seperator}";
             }

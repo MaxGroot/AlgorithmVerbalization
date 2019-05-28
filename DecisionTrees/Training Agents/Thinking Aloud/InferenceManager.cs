@@ -73,7 +73,8 @@ namespace DecisionTrees
         {
             var csv = new StringBuilder();
             string firstline = "";
-            foreach (string variableName in descriptor.considerations.Keys.ToList())
+            List<string> keys_in_order = descriptor.considerations.Keys.ToList();
+            foreach (string variableName in keys_in_order)
             {
                 firstline += $"{variableName}{seperator}";
             }
@@ -82,7 +83,7 @@ namespace DecisionTrees
 
             foreach (StateRecording recording in this.state_record[descriptor])
             {
-                csv.AppendLine(recording.toLine(seperator));
+                csv.AppendLine(recording.toLine(seperator, keys_in_order));
             }
 
             return csv.ToString();
