@@ -85,7 +85,7 @@ namespace DecisionTrees
                 this.prepareSnapshot(node);
                 agent.THINK("prune-node").setState(state).finish();
                 
-                tree = this.replaceNodeByNewLeaf(tree, node);
+                tree = tree.replaceNodeByNewLeaf(node);
             }else
             {
                 agent.THINK("keep-node").setState(state).finish();
@@ -148,48 +148,7 @@ namespace DecisionTrees
 
             return queue;
         }
-
-        private DecisionTree replaceNodeByNewLeaf(DecisionTree tree, Node removeNode)
-        {
-            // Create the new leaf
-            List<DataInstance> total_set = new List<DataInstance>();
-            List<Node> queue = new List<Node>();
-            queue.Add(removeNode);
-
-            // Get all instances that should be covered.
-            while(queue.Count > 0)
-            {
-                Node node = queue[0];
-                queue.RemoveAt(0);
-
-                foreach(Leaf child in node.getLeafChildren())
-                {
-                    total_set.AddRange(tree.data_locations[child]);
-                    tree.data_locations.Remove(child);
-                }
-
-                // Add child nodes to queue
-                queue.AddRange(node.getNodeChildren());
-            }
-
-            // Make the new leaf
-            string prediction = SetHelper.mostCommonClassifier(total_set, tree.target_attribute);
-            double uncertainty = (double) SetHelper.subset_errors(total_set, tree.target_attribute) / (double) total_set.Count;
-            Node parent = removeNode.getParent();
-            Leaf newleaf = tree.addUncertainLeaf(removeNode.value_splitter, prediction, parent, uncertainty);
-            
-            // Make sure we can access this leaf's new subset!
-            tree.data_locations[newleaf] = total_set;
-
-            // Remove the old node from its parent.
-            if (parent != null)
-            {
-                parent.removeChildNode(removeNode);
-            }
-
-            return tree;
-        }
-
+        
         private void prepareSnapshot(Node node)
         {
             foreach (Node child in node.getNodeChildren())

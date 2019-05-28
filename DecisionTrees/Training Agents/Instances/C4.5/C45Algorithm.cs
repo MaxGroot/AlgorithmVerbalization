@@ -66,7 +66,7 @@ namespace DecisionTrees
 
             // Generate C4.5 decision tree.
             agent.THINK("start").finish();
-            DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, target_attribute, attributes, null, null);
+            DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, attributes, null, null);
 
             // Snapshot full tree.
             agent.SNAPSHOT("pre-pruning", full_tree);
@@ -82,47 +82,18 @@ namespace DecisionTrees
             return pruned_tree;
         }
 
-        private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes, Node parent, string last_split)
+        private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, Dictionary<string, string> attributes, Node parent, string last_split)
         {
             this.agent.THINK("iterate").finish();
-
-            // Re-evaluate gains and thresholds
             Dictionary<string, Dictionary<string, double>> gains_and_thresholds = calculate_attribute_gain_ratios(set, target_attribute, attributes);
-            Dictionary<string, double> gains = gains_and_thresholds["gains"];
             Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
 
-            // Select the best attribute to split on
-            double highest_gain_ratio = -1;
-            string best_split_attribute = "NOTFOUND";
-            Boolean split_on_continuous = false;
-            double threshold = 0;
-            foreach (string attribute in attributes.Keys.ToList())
-            {
-                agent.THINK("consider-attribute").finish();
-                double my_gain_ratio = gains[attribute];
-                bool competing_is_continuous = (attributes[attribute] == "continuous");
-                Dictionary<string, object> comparingState = StateRecording.generateState("current_best_attribute", best_split_attribute, "competing_attribute", attribute, "current_best_gain", highest_gain_ratio, "competing_gain", my_gain_ratio,
-                                                                                        "current_best_threshold", (split_on_continuous) ? (double?)threshold : null, "competing_threshold", (competing_is_continuous) ? (double?)thresholds[attribute] : null,
-                                                                                        "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split !=null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
-             
-                if (my_gain_ratio > highest_gain_ratio)
-                {
-                    agent.THINK("set-new-best-attribute").setState(comparingState).finish();
-                    highest_gain_ratio = my_gain_ratio;
-                    best_split_attribute = attribute;
-                    split_on_continuous = competing_is_continuous;
-                    if (split_on_continuous)
-                    {
-                        threshold = thresholds[attribute];
-                    }
-                }
-                else
-                {
-                    agent.THINK("keep-old-attribute").setState(comparingState).finish();
-                }
-            }
-            agent.THINK("end-attribute-loop").finish();
+            Tuple<string, Dictionary<string, List<DataInstance>>> attributeFound = this.findAttributeSplit(tree, set, attributes, gains_and_thresholds, parent, last_split);
+            string best_split_attribute = attributeFound.Item1;
+            Dictionary<string, List<DataInstance>> subsets = attributeFound.Item2;
 
+            double threshold = -1000000;
+           
             // This is to come to the same result as J48 [TODO: This has to go at some point]
             if (!have_been_at_root && best_split_attribute == "petal-length")
             {
@@ -132,38 +103,22 @@ namespace DecisionTrees
                 threshold = thresholds[best_split_attribute];
             }
 
-            Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
-            Dictionary<string, List<DataInstance>> subsets = (split_on_continuous) ? SetHelper.subsetOnAttributeContinuous(set, best_split_attribute, threshold) : SetHelper.subsetOnAttributeNominal(set, best_split_attribute, possible_nominal_values[best_split_attribute]);
-            bool subset_below_minimum_requirement = false;
-            foreach (string value_splitter in subsets.Keys.ToList())
+            // Check if a split attribute could even be found
+            if (best_split_attribute == "[INTERNAL_VARIABLE]-NOTFOUND")
             {
-                List<DataInstance> subset = subsets[value_splitter];
-                // If at least one of these subsets has less instances than the minimum leaf size, than this split should NOT happen. 
-                agent.THINK("consider-subset-size").finish();
-
-                Dictionary<string, object> considerReplacementState = StateRecording.generateState("minimum_objects", minimum_leaf_size, "subset_count", subset.Count, "chosen_attribute", best_split_attribute, "value_split", value_splitter, 
-                                                                                                    "suggested_threshold", (split_on_continuous) ? (double?) thresholds[best_split_attribute] : null,
-                                                                                                    "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
-                if (subset.Count < minimum_leaf_size && subset.Count != 0)
-                {
-                    agent.THINK("replace-node-suggestion-for-leaf").setState(considerReplacementState).finish();
-                    subset_below_minimum_requirement = true;
-                    break;
-                }else
-                {
-                    agent.THINK("do-not-replace-node-suggestion-for-leaf").setState(considerReplacementState).finish();
-                }
-            }
-            if (subset_below_minimum_requirement)
-            {
+                // Okay so the subset we received could not be split such that it did not create too small of a leaf. Therefore we will make an estimation leaf and move up.
                 tree = this.addEstimationLeaf(tree, set, parent, last_split);
-                if (parent != null)
-                {
-                    agent.THINK("return-tree-to-self").finish();
-                }
                 return tree;
             }
-            agent.THINK("end-considering-node-replacement-loop").finish();
+
+            bool split_on_continuous = attributes[best_split_attribute] == "continuous";
+            if (split_on_continuous)
+            {
+                threshold = thresholds[best_split_attribute];
+            }
+
+            Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
+            
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
             Node newnode = null;
             if (split_on_continuous)
@@ -176,9 +131,7 @@ namespace DecisionTrees
                 attributes_for_further_iteration.Remove(best_split_attribute);
             }
             // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
-
-            int values_left = subsets.Keys.Count;
-            foreach (string subset_splitter in subsets.Keys)
+           foreach (string subset_splitter in subsets.Keys)
             {
                 List<DataInstance> subset = subsets[subset_splitter];
                 agent.THINK("subset-on-value").finish();
@@ -212,27 +165,27 @@ namespace DecisionTrees
                     agent.THINK("add-leaf").setState(state).finish();
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                     tree.data_locations[leaf] = subset;
+                    tree.verifyNodeIntegrity(leaf.parent);
                 }
                 else
                 {
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
                     if (attributes_for_further_iteration.Count == 0)
                     {
-                        agent.THINK("add-best-guess-leaf").setState(state).finish();
+                        agent.THINK("add-estimation-leaf").setState(state).finish();
                         tree = this.addEstimationLeaf(tree, subset, newnode, subset_splitter);
                     }
                     else
                     {
                         // We still have attributes left, we can continue further!
                         agent.THINK("iterate-further").setState(state).finish();
-                        tree = this.iterate(tree, subset, target_attribute, attributes_for_further_iteration, newnode, subset_splitter);
+                        tree = this.iterate(tree, subset, attributes_for_further_iteration, newnode, subset_splitter);
                     }
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. 
                     // Therefore we can let the foreach continue further!
                 }
-
-                values_left--;
             }
+            
             // The set that we have received has been dealt with completely. We can now move up!
             agent.THINK("end-value-loop").finish();
             if (parent != null)
@@ -240,6 +193,77 @@ namespace DecisionTrees
                 agent.THINK("return-tree-to-self").finish();
             }
             return tree;
+        }
+
+        private Tuple<string, Dictionary<string, List<DataInstance>>> findAttributeSplit(DecisionTree tree, List<DataInstance> set, Dictionary<string, string> attributes, Dictionary<string, Dictionary<string, double>> gains_and_thresholds, Node parent, string last_split)
+        {
+
+            // Re-evaluate gains and thresholds
+            Dictionary<string, double> gains = gains_and_thresholds["gains"];
+            Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
+
+            // Select the best attribute to split on
+            double highest_gain_ratio = -1;
+            string best_split_attribute = "[INTERNAL_VARIABLE]-NOTFOUND";
+            Boolean split_on_continuous = false;
+            double threshold = 0;
+            Dictionary<string, List<DataInstance>> subsets = null;
+            foreach (string competing_attribute in attributes.Keys.ToList())
+            {
+                agent.THINK("consider-attribute").finish();
+                double my_gain_ratio = gains[competing_attribute];
+                bool competing_is_continuous = (attributes[competing_attribute] == "continuous");
+                Dictionary<string, object> comparingAttributeState = StateRecording.generateState("current_best_attribute", best_split_attribute, "competing_attribute", competing_attribute, "current_best_gain", highest_gain_ratio, "competing_gain", my_gain_ratio,
+                                                                                        "current_best_threshold", (split_on_continuous) ? (double?)threshold : null, "competing_threshold", (competing_is_continuous) ? (double?)thresholds[competing_attribute] : null,
+                                                                                        "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
+
+                if (my_gain_ratio > highest_gain_ratio)
+                {
+                    // This attribute has the potential to become the new best attribute, but first we need to make sure splitting on this
+                    // attribute will not result in a leaf that has a subset lower than the minimum leaf size.
+                    Dictionary<string, List<DataInstance>> competing_subsets = (competing_is_continuous) ? SetHelper.subsetOnAttributeContinuous(set, competing_attribute, thresholds[competing_attribute]) : SetHelper.subsetOnAttributeNominal(set, competing_attribute, possible_nominal_values[competing_attribute]);
+                    int subsets_above_minimum_requirement = 0;
+
+                    foreach (string value_splitter in competing_subsets.Keys.ToList())
+                    {
+                        List<DataInstance> subset = competing_subsets[value_splitter];
+
+                        // If at least one of these subsets has less instances than the minimum leaf size, then this split should NOT happen. 
+
+                        Dictionary<string, object> considerSubsetState = StateRecording.generateState("minimum_objects", minimum_leaf_size, "subset_count", subset.Count, "chosen_attribute", best_split_attribute, "value_split", value_splitter,
+                                                                                                            "suggested_threshold", (split_on_continuous) ? (double?)thresholds[best_split_attribute] : null);
+                        if (subset.Count >= minimum_leaf_size)
+                        {
+                            subsets_above_minimum_requirement++;
+                        }
+                    }
+
+                    if (subsets_above_minimum_requirement < 2)
+                    {
+                        // Although this attribute has a better gain ratio than the best one we have now, it also forces us to create a leaf
+                        // that is below the minimum leaf size and therefore we cannot choose this one!
+                    }
+                    else
+                    {
+                        agent.THINK("set-new-best-attribute").setState(comparingAttributeState).finish();
+                        highest_gain_ratio = my_gain_ratio;
+                        best_split_attribute = competing_attribute;
+                        split_on_continuous = competing_is_continuous;
+                        subsets = competing_subsets;
+                        if (split_on_continuous)
+                        {
+                            threshold = thresholds[competing_attribute];
+                        }
+                    }
+                }
+                else
+                {
+                    // Previous attribute had a better gain ratio
+                    agent.THINK("keep-old-attribute").setState(comparingAttributeState).finish();
+                }
+            }
+            agent.THINK("end-attribute-loop").finish();
+            return new Tuple<string, Dictionary<string, List<DataInstance>>>(best_split_attribute, subsets);
         }
 
         private Dictionary<string, Dictionary<string, double>> calculate_attribute_gain_ratios(List<DataInstance> set, string target_attribute, Dictionary<string, string> attributes)
@@ -285,7 +309,7 @@ namespace DecisionTrees
             certainty = certainty * percentage_with_this_classifier;
             Leaf leaf = tree.addUncertainLeaf(value_splitter, most_common_classifier, parent, certainty);
             tree.data_locations[leaf] = subset;
-
+            tree.verifyNodeIntegrity(leaf.parent);
             return tree;
         }
     }
