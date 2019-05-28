@@ -106,17 +106,19 @@ namespace DecisionTrees
             // Check if a split attribute could even be found
             if (best_split_attribute == "[INTERNAL_VARIABLE]-NOTFOUND")
             {
-                Console.WriteLine("Even more special");
-                throw new Exception("Ben ik mee bezig");
+                // Okay so the subset we received could not be split such that it did not create too small of a leaf. Therefore we will make an estimation leaf and move up.
+                tree = this.addEstimationLeaf(tree, set, parent, last_split);
+                return tree;
             }
+
             bool split_on_continuous = attributes[best_split_attribute] == "continuous";
             if (split_on_continuous)
             {
                 threshold = thresholds[best_split_attribute];
             }
+
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
-            agent.THINK("end-considering-node-replacement-loop").finish();
-        
+            
             // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
             Node newnode = null;
             if (split_on_continuous)
@@ -129,9 +131,7 @@ namespace DecisionTrees
                 attributes_for_further_iteration.Remove(best_split_attribute);
             }
             // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
-
-            int values_left = subsets.Keys.Count;
-            foreach (string subset_splitter in subsets.Keys)
+           foreach (string subset_splitter in subsets.Keys)
             {
                 List<DataInstance> subset = subsets[subset_splitter];
                 agent.THINK("subset-on-value").finish();
@@ -165,6 +165,7 @@ namespace DecisionTrees
                     agent.THINK("add-leaf").setState(state).finish();
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                     tree.data_locations[leaf] = subset;
+                    tree.verifyNodeIntegrity(leaf.parent);
                 }
                 else
                 {
@@ -183,9 +184,8 @@ namespace DecisionTrees
                     // If we got here in the code then the set that was previously not all the same classifier has been resolved. 
                     // Therefore we can let the foreach continue further!
                 }
-
-                values_left--;
             }
+            
             // The set that we have received has been dealt with completely. We can now move up!
             agent.THINK("end-value-loop").finish();
             if (parent != null)
@@ -222,7 +222,8 @@ namespace DecisionTrees
                     // This attribute has the potential to become the new best attribute, but first we need to make sure splitting on this
                     // attribute will not result in a leaf that has a subset lower than the minimum leaf size.
                     Dictionary<string, List<DataInstance>> competing_subsets = (competing_is_continuous) ? SetHelper.subsetOnAttributeContinuous(set, competing_attribute, thresholds[competing_attribute]) : SetHelper.subsetOnAttributeNominal(set, competing_attribute, possible_nominal_values[competing_attribute]);
-                    bool subset_below_minimum_requirement = false;
+                    int subsets_above_minimum_requirement = 0;
+
                     foreach (string value_splitter in competing_subsets.Keys.ToList())
                     {
                         List<DataInstance> subset = competing_subsets[value_splitter];
@@ -230,20 +231,17 @@ namespace DecisionTrees
                         // If at least one of these subsets has less instances than the minimum leaf size, then this split should NOT happen. 
 
                         Dictionary<string, object> considerSubsetState = StateRecording.generateState("minimum_objects", minimum_leaf_size, "subset_count", subset.Count, "chosen_attribute", best_split_attribute, "value_split", value_splitter,
-                                                                                                            "suggested_threshold", (split_on_continuous) ? (double?)thresholds[best_split_attribute] : null,
-                                                                                                            "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "NULL", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
-
-                        if (subset.Count < minimum_leaf_size && subset.Count != 0)
+                                                                                                            "suggested_threshold", (split_on_continuous) ? (double?)thresholds[best_split_attribute] : null);
+                        if (subset.Count >= minimum_leaf_size)
                         {
-                            subset_below_minimum_requirement = true;
-                            break;
+                            subsets_above_minimum_requirement++;
                         }
                     }
-                    if (subset_below_minimum_requirement)
+
+                    if (subsets_above_minimum_requirement < 2)
                     {
                         // Although this attribute has a better gain ratio than the best one we have now, it also forces us to create a leaf
                         // that is below the minimum leaf size and therefore we cannot choose this one!
-                        Console.WriteLine("It happened.");
                     }
                     else
                     {
@@ -311,7 +309,7 @@ namespace DecisionTrees
             certainty = certainty * percentage_with_this_classifier;
             Leaf leaf = tree.addUncertainLeaf(value_splitter, most_common_classifier, parent, certainty);
             tree.data_locations[leaf] = subset;
-
+            tree.verifyNodeIntegrity(leaf.parent);
             return tree;
         }
     }

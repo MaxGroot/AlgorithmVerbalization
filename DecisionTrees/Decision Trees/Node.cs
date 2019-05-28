@@ -42,7 +42,10 @@ namespace DecisionTrees
             }
             throw new Exception($"Child removal request on a node that doesn't have it: {child.identifier}");
         }
-
+        public void removeChildLeaf(Leaf child)
+        {
+            this.leafChildren.Remove(child);
+        }
         public void addParentNode(Node parent)
         {
             this.parent = parent;

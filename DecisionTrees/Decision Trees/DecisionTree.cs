@@ -65,7 +65,7 @@ namespace DecisionTrees
             }
             Leaf leaf = new Leaf(element_identifier, value_splitter, class_prediction, parent);
             parent.addChildLeaf(leaf);
-
+            
             element_counter++;
             return leaf;
         }
@@ -106,6 +106,87 @@ namespace DecisionTrees
             return this;
         }
 
+        public DecisionTree replaceNodeByNewLeaf(Node removeNode, bool check_parent_integrity = false)
+        {
+            // Create the new leaf
+            List<DataInstance> total_set = new List<DataInstance>();
+            List<Node> queue = new List<Node>();
+            queue.Add(removeNode);
+
+            // Get all instances that should be covered.
+            while (queue.Count > 0)
+            {
+                Node node = queue[0];
+                queue.RemoveAt(0);
+
+                foreach (Leaf child in node.getLeafChildren())
+                {
+                    total_set.AddRange(this.data_locations[child]);
+                    this.data_locations.Remove(child);
+                }
+
+                // Add child nodes to queue so their leafs also get added
+                queue.AddRange(node.getNodeChildren());
+            }
+
+            // Make the new leaf
+            string prediction = SetHelper.mostCommonClassifier(total_set, this.target_attribute);
+            double uncertainty = (double)SetHelper.subset_errors(total_set, this.target_attribute) / (double)total_set.Count;
+            Node parent = removeNode.getParent();
+            Leaf newleaf = this.addUncertainLeaf(removeNode.value_splitter, prediction, parent, uncertainty);
+
+            // Make sure we can access this leaf's new subset!
+            this.data_locations[newleaf] = total_set;
+
+            // Remove the old node from its parent.
+            if (parent != null)
+            {
+                parent.removeChildNode(removeNode);
+                if (check_parent_integrity)
+                {
+                    this.verifyNodeIntegrity(parent);
+                }
+            }
+            return this;
+        }
+        
+        public DecisionTree verifyNodeIntegrity(Node node)
+        {
+            Dictionary<string, Leaf> classifier_leafs = new Dictionary<string, Leaf>();
+            List<Leaf> children_to_remove = new List<Leaf>();
+
+            foreach (Leaf child in node.getLeafChildren())
+            {
+                if (!classifier_leafs.ContainsKey(child.classifier))
+                {
+                    classifier_leafs[child.classifier] = child;
+                }
+                else
+                {
+                    // We already have this classifier for this node! Merge this child in the other
+                    if (!(node is ContinuousNode))
+                    {
+                        children_to_remove.Add(child);
+                    }else
+                    {
+                        // This is a continuous node so we should remove the node anyway since that's always a binary split
+                        return this.replaceNodeByNewLeaf(node, true);
+                    }
+                }
+            }
+
+            // If we got here, then this is a nominal node that possible requires shifting leafs arround.
+
+            foreach (Leaf child in children_to_remove)
+            {
+                // Relocate the data instances from this child to the first child that had this classifier
+                this.data_locations[classifier_leafs[child.classifier]].AddRange(this.data_locations[child]);
+                child.classifier = "SHOULD BE REMOVED";
+                child.value_splitter = "SHOULD HAVE BEEN REMOVED";
+                node.removeChildLeaf(child);
+            }
+            return this;
+        }
         public string classify(DataInstance instance)
         {
             return this.getRoot().classify(instance);
