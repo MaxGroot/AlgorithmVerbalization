@@ -20,16 +20,28 @@
             "state_descriptor_id": null
         },
         {
-            "id"        : "set-new-best-attribute",
-            "action"    : "Set new best attribute",
+            "id"        : "propose-competing-attribute",
+            "action"    : "Propose competing attribute",
             "situation" : "Comparing attributes",
-            "state_descriptor_id" : "comparing-attributes"
+            "state_descriptor_id" : "comparing-competing-attribute"
         },
         {
-            "id"        : "keep-old-attribute",
+            "id"        : "keep-best-attribute",
             "action"    : "Do not change best attribute",
             "situation" : "Comparing attributes",
-            "state_descriptor_id" : "comparing-attributes"
+            "state_descriptor_id" : "comparing-competing-attribute"
+        },
+        {
+            "id"        : "allow-competing-attribute",
+            "action"    : "Allow competing attribute",
+            "situation" : "Verify competing attribute",
+            "state_descriptor_id" : "verify-competing-attribute"
+        },
+        {
+            "id"        : "disregard-competing-attribute",
+            "action"    : "Disregard competing attribute",
+            "situation" : "Verify competing attribute",
+            "state_descriptor_id" : "verify-competing-attribute"
         },
         {
             "id"        : "end-attribute-loop",
@@ -38,29 +50,17 @@
             "state_descriptor_id" : null
         },
         {
-            "id"    : "consider-subset-size",
-            "action" : "Validate subset of node subset size",
-            "situation" : "Best attribute determined",
+            "id" : "add-node",
+            "action" : "Create node for best attribute",
+            "situation" : "Check if best attribute could be found",
             "state_descriptor_id" : null
-         },
+        },
         {
-            "id"    : "end-considering-node-replacement-loop",
-            "action" : "End subset size consideration loop",
-            "situation" : "Best attribute determined",
+            "id" : "add-estimation-leaf",
+            "action" : "Create estimation leaf for this set",
+            "situation" : "Check if best attribute could be found",
             "state_descriptor_id" : null
-         },
-         {
-             "id"    : "do-not-replace-node-suggestion-for-leaf",
-             "action" : "Do not replace node suggestion for estimation leaf",
-             "situation" : "Considering subset size",
-             "state_descriptor_id" : "considering-subset-size"
-          },
-         {
-             "id"    : "replace-node-suggestion-for-leaf",
-             "action" : "Replace node suggestion for estimation leaf",
-             "situation" : "Considering subset size",
-             "state_descriptor_id" : "considering-subset-size"
-          },
+        },
         {
             "id" : "subset-on-value",
             "action" : "Create subset with this value",
@@ -80,8 +80,8 @@
             "state_descriptor_id" : "considering-subset"
         },
         {
-            "id"    : "add-estimation-leaf",
-            "action" : "Add estimation leaf",
+            "id"    : "add-majority-leaf",
+            "action" : "Add majority leaf",
             "situation" : "Considering subset",
             "state_descriptor_id" : "considering-subset"
         },
@@ -137,9 +137,8 @@
     "state_descriptors":
     [
         {
-            "id" : "comparing-attributes",
+            "id" : "comparing-competing-attribute",
             "considerations" : {
-                
                 "current_best_gain" : "double",
                 "competing_gain" : "double",
                 "current_best_attribute" : "string",
@@ -153,12 +152,11 @@
             }
         },
         {
-            "id" : "considering-subset-size",
+            "id" : "verify-competing-attribute",
             "considerations" : {
                 "minimum_objects" : "int",
-                "subset_count" : "int",
+                "valid_subset_count" : "int",
                 "chosen_attribute" : "string",
-                "value_split" : "string",
                 "suggested_threshold" : "nullable_double",
                 "parent_id" : "string",
                 "parent_attribute" : "string",
