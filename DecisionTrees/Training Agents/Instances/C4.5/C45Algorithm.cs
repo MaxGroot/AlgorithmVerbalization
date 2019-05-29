@@ -85,10 +85,14 @@ namespace DecisionTrees
         private DecisionTree iterate(DecisionTree tree, List<DataInstance> set, Dictionary<string, string> attributes, Node parent, string last_split)
         {
             this.agent.THINK("iterate").finish();
+
+            // Calculate gains and thresholds.
             Dictionary<string, Dictionary<string, double>> gains_and_thresholds = calculate_attribute_gain_ratios(set, target_attribute, attributes);
             Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
 
             Tuple<string, Dictionary<string, List<DataInstance>>> attributeFound = this.findAttributeSplit(tree, set, attributes, gains_and_thresholds, parent, last_split);
+
+            // We need to know what the best attribute to split on is, and  what the subsets of splitting on it would be. 
             string best_split_attribute = attributeFound.Item1;
             Dictionary<string, List<DataInstance>> subsets = attributeFound.Item2;
 
@@ -106,7 +110,8 @@ namespace DecisionTrees
             // Check if a split attribute could even be found
             if (best_split_attribute == "[INTERNAL_VARIABLE]-NOTFOUND")
             {
-                // Okay so the subset we received could not be split such that it did not create too small of a leaf. Therefore we will make an estimation leaf and move up.
+                // Okay so the subset we received could not be split such that it did not create too small of a leaf. 
+                // Therefore we will make an estimation leaf and move up.
                 tree = this.addEstimationLeaf(tree, set, parent, last_split);
                 return tree;
             }
@@ -117,9 +122,11 @@ namespace DecisionTrees
                 threshold = thresholds[best_split_attribute];
             }
 
+            // Get started on making a node 
+
             Dictionary<string, string> attributes_for_further_iteration = AttributeHelper.CopyAttributeDictionary(attributes);
             
-            // We now know the best splitting attribute and how to split it. We're gonna create the subsets now.
+            // We now know the best splitting attribute and how to split it.
             Node newnode = null;
             if (split_on_continuous)
             {
@@ -130,6 +137,7 @@ namespace DecisionTrees
                 newnode = tree.addNode(best_split_attribute, last_split, parent);
                 attributes_for_further_iteration.Remove(best_split_attribute);
             }
+            
             // We now have a dictionary where each string represents the value split and the list of datainstances is the subset.
            foreach (string subset_splitter in subsets.Keys)
             {
@@ -172,6 +180,7 @@ namespace DecisionTrees
                     // We still haven't resolved this set. We need to iterate upon it to split it again. 
                     if (attributes_for_further_iteration.Count == 0)
                     {
+                        // If this happens than we have no more 
                         agent.THINK("add-estimation-leaf").setState(state).finish();
                         tree = this.addEstimationLeaf(tree, subset, newnode, subset_splitter);
                     }
@@ -198,7 +207,7 @@ namespace DecisionTrees
         private Tuple<string, Dictionary<string, List<DataInstance>>> findAttributeSplit(DecisionTree tree, List<DataInstance> set, Dictionary<string, string> attributes, Dictionary<string, Dictionary<string, double>> gains_and_thresholds, Node parent, string last_split)
         {
 
-            // Re-evaluate gains and thresholds
+            // Get gains and thresholds from parameters
             Dictionary<string, double> gains = gains_and_thresholds["gains"];
             Dictionary<string, double> thresholds = gains_and_thresholds["thresholds"];
 
@@ -208,6 +217,7 @@ namespace DecisionTrees
             Boolean split_on_continuous = false;
             double threshold = 0;
             Dictionary<string, List<DataInstance>> subsets = null;
+
             foreach (string competing_attribute in attributes.Keys.ToList())
             {
                 agent.THINK("consider-attribute").finish();
@@ -238,6 +248,9 @@ namespace DecisionTrees
                         }
                     }
 
+                    // I could not find proof of how J48 determines how many 'wrong' subsets are allowed. 
+                    // I found a suggestion (https://stackoverflow.com/questions/21762161/what-does-the-minnumobj-parameter-do-in-j48-classifier-weka)
+                    // And that works perfectly like J48 so I assume that this is how they do it. 
                     if (subsets_above_minimum_requirement < 2)
                     {
                         // Although this attribute has a better gain ratio than the best one we have now, it also forces us to create a leaf

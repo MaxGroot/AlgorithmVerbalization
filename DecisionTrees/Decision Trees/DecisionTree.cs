@@ -142,6 +142,9 @@ namespace DecisionTrees
             if (parent != null)
             {
                 parent.removeChildNode(removeNode);
+
+                // Creating a leaf can create the possibility of a node losing its integrity (i.e. it has leafs with the same classifier)
+                // If we need to check for that, call the integrity check method. 
                 if (check_parent_integrity)
                 {
                     this.verifyNodeIntegrity(parent);
@@ -170,14 +173,16 @@ namespace DecisionTrees
                     }else
                     {
                         // This is a continuous node so we should remove the node anyway since that's always a binary split
+                        // meaning that by removing one child we only have one child left which is useless.
+
+                        //TODO: What if it has one node child and one leaf child?
                         return this.replaceNodeByNewLeaf(node, true);
                     }
                 }
             }
 
             // If we got here, then this is a nominal node that possible requires shifting leafs arround.
-
-            foreach (Leaf child in children_to_remove)
+             foreach (Leaf child in children_to_remove)
             {
                 // Relocate the data instances from this child to the first child that had this classifier
                 this.data_locations[classifier_leafs[child.classifier]].AddRange(this.data_locations[child]);
