@@ -53,13 +53,13 @@
             "id" : "add-node",
             "action" : "Create node for best attribute",
             "situation" : "Check if best attribute could be found",
-            "state_descriptor_id" : null
+            "state_descriptor_id" : "check-best-attribute-was-possible"
         },
         {
             "id" : "add-estimation-leaf",
             "action" : "Create estimation leaf for this set",
             "situation" : "Check if best attribute could be found",
-            "state_descriptor_id" : null
+            "state_descriptor_id" : "check-best-attribute-was-possible"
         },
         {
             "id" : "subset-on-value",
@@ -164,6 +164,19 @@
                 "previous_value_split" : "string"
             }
         },
+        {
+        "id" : "check-best-attribute-was-possible",
+            "considerations" : {
+                "attribute_was_found" : "string",
+                "best_attribute" : "string",
+                "suggested_threshold" : "nullable_double",
+                "parent_id" : "string",
+                "parent_attribute" : "string",
+                "parent_threshold" : "nullable_double",
+                "previous_value_split" : "string"
+            }
+        }
+        ,
         {
             "id" : "considering-subset",
             "considerations" : {

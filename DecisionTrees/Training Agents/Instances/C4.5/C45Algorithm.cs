@@ -107,18 +107,24 @@ namespace DecisionTrees
                 threshold = thresholds[best_split_attribute];
             }
 
+            bool split_on_continuous = (best_split_attribute != "[INTERNAL_VARIABLE]-NOTFOUND") ? attributes[best_split_attribute] == "continuous" : false;
+
             // Check if a split attribute could even be found
+            Dictionary<string, object> checkBestAttributeWasPossibleState = StateRecording.generateState("attribute_was_found", best_split_attribute == "[INTERNAL_VARIABLE]-NOTFOUND" ? "TRUE" : "FALSE", "best_attribute", best_split_attribute,
+                                                                                                            "suggested_threshold", (split_on_continuous) ? (double?)thresholds[best_split_attribute] : null,
+                                                                                                            "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
+
             if (best_split_attribute == "[INTERNAL_VARIABLE]-NOTFOUND")
             {
                 // Okay so the subset we received could not be split such that it did not create too small of a leaf. 
                 // Therefore we will make an estimation leaf and move up.
-                agent.THINK("add-estimation-leaf").finish();
+                agent.THINK("add-estimation-leaf").setState(checkBestAttributeWasPossibleState).finish();
                 tree = this.addEstimationLeaf(tree, set, parent, last_split);
                 return tree;
             }
-            agent.THINK("add-node").finish();
+            // If we got here then we did not return an estimation leaf and therefore we found a suitable attribute to split on!
+            agent.THINK("add-node").setState(checkBestAttributeWasPossibleState).finish();
 
-            bool split_on_continuous = attributes[best_split_attribute] == "continuous";
             if (split_on_continuous)
             {
                 threshold = thresholds[best_split_attribute];
