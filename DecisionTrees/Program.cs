@@ -86,7 +86,7 @@ namespace DecisionTrees
                     string keep_values_input = writer.askFromConfig("Should all values keep getting considered even when not in subset?", "C4.5", "keep_considering_values");
                     string minimum_number_of_objects_input = writer.askFromConfig("How many objects should a leaf at least contain?", "C4.5", "minimum_number_of_objects");
 
-                    parameters["confidence"] = int.Parse(confidence_input);
+                    parameters["confidence"] = float.Parse(confidence_input);
                     parameters["keep_values_input"] = bool.Parse(keep_values_input);
                     parameters["minimum_number_of_objects"] = int.Parse(minimum_number_of_objects_input);
 

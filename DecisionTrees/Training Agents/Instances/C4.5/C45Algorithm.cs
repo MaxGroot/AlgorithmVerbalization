@@ -64,6 +64,9 @@ namespace DecisionTrees
             minimum_leaf_size = (int) parameters["minimum_number_of_objects"];
             keep_considering_all_values = (bool) parameters["keep_values_input"];
 
+            float confidence_on_100_scale = (float)parameters["confidence"];
+            double confidence = (double)(((double)confidence_on_100_scale * 2d) / 100d);
+
             // Generate C4.5 decision tree.
             agent.THINK("start").finish();
             DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, attributes, null, null);
@@ -76,8 +79,6 @@ namespace DecisionTrees
             // Return pruned tree.
             C45Pruner pruner = new C45Pruner();
 
-            int confidence_on_100_scale = (int) parameters["confidence"];
-            double confidence = (double) (((double) confidence_on_100_scale * 2d) / 100d);
             DecisionTree pruned_tree = pruner.prune(full_tree, target_attribute, confidence, agent);
             agent.THINK("return-prediction-model").finish();
 
