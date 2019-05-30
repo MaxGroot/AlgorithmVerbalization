@@ -132,19 +132,8 @@ namespace DecisionTrees
                 }
             }
 
-            // If we got here, the instance has a value for an attribute that this model does not know. 
-            // Perhaps the value belonged to a leaf that has been removed and the instances have been shifted to another child leaf of this node. Let's try that!
-            if (this.value_split_shifts.ContainsKey(value_of_instance))
-            {
-                return value_split_shifts[value_of_instance].classifier;
-            }
-
             throw new Exception($"Unknown value {value_of_instance} for {this.label}");
         }
-
-        public void addValueSplitShift(string old_value_splitter, Leaf relocated_leaf)
-        {
-            this.value_split_shifts[old_value_splitter] = relocated_leaf;
-        }
+        
     }
 }
