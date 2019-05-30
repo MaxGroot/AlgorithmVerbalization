@@ -84,8 +84,11 @@ namespace DecisionTrees
                 // Multiply the proportion with log base 2 of itself. 
                 proportion *= Math.Log(proportion, 2);
 
+                if (! Double.IsNaN(proportion))
+                {
+                    splitinfo += proportion;
+                }
                 // Add to intrinsic value
-                splitinfo += proportion;
 
             }
             // Return the negative of the sum.
@@ -97,8 +100,20 @@ namespace DecisionTrees
 
             // Adjust for missing data
             double missingFraction = SetHelper.missingDataFraction(S, wanted_attribute);
+
+            double gain_result = gain(S, wanted_attribute, targetAttribute, possible_values);
+            double splitinfo = splitInfo(S, wanted_attribute, possible_values);
+
+            if (splitinfo == 0)
+            {
+                return 0;
+            }
+            double ret = gain_result / splitinfo;
             
-            return (1 - missingFraction) * gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
+            return ret;
+           // return (1 - missingFraction) * gain(S, wanted_attribute, targetAttribute, possible_values) / splitInfo(S, wanted_attribute, possible_values);
+
+
         }
 
         public static double[] best_split_and_ratio_for_continuous(List<DataInstance> S, string wanted_attribute, string target_attribute, List<double> supplied_values)

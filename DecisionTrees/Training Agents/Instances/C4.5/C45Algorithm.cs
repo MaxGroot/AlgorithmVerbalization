@@ -154,19 +154,24 @@ namespace DecisionTrees
             {
                 List<DataInstance> subset = subsets[subset_splitter];
                 agent.THINK("subset-on-value").finish();
-                bool uniformClassifier = SetHelper.hasUniformClassifier(subset, target_attribute);
-                Dictionary<string, object> state = StateRecording.generateState("set_count", subset.Count, "set_has_uniform_classifier", uniformClassifier ? "TRUE" : "FALSE",  "chosen_attribute", best_split_attribute, "value_split", subset_splitter, "possible_attribute_count", attributes_for_further_iteration.Count,
+
+                bool uniformClassifier = false;
+
+                if (subset.Count > 0)
+                {
+                    uniformClassifier = SetHelper.hasUniformClassifier(subset, target_attribute);
+                }
+                Dictionary<string, object> state = StateRecording.generateState("set_count", subset.Count, "set_has_uniform_classifier", (subset.Count > 0) ? (uniformClassifier ? "TRUE" : "FALSE") : "EMPTY SET",  "chosen_attribute", best_split_attribute, "value_split", subset_splitter, "possible_attribute_count", attributes_for_further_iteration.Count,
                                                                                 "chosen_threshold", (split_on_continuous) ? (double?) thresholds[best_split_attribute] : null, "current_node_id", newnode.identifier,
                                                                                 "parent_id", (parent != null) ? parent.identifier : "NULL", "parent_attribute", (parent != null) ? parent.label : "NULL", "previous_value_split", (last_split != null) ? last_split : "", "parent_threshold", (parent != null && parent is ContinuousNode) ? (double?)((ContinuousNode)parent).threshold : null);
 
-                if (subset.Count < minimum_leaf_size && subset.Count != 0)
-
-                    if (subset.Count == 0)
+                if (subset.Count == 0)
                 {
                     // There are no more of this subset. We need to skip this iteration.
                     agent.THINK("ignore-value").setState(state).finish();
                     continue;
                 }
+
                 if (uniformClassifier)
                 {
                     // This subset doesn't have to be split anymore. We can just add it to the node as a leaf. 
