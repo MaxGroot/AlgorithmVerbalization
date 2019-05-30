@@ -108,6 +108,11 @@ namespace DecisionTrees
 
         public DecisionTree replaceNodeByNewLeaf(Node removeNode)
         {
+            if (removeNode.getParent() == null)
+            {
+                Console.WriteLine("Tried to prune root. You sure this Decision Tree makes sense?");
+                return this;
+            }
             // Create the new leaf
             List<DataInstance> total_set = new List<DataInstance>();
             List<Node> queue = new List<Node>();
@@ -221,6 +226,10 @@ namespace DecisionTrees
 
         private bool verifyNodeIntegrity(Node node)
         {
+            if (node.getParent() == null)
+            {
+                return false;
+            }
             bool should_remove_node = false;
             if (node is ContinuousNode)
             {
@@ -274,10 +283,6 @@ namespace DecisionTrees
             if (should_remove_node)
             {
                 Node parent = node.getParent();
-                if (parent == null)
-                {
-                    throw new Exception("Tried to remove the root of the DecisionTree!");
-                }
                 // This node is useless. We need to stick its leaf to the parent on this node's value splitter.
                 Leaf my_child = null;
                 if (node.getLeafChildren().Count == 1)
