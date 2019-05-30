@@ -184,10 +184,16 @@ namespace DecisionTrees
         {
             List<Leaf> list_to_return = new List<Leaf>();
             list_to_return.AddRange(node.getLeafChildren());
-            foreach(Node child in node.getNodeChildren())
+            List<Node> queue = new List<Node>();
+            queue.AddRange(node.getNodeChildren());
+            while(queue.Count > 0)
             {
-                list_to_return.AddRange(all_leaf_children(child));
+                Node check = queue[0];
+                queue.RemoveAt(0);
+                queue.AddRange(check.getNodeChildren());
+                list_to_return.AddRange(check.getLeafChildren());
             }
+
             return list_to_return;
         }
     }
