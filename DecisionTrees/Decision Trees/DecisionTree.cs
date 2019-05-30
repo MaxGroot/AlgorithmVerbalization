@@ -212,6 +212,53 @@ namespace DecisionTrees
 
         private DecisionTree verifyNodeIntegrity(Node node)
         {
+            if (node is ContinuousNode)
+            {
+                string first_classifier = null;
+                bool should_remove_node = false;
+                foreach(Leaf child in node.getLeafChildren())
+                {
+                   if (child.classifier != first_classifier)
+                    {
+                        first_classifier = child.classifier;
+                    }else
+                    {
+                        should_remove_node = true;
+                    }
+                }
+                if (should_remove_node)
+                {
+                    // First we need to combine the two leafs of this node into one. We'll stick the latter in the former.
+                    Leaf child_to_remove = node.getLeafChildren().Last();
+                    Leaf child_to_keep = node.getLeafChildren().First();
+
+                    // Move the data
+                    this.data_locations[child_to_keep].AddRange(data_locations[child_to_remove]);
+                    this.data_locations.Remove(child_to_remove);
+
+                    // Remove the removal child from this node.
+                    node.removeChildLeaf(child_to_remove);
+                    
+                    // We now have a node with only one leaf. That shouldnt happen. But it will be addressed outside of this if condition!
+                }
+            }
+
+            if (node.getAllChildren().Count == 1 && node.getLeafChildren().Count == 1)
+            {
+                Node parent = node.getParent();
+                if (parent == null)
+                {
+                    throw new Exception("Tried to remove the root of the DecisionTree!");
+                }
+                // This node is useless. We need to stick its leaf to the parent on this node's value splitter.
+                Leaf my_child = node.getLeafChildren().First();
+                my_child.value_splitter = node.value_splitter;
+
+                // Attach the child to this node's parent, remove this node from its parent
+                parent.addChildLeaf(my_child);
+                parent.removeChildNode(node);
+
+            }
 
             return this;
         }
