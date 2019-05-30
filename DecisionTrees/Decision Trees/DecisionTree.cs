@@ -106,7 +106,7 @@ namespace DecisionTrees
             return this;
         }
 
-        public DecisionTree replaceNodeByNewLeaf(Node removeNode, bool check_parent_integrity = false)
+        public DecisionTree replaceNodeByNewLeaf(Node removeNode)
         {
             // Create the new leaf
             List<DataInstance> total_set = new List<DataInstance>();
@@ -141,13 +141,7 @@ namespace DecisionTrees
                 this.data_locations[newleaf] = total_set;
 
                 parent.removeChildNode(removeNode);
-
-                // Creating a leaf can create the possibility of a node losing its integrity (i.e. it has leafs with the same classifier)
-                // If we need to check for that, call the integrity check method. 
-                if (check_parent_integrity)
-                {
-                    this.verifyNodeIntegrity(parent);
-                }
+                
             }
             return this;
         }
@@ -155,9 +149,22 @@ namespace DecisionTrees
         public DecisionTree verifyIntegrity()
         {
             List<Node> bottom_up_nodes = this.sort_nodes_bottom_up();
-            foreach(Node node in bottom_up_nodes)
+            while(bottom_up_nodes.Count > 0)
             {
-                this.verifyNodeIntegrity(node);
+                Node node = bottom_up_nodes[0];
+                bottom_up_nodes.RemoveAt(0);
+                if (node.isDeleted())
+                {
+                    // This node was deleted before we arrived at it from the queue and therefore we shouldnt analyze it.
+                }
+                else
+                {
+                    if (this.verifyNodeIntegrity(node))
+                    {
+                        // That node was removed! We need to add this node's parent to the end of the queue
+                        bottom_up_nodes.Add(node.getParent());
+                    }
+                }
             }
 
             return this;
@@ -210,12 +217,12 @@ namespace DecisionTrees
             return queue;
         }
 
-        private DecisionTree verifyNodeIntegrity(Node node)
+        private bool verifyNodeIntegrity(Node node)
         {
+            bool should_remove_node = false;
             if (node is ContinuousNode)
             {
                 string first_classifier = null;
-                bool should_remove_node = false;
                 foreach(Leaf child in node.getLeafChildren())
                 {
                    if (child.classifier != first_classifier)
@@ -238,12 +245,31 @@ namespace DecisionTrees
 
                     // Remove the removal child from this node.
                     node.removeChildLeaf(child_to_remove);
-                    
+
                     // We now have a node with only one leaf. That shouldnt happen. But it will be addressed outside of this if condition!
                 }
             }
+            else
+            {
+                // Check if this is a nominal node that results in all the same classifier
 
-            if (node.getAllChildren().Count == 1 && node.getLeafChildren().Count == 1)
+                // If it has at least one node as a child, we do not want to remove it
+                should_remove_node = (node.getNodeChildren().Count == 0);
+                string first_classifier = null;
+                foreach(Leaf child in node.getLeafChildren())
+                {
+                    if (first_classifier == null)
+                    {
+                        first_classifier = child.classifier;
+                    }
+                    if (child.classifier != first_classifier)
+                    {
+                        should_remove_node = false;
+                    }
+                }
+            }
+
+            if (should_remove_node)
             {
                 Node parent = node.getParent();
                 if (parent == null)
@@ -251,16 +277,44 @@ namespace DecisionTrees
                     throw new Exception("Tried to remove the root of the DecisionTree!");
                 }
                 // This node is useless. We need to stick its leaf to the parent on this node's value splitter.
-                Leaf my_child = node.getLeafChildren().First();
-                my_child.value_splitter = node.value_splitter;
+                Leaf my_child = null;
+                if (node.getLeafChildren().Count == 1)
+                {
+                    my_child = node.getLeafChildren().First();
 
-                // Attach the child to this node's parent, remove this node from its parent
-                parent.addChildLeaf(my_child);
+                    my_child.value_splitter = node.value_splitter;
+
+                    // Attach the child to this node's parent, remove this node from its parent
+                    parent.addChildLeaf(my_child);
+
+                }
+                else
+                {
+                    string classifier = node.getLeafChildren().First().classifier;
+                    List<DataInstance> full_dataset = new List<DataInstance>();
+
+                    double average_certainty = 0;
+
+                    // Relocate the data.
+                    foreach(Leaf child in node.getLeafChildren())
+                    {
+                        full_dataset.AddRange(data_locations[child]);
+                        data_locations.Remove(child);
+                        average_certainty += child.certainty;
+                    }
+                    average_certainty /= (double)node.getLeafChildren().Count;
+
+                    // We need to merge all leafs into one.
+                    my_child = this.addUncertainLeaf(node.value_splitter, classifier, parent, average_certainty);
+                    data_locations[my_child] = full_dataset;
+                }
+
+                // Now that all leafs have been dealt with, we need to delete the node
                 parent.removeChildNode(node);
-
+                node.delete();
             }
 
-            return this;
+            return should_remove_node;
         }
 
         public string classify(DataInstance instance)

@@ -16,6 +16,7 @@ namespace DecisionTrees
         private List<Node> nodeChildren = new List<Node>();
         private List<Leaf> leafChildren = new List<Leaf>();
         private Dictionary<string, Leaf> value_split_shifts = new Dictionary<string, Leaf>();
+        private bool deleted = false; 
 
         public Node(string identifier, string label, string value_splitter)
         {
@@ -84,7 +85,14 @@ namespace DecisionTrees
             ret.AddRange(this.getNodeChildren());
             return ret;
         }
-
+        public bool isDeleted()
+        {
+            return this.deleted;
+        }
+        public void delete()
+        {
+            this.deleted = true;
+        }
         public virtual string rule()
         {
             string rule = "";
