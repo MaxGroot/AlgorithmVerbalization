@@ -68,6 +68,8 @@ namespace DecisionTrees
             agent.THINK("start").finish();
             DecisionTree full_tree = this.iterate(new DecisionTree(target_attribute), examples, attributes, null, null);
 
+            full_tree.verifyIntegrity();
+
             // Snapshot full tree.
             agent.SNAPSHOT("pre-pruning", full_tree);
 
@@ -181,7 +183,6 @@ namespace DecisionTrees
                     agent.THINK("add-leaf").setState(state).finish();
                     Leaf leaf = tree.addUncertainLeaf(subset_splitter, classifier_value, newnode, certainty);
                     tree.data_locations[leaf] = subset;
-                    tree.verifyNodeIntegrity(leaf.parent);
                 }
                 else
                 {
@@ -334,7 +335,6 @@ namespace DecisionTrees
             certainty = certainty * percentage_with_this_classifier;
             Leaf leaf = tree.addUncertainLeaf(value_splitter, most_common_classifier, parent, certainty);
             tree.data_locations[leaf] = subset;
-            tree.verifyNodeIntegrity(leaf.parent);
             return tree;
         }
     }

@@ -24,11 +24,8 @@ namespace DecisionTrees
             this.agent = agent;
             this.confidence = confidence;
 
-            // Find all nodes that have a leaf and are therefore up for pruning.
-            List<Node> nodes_unsorted = this.nodes_with_leafs(tree.data_locations.Keys.ToList());
-
             // Sort them bottom-up.
-            List<Node> queue = this.sort_nodes_bottom_up(nodes_unsorted);
+            List<Node> queue = tree.sort_nodes_bottom_up();
             
             agent.THINK("prepare-for-pruning").finish();
             // Start post-pruning with this queue.
@@ -97,56 +94,6 @@ namespace DecisionTrees
                 tree = this.pruneIterate(tree, queue, target_attribute);
             }
             return tree;
-        }
-
-        private List<Node> nodes_with_leafs(List<Leaf> leafs)
-        {
-            // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
-            Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
-            foreach (Leaf leaf in leafs)
-            {
-                // We need to check for unique nodes, therefore we work with a dictionary to prevent a node occuring multiple times.
-                if (!node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
-                {
-                    // This node has not yet been added, so add it now.
-                    node_queue_with_identifiers.Add(leaf.parent.identifier, leaf.parent);
-                }
-            }
-
-            return node_queue_with_identifiers.Values.ToList();
-        }
-
-        private List<Node> sort_nodes_bottom_up(List<Node> nodes)
-        {
-
-            // We now have a queue of nodes that have at least 1 leaf child. 
-            // However, we need to sort it such that we will go through it bottom-up.
-            // First, convert it to a dictionary containing the parent counts.
-
-            Dictionary<Node, int> node_queue_with_parentcounts = new Dictionary<Node, int>();
-            foreach (Node node in nodes)
-            {
-                node_queue_with_parentcounts[node] = ElementHelper.parentCount(node);
-            }
-
-            // Then, convert it to a sorted dictionary, descending by parent count to ensure bottom-up.
-            List<KeyValuePair<Node, int>> sortedNodes = node_queue_with_parentcounts.ToList();
-            sortedNodes.Sort(
-                delegate (KeyValuePair<Node, int> pair1,
-                KeyValuePair<Node, int> pair2)
-                {
-                    return - pair1.Value.CompareTo(pair2.Value);
-                }
-            );
-
-            // Make a queue out of the sorted dictionary.
-            List<Node> queue = new List<Node>();
-            foreach (KeyValuePair<Node, int> row in sortedNodes)
-            {
-                queue.Add(row.Key);
-            }
-
-            return queue;
         }
         
         private void prepareSnapshot(Node node)

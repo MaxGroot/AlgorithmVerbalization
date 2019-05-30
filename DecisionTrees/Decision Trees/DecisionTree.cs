@@ -129,18 +129,17 @@ namespace DecisionTrees
                 queue.AddRange(node.getNodeChildren());
             }
 
-            // Make the new leaf
-            string prediction = SetHelper.mostCommonClassifier(total_set, this.target_attribute);
-            double uncertainty = (double)SetHelper.subset_errors(total_set, this.target_attribute) / (double)total_set.Count;
             Node parent = removeNode.getParent();
-            Leaf newleaf = this.addUncertainLeaf(removeNode.value_splitter, prediction, parent, uncertainty);
-
-            // Make sure we can access this leaf's new subset!
-            this.data_locations[newleaf] = total_set;
-
             // Remove the old node from its parent.
             if (parent != null)
             {
+                // Make the new leaf
+                string prediction = SetHelper.mostCommonClassifier(total_set, this.target_attribute);
+                double uncertainty = (double)SetHelper.subset_errors(total_set, this.target_attribute) / (double)total_set.Count;
+                Leaf newleaf = this.addUncertainLeaf(removeNode.value_splitter, prediction, parent, uncertainty);
+                // Make sure we can access this leaf's new subset!
+                this.data_locations[newleaf] = total_set;
+
                 parent.removeChildNode(removeNode);
 
                 // Creating a leaf can create the possibility of a node losing its integrity (i.e. it has leafs with the same classifier)
@@ -153,45 +152,70 @@ namespace DecisionTrees
             return this;
         }
         
-        public DecisionTree verifyNodeIntegrity(Node node)
+        public DecisionTree verifyIntegrity()
         {
-            Dictionary<string, Leaf> classifier_leafs = new Dictionary<string, Leaf>();
-            List<Leaf> children_to_remove = new List<Leaf>();
-
-            foreach (Leaf child in node.getLeafChildren())
+            List<Node> bottom_up_nodes = this.sort_nodes_bottom_up();
+            foreach(Node node in bottom_up_nodes)
             {
-                if (!classifier_leafs.ContainsKey(child.classifier))
-                {
-                    classifier_leafs[child.classifier] = child;
-                }
-                else
-                {
-                    // We already have this classifier for this node! Merge this child in the other
-                    if (!(node is ContinuousNode))
-                    {
-                        children_to_remove.Add(child);
-                    }else
-                    {
-                        // This is a continuous node so we should remove the node anyway since that's always a binary split
-                        // meaning that by removing one child we only have one child left which is useless.
-
-                        //TODO: What if it has one node child and one leaf child?
-                        return this.replaceNodeByNewLeaf(node, true);
-                    }
-                }
+                this.verifyNodeIntegrity(node);
             }
 
-            // If we got here, then this is a nominal node that possible requires shifting leafs arround.
-             foreach (Leaf child in children_to_remove)
-            {
-                // Relocate the data instances from this child to the first child that had this classifier
-                this.data_locations[classifier_leafs[child.classifier]].AddRange(this.data_locations[child]);
-                child.classifier = "SHOULD BE REMOVED";
-                child.value_splitter = "SHOULD HAVE BEEN REMOVED";
-                node.removeChildLeaf(child);
-            }
             return this;
         }
+
+        public List<Node> sort_nodes_bottom_up()
+        {
+            // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
+            Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
+            foreach (Leaf leaf in this.data_locations.Keys.ToList())
+            {
+                // We need to check for unique nodes, therefore we work with a dictionary to prevent a node occuring multiple times.
+                if (!node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
+                {
+                    // This node has not yet been added, so add it now.
+                    node_queue_with_identifiers.Add(leaf.parent.identifier, leaf.parent);
+                }
+            }
+
+            List<Node> nodes =  node_queue_with_identifiers.Values.ToList();
+            
+
+            // We now have a queue of nodes that have at least 1 leaf child. 
+            // However, we need to sort it such that we will go through it bottom-up.
+            // First, convert it to a dictionary containing the parent counts.
+
+            Dictionary<Node, int> node_queue_with_parentcounts = new Dictionary<Node, int>();
+            foreach (Node node in nodes)
+            {
+                node_queue_with_parentcounts[node] = ElementHelper.parentCount(node);
+            }
+
+            // Then, convert it to a sorted dictionary, descending by parent count to ensure bottom-up.
+            List<KeyValuePair<Node, int>> sortedNodes = node_queue_with_parentcounts.ToList();
+            sortedNodes.Sort(
+                delegate (KeyValuePair<Node, int> pair1,
+                KeyValuePair<Node, int> pair2)
+                {
+                    return -pair1.Value.CompareTo(pair2.Value);
+                }
+            );
+
+            // Make a queue out of the sorted dictionary.
+            List<Node> queue = new List<Node>();
+            foreach (KeyValuePair<Node, int> row in sortedNodes)
+            {
+                queue.Add(row.Key);
+            }
+
+            return queue;
+        }
+
+        private DecisionTree verifyNodeIntegrity(Node node)
+        {
+
+            return this;
+        }
+
         public string classify(DataInstance instance)
         {
             return this.getRoot().classify(instance);
