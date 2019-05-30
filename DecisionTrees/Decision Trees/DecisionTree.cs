@@ -172,20 +172,22 @@ namespace DecisionTrees
 
         public List<Node> sort_nodes_bottom_up()
         {
-            // Find all nodes that have at least 1 leaf child, as they might be up for consideration of pruning.
-            Dictionary<string, Node> node_queue_with_identifiers = new Dictionary<string, Node>();
-            foreach (Leaf leaf in this.data_locations.Keys.ToList())
+            // Find all nodes that have at least 1 leaf child, as they might be up for consideration.
+            List<Node> discover_queue = new List<Node>();
+            List<Node> nodes = new List<Node>();
+            discover_queue.Add(this.getRoot());
+
+            while(discover_queue.Count > 0)
             {
-                // We need to check for unique nodes, therefore we work with a dictionary to prevent a node occuring multiple times.
-                if (!node_queue_with_identifiers.ContainsKey(leaf.parent.identifier))
+                Node node = discover_queue[0];
+                discover_queue.RemoveAt(0);
+                discover_queue.AddRange(node.getNodeChildren());
+
+                if (node.getLeafChildren().Count > 0)
                 {
-                    // This node has not yet been added, so add it now.
-                    node_queue_with_identifiers.Add(leaf.parent.identifier, leaf.parent);
+                    nodes.Add(node);
                 }
             }
-
-            List<Node> nodes =  node_queue_with_identifiers.Values.ToList();
-            
 
             // We now have a queue of nodes that have at least 1 leaf child. 
             // However, we need to sort it such that we will go through it bottom-up.
