@@ -44,9 +44,8 @@ namespace DecisionTrees
         {
             Dictionary<string, List<DataInstance>> subset_collection = new Dictionary<string, List<DataInstance>>();
 
-            List<DataInstance> less_than_equal = set.Where(A => A.getPropertyAsDouble(attribute) <= threshold).ToList();
-
-            List<DataInstance> above = set.Where(A => A.getPropertyAsDouble(attribute) > threshold).ToList();
+            List<DataInstance> less_than_equal = set.Where(A => A.getProperty(attribute) != null ? A.getPropertyAsDouble(attribute) <= threshold : false).ToList();
+            List<DataInstance> above = set.Where(A => A.getProperty(attribute) != null ? A.getPropertyAsDouble(attribute) > threshold : false).ToList();
 
             subset_collection.Add("<=", less_than_equal);
             subset_collection.Add(">", above);

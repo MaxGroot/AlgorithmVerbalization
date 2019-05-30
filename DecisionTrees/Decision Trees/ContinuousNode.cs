@@ -27,9 +27,12 @@ namespace DecisionTrees
 
         public override string classify(DataInstance instance)
         {
+            bool instance_is_below_or_equals = false;
+            bool instance_is_above = false;
+
             double instance_value = instance.getPropertyAsDouble(this.label);
-            bool instance_is_below_or_equals = (instance_value <= this.threshold);
-            bool instance_is_above = (instance_value > this.threshold);
+            instance_is_below_or_equals = (instance_value <= this.threshold);
+            instance_is_above = (instance_value > this.threshold);
 
             foreach(Node child in this.getNodeChildren())
             {

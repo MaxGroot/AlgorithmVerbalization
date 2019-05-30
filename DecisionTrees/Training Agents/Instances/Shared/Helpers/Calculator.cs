@@ -132,10 +132,13 @@ namespace DecisionTrees
                 // Add posisble attribute values based on instances supplied.
                 foreach (DataInstance instance in s_sorted)
                 {
-                    double my_value = instance.getPropertyAsDouble(wanted_attribute);
-                    if (!possible_values.Contains(my_value))
+                    if (instance.getProperty(wanted_attribute) != null)
                     {
-                        possible_values.Add(my_value);
+                        double my_value = instance.getPropertyAsDouble(wanted_attribute);
+                        if (!possible_values.Contains(my_value))
+                        {
+                            possible_values.Add(my_value);
+                        }
                     }
                 }
             }else
@@ -152,10 +155,9 @@ namespace DecisionTrees
             bool found_better_than_nothing = false;
             foreach (double binary_split in possible_values)
             {
-
                 // Create subsets below or equal, and above the wanted attribute's current binary split. 
-                List<DataInstance> s_below_or_equal = S.Where(o => o.getPropertyAsDouble(wanted_attribute) <= binary_split).ToList();
-                List<DataInstance> s_above = S.Where(o => o.getPropertyAsDouble(wanted_attribute) > binary_split).ToList();
+                List<DataInstance> s_below_or_equal = S.Where(o => (o.getProperty(wanted_attribute) != null) ? o.getPropertyAsDouble(wanted_attribute) <= binary_split : false).ToList();
+                List<DataInstance> s_above = S.Where(o => (o.getProperty(wanted_attribute) != null) ?  o.getPropertyAsDouble(wanted_attribute) > binary_split : false).ToList();
 
                 double entropy_below_or_equal = entropy(s_below_or_equal, target_attribute);
                 double entropy_above = entropy(s_above, target_attribute);
