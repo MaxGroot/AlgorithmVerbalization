@@ -92,18 +92,18 @@ namespace DecisionTrees
         {
             Node node = queue[0];
             queue.RemoveAt(0);
-            outputs.Add(nodeToModelLine(node));
+            outputs.Add(nodeToModelLine(node, "|"));
             foreach (Node child in node.getNodeChildren())
             {
                 queue.Add(child);
             }
             foreach(Leaf child in node.getLeafChildren())
             {
-                outputs.Add(leafToModelLine(child));
+                outputs.Add(leafToModelLine(child, "|"));
             }
         }
 
-        private static string nodeToModelLine(Node node)
+        private static string nodeToModelLine(Node node, string sep)
         {
             ContinuousNode cNode = null;
             if (node is ContinuousNode)
@@ -111,13 +111,13 @@ namespace DecisionTrees
                 cNode = (ContinuousNode) node;
             }
             string parentidentifier = (node.getParent() == null) ? "ROOT" : node.getParent().identifier;
-            return $"NODE-{node.identifier}-{parentidentifier}-{(node is ContinuousNode ? 'C' : 'N')}-{node.label}-{node.value_splitter}{(node is ContinuousNode ? $"-{cNode.threshold}" : "")}";
+            return $"NODE{sep}{node.identifier}{sep}{parentidentifier}{sep}{(node is ContinuousNode ? 'C' : 'N')}{sep}{node.label}{sep}{node.value_splitter}{(node is ContinuousNode ? $"{sep}{cNode.threshold}" : "")}";
         }
 
-        private static string leafToModelLine(Leaf leaf)
+        private static string leafToModelLine(Leaf leaf, string sep)
         {
             string classifying_strength = leaf.certainty.ToString();
-            return $"LEAF-{leaf.identifier}-{leaf.parent.identifier}-{leaf.value_splitter}-{leaf.classifier}-{classifying_strength}";
+            return $"LEAF{sep}{leaf.identifier}{sep}{leaf.parent.identifier}{sep}{leaf.value_splitter}{sep}{leaf.classifier}{sep}{classifying_strength}";
         }
     }
 }

@@ -1,5 +1,5 @@
 age; workclass; fnlwgt; education; education-num; marital-status; occupation; relationship; race; sex; capital-gain; capital-loss; hours-per-week; native-country; classifier
-continuous; nominal; nominal; continuous;continuous; nominal; nominal; nominal; nominal;nominal;continuous;continuous;continuous;nominal;classifier
+continuous;nominal;nominal;nominal;continuous;nominal;nominal;nominal;nominal;nominal;continuous;continuous;continuous;nominal;classifier
 30; Private;103596; HS-grad;9; Never-married; Protective-serv; Not-in-family; White; Male;0;0;99; United-States; <=50K
 19; ?;62534; Bachelors;13; Never-married; ?; Own-child; Black; Female;0;0;40; Jamaica; <=50K
 25; Private;176729; Bachelors;13; Married-civ-spouse; Craft-repair; Husband; White; Male;0;0;60; United-States; >50K

@@ -26,7 +26,7 @@ namespace DecisionTrees
 
         private void update_model_with_line(ref DecisionTree model, string line)
         {
-            string[] split = line.Split('-');
+            string[] split = line.Split('|');
             string type = split[0];
             string identifier = split[1];
             string parentidentifier = split[2];
