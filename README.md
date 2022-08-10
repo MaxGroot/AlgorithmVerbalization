@@ -1,4 +1,5 @@
 # Think Aloud Decision Tree Learning
+This was a thesis project of 2018-2019 and is no longer actively maintained.
 
 ## Basic functionality
 The program accepts several inputs. From an INI file, it reads the settings and parameters for operation. It allows both model validation and training. 
